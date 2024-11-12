@@ -1,0 +1,311 @@
+.content-wrapper .img-updown  {
+    position: absolute;
+    top: 15px;
+    right: 10px;
+    left: auto;
+    animation: bounce-animation 5s infinite ease-in;
+}
+
+.rtl .content-wrapper .img-updown  {
+    position: absolute;
+    top: 15px;
+    left: 10px;
+    right: auto;
+    animation: bounce-animation 5s infinite ease-in;
+}
+
+.calendar_box #calendar {
+    height: 417px;
+    overflow-y: scroll;
+}
+
+#chartdiv {
+  width: 100%;
+  height: 500px;
+}
+.text-purple{
+    color: #9553fb;
+}
+
+.current_ticket{
+    left: -30px;
+}
+.active-box{
+    height: 344px;
+    overflow: auto ;
+}
+/* Scrollbar Styling */
+.active-box::-webkit-scrollbar {
+    width: 8px;
+}
+tr:hover{
+    background-color: #00800030!important
+}
+th:before{
+    content: ''!important;
+}
+th:after{
+    content: ''!important;
+}
+td.sorting_1{
+    height:35px!important;
+}
+.icon-table{
+    line-height: 1.7;
+    font-size: 20px;
+} 
+
+.active-box::-webkit-scrollbar-track {
+    background-color: #ebebeb;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+
+.active-box::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: #cdcdcd; 
+}
+/* Scrollbar Styling end*/
+
+@media screen and (max-width: 1440px) {
+    .calendar_box #calendar {
+        height: 482px;
+        overflow-y: scroll;
+        margin-right: 10px;
+        align-content: space-around;
+    }
+    .current_ticket{
+        left: -130px;
+    }
+    .active-box .table{
+        width: 450px;
+    }
+    .trophy-box .bg-img{
+        background-size: auto 70% !important;
+        margin: 10px 0px 0px 0px !important;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .event-table{
+        width: 930px;
+    }
+    .current_ticket {
+        left: -15px;
+    }
+    .trophy-box .bg-img{
+        background-size: auto 100% !important;
+        margin: 10px 10px 0px 0px !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .content-wrapper .img-updown  {
+        right: -10px;    
+    }
+}
+
+.fc-day-number {
+    font-size: 1rem;
+    font-weight: 300;
+}
+@media (min-width: 1200px) {
+    .fc-basic-view .fc-day-number {
+        padding: 0px 0px;
+    }
+}
+
+
+@keyframes bounce-animation  {
+  0% {
+    transform: translateY(0);
+    transition: 0.5s;
+  }
+  50% {
+    transform: translateY(-5px);
+    transition: 0.5s;
+  }
+  100% {
+    transform: translateY(0);
+    transition: 0.5s;
+  }
+}
+
+
+.twoarrow
+{
+    margin-top:28px;
+    margin-left: -15px;
+}
+.text-black{
+    color: #000000 !important;
+}
+
+
+
+/*-----------Dashboard-2-----------*/
+
+.first-section .first-plan {
+    border-radius: 5px;
+    padding: 18px 25px;
+    position: relative;
+    overflow: hidden;
+}
+.first-section .first-plan .bg-img {
+    position: absolute;
+    top: 8px;
+    opacity: 0.9;
+    transform: rotate(-25deg);
+    right: 0px;
+}
+.rtl .first-section .first-plan {
+    border-radius: 5px;
+    padding: 18px 25px;
+    position: relative;
+    overflow: hidden;
+}
+.rtl .first-section .first-plan .bg-img {
+    position: absolute;
+    top: 8px;
+    opacity: 0.9;
+    transform: rotate(-25deg);
+    left: 0px;
+    right: auto;
+}
+
+/*-----------Dashboard-2-----------*/
+
+
+.departure
+{
+     background-color: #e1eaf9;
+    color: black;
+}
+
+
+.departure:hover
+{
+    background-color: #3179e4;
+    color: white;
+}
+
+.lionhover:hover
+{
+    background-color: #e1eaf9;
+}
+
+.leohover:hover
+{
+    background-color: #ffeae5;
+}
+
+.deplane
+{
+    background-color: #3179e4;
+}
+
+.deplane:hover
+{
+     background-color: #0080ff;
+}
+
+.flightsearch
+{
+    padding : 20px 0px;
+}
+
+.planeicon2
+{
+    margin-top:1px;
+}
+
+.planeicon3
+{
+    margin-top:1px;
+}
+
+hr
+{
+    color:#D3D3D3;
+}
+/*<Dashboard 5 start>*/
+
+@media only screen and (max-width: 1600px) {
+   .planeicon2{
+      margin-top: 1px;
+  }
+
+
+@media only screen and (max-width: 1440px) {
+   .texas-font{
+      font-size: 12px;
+  }
+  .flightsearch{
+            
+            padding:18px 0px;
+  }
+  .india
+  {
+    font-size:14px;
+  }
+  .singapore
+  {
+    font-size:14px;
+  }
+  .texasleo
+  {
+    font-size:14px;
+  }
+
+  .planeicon1
+  {
+    margin-top:0px;
+  }
+/*  .flighttickets
+{
+    overflow:scroll;
+    height:656px;
+}*/
+
+}
+
+@media only screen and (max-width: 1366px) {
+   .flightsearch{
+            font-size: 12px;
+            padding:21px 0px;
+  }
+  .texas-font{
+      font-size: 16px;
+  }
+  .twoarrow{
+    margin-top:28px;
+    margin-left: -15px;
+  }
+  .planeicon1
+  {
+    margin-top:1px;
+  }
+  
+}
+
+
+@media only screen and (max-width: 1280px) {
+   .planeicon3{
+            margin-top: 1px;
+  }
+
+@media only screen and (max-width: 834px) {
+   .flightsearch{
+            padding:inherit;
+  }
+}
+
+
+@media only screen and (max-width: 414px) {
+   .twoarrow{
+    margin-top:38px;
+    margin-left: -15px; 
+  }
+}
+/*<Dashboard 5 end>*/

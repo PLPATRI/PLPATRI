@@ -8,6 +8,9 @@ use App\Models\Movimentacoes;
 use App\Models\Pedidos;
 use App\Models\PedidosItems;
 use App\Models\Produtos;
+use App\Models\Configuracoes;
+
+use Livewire\WithPagination;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +18,8 @@ use Carbon\Carbon;
 
 class NovoPedido extends Component
 {
+    use WithPagination;
+
     public $numero_documento = '';
     public $nomeCliente = '';
     public $cliente;
@@ -24,6 +29,11 @@ class NovoPedido extends Component
     public $valorUnitarios = [];
     public $valorTotal = 0.00;
     public $valorTotalComDesconto = 0.00;
+    public $observacao = '';
+
+    public $configuracoes;
+    public $paginate;
+    public $totalPaginate;
 
     public $desconto = 0.00;
     public $produtosSelecionados = [];
@@ -67,6 +77,10 @@ class NovoPedido extends Component
 
     public function atualizarProdutos()
     {
+        $this->configuracoes = Configuracoes::first();
+
+        $this->paginate = $this->configuracoes ? $this->configuracoes->numero_itens_tabelas : 10;
+
         if ($this->referencia_inicial != '') {
             $query = Produtos::where('id', '>=', $this->referencia_inicial);
         }
@@ -88,8 +102,16 @@ class NovoPedido extends Component
             }
         }
 
-        $this->produtos = $query->get();
+        $this->produtos = $query->paginate($this->paginate)->toArray();
+        // dd($this->produtos);
     }
+
+    public function atualizarPagina($pagina)
+    {
+        $this->setPage($pagina);
+        $this->atualizarProdutos();
+    }
+
 
     public function buscarPedidos()
     {
@@ -107,13 +129,13 @@ class NovoPedido extends Component
             return;
         }
 
-        if (!$this->cliente) {
+        if (!$this->cliente) { 
             toastr('Cliente não encontrado.', 'error');
             return;
         }
 
         if ($this->cliente) {
-            $pedido = Pedidos::where('cliente_id', $this->cliente->id)->get();
+            $pedido = Pedidos::where('cliente_id', $this->cliente->id)->orderBy('id', 'desc')->get();
             if ($pedido->count() > 0) {
                 foreach ($pedido as $key => $value) {
                     $items = PedidosItems::where('pedido_id', $value['id'])->get()->toArray();
@@ -157,13 +179,19 @@ class NovoPedido extends Component
 
     public function render()
     {
-        return view('livewire.pedidos.novo-pedido', ['pedidos' => $this->pedidos, 'cliente' => $this->cliente, 'produtos' => $this->produtos]);
+        return view('livewire.pedidos.novo-pedido', [
+            'pedidos' => $this->pedidos,
+            'cliente' => $this->cliente,
+            'produtos' => $this->produtos,
+        ]);
     }
+
 
     public function calcula($quantidade, $valorUnitario, $produto_id)
     {
         $retorno = $valorUnitario * $quantidade;
-        $produto = $this->produtos->find($produto_id);
+        // $produto = $this->produtos->find($produto_id);
+        $produto = Produtos::find($produto_id);
 
         $this->produtosSelecionados[$produto_id] = [
             'id' => $produto->id,
@@ -182,7 +210,7 @@ class NovoPedido extends Component
 
     public function toggleProduto($produtoId)
     {
-        $produto = $this->produtos->find($produtoId);
+        $produto = Produtos::find($produtoId);
 
         if ($produto === null) {
             return;
@@ -264,6 +292,7 @@ class NovoPedido extends Component
         $pedido->numero = $this->numero;
         $pedido->telefone = $this->cliente->telefone;
         $pedido->data = Carbon::now()->format('Y-m-d');
+        $pedido->observacoes = $this->observacao;
 
         if (Auth::guard('vendedor')->check()) {
             $pedido->vendedor_id = Auth::guard('vendedor')->id();

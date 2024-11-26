@@ -139,7 +139,7 @@
                                                                     <div class="modal-content"
                                                                         style="border-radius: 16px">
                                                                         <div class="modal-header">
-                                                                            <h4 class="modal-title">Visualizar Cliente</h4>
+                                                                            <h4 class="modal-title">Visualizar Cliente - {{ $cliente['razao_social'] }}</h4>
                                                                             <button type="button" class="btn-close"
                                                                                 data-bs-dismiss="modal"
                                                                                 aria-label="Close"></button>
@@ -375,7 +375,7 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content" style="border-radius: 16px">
                     <div class="modal-header">
-                        <h4 class="modal-title">Editar Cliente</h4>
+                        <h4 class="modal-title">Editar Cliente - {{ $cliente['razao_social'] }}</h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -391,8 +391,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="form-group">
-                                                        <label class="form-label">Razão
-                                                            Social</label>
+                                                        <label class="form-label">Cliente</label>
                                                         <input type="text" name="razao_social" class="form-control"
                                                             value="{{ $cliente['razao_social'] }}" required>
                                                     </div>
@@ -416,7 +415,7 @@
                                                                 value="{{ $cliente['email'] }}" required>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
                                                             <label class="form-label">Segundo Email</label>
                                                             <input type="email" name="second_email"
@@ -443,11 +442,11 @@
                                                                     value="{{ $cliente['transportadora'] }}">
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-6"> 
                                                             <div class="form-group">
                                                                 <label class="form-label">Responsavel
                                                                     Transportadora</label>
-                                                                <input type="text" name="transportadora"
+                                                                <input type="text" name="responsavel_transportadora"
                                                                     class="form-control"
                                                                     value="{{ $cliente['responsavel_transportadora'] }}">
                                                             </div>
@@ -455,7 +454,7 @@
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label class="form-label">Telefone Transportadora</label>
-                                                                <input type="text" name="transportadora"
+                                                                <input type="text" name="numero_transportadora"
                                                                     class="form-control" oninput="maskCell(this)"
                                                                     value="{{ $cliente['numero_transportadora'] }}">
                                                             </div>
@@ -475,7 +474,7 @@
                                             </div>
                                             <div class="row">
                                                 @if ($cliente['inscricao_estadual'])
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
                                                             <label class="form-label">Inscrição
                                                                 Estadual</label>
@@ -490,21 +489,13 @@
                                                             <input type="email" name="email" class="form-control"
                                                                 value="{{ $cliente['email'] }}" required>
                                                         </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label class="form-label">Segundo Email</label>
-                                                                <input type="email" name="second_email"
-                                                                    class="form-control"
-                                                                    value="{{ $cliente['second_email'] }}" required>
-                                                            </div>
-                                                        </div>
                                                     </div>
-                                                @else
-                                                    <div class="col-md-12">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
-                                                            <label class="form-label">Email</label>
-                                                            <input type="email" name="email" class="form-control"
-                                                                value="{{ $cliente['email'] }}" required>
+                                                            <label class="form-label">Segundo Email</label>
+                                                            <input type="email" name="second_email"
+                                                                class="form-control"
+                                                                value="{{ $cliente['second_email'] }}" required>
                                                         </div>
                                                     </div>
                                                 @endif
@@ -559,7 +550,7 @@
                                             </div>
                                             <div class="row">
 
-                                                <div class="col-md-5">
+                                                <div class="col-md-10">
                                                     <div class="form-group">
                                                         <label class="form-label">Endereço</label>
                                                         <input type="text" id="endereco-{{ $cliente['id'] }}"
@@ -567,7 +558,7 @@
                                                             value="{{ $cliente['endereco'] }}" required>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <div class="form-group">
                                                         <label class="form-label">Número</label>
                                                         <input type="text" id="numero-{{ $cliente['id'] }}"
@@ -575,7 +566,7 @@
                                                             value="{{ $cliente['numero'] }}" required>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-2">
+                                                <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label class="form-label">Bairro</label>
                                                         <input type="text" id="bairro-{{ $cliente['id'] }}"
@@ -583,12 +574,26 @@
                                                             value="{{ $cliente['bairro'] }}" required>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-2">
+                                                <div class="col-md-5">
+                                                        <div class="form-group">
+                                                            <label class="form-label">Cidade</label>
+                                                            <input type="text" id="cidade"
+                                                                name="cidade" class="form-control"
+                                                                value="{{ $cliente['cidade'] }}" required>
+                                                        </div>
+                                                    </div>
+                                                <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label class="form-label">UF</label>
                                                         <input type="text" name="uf" class="form-control"
                                                             value="{{ $cliente['uf'] }}" required>
                                                     </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="form-group">
+                                                    <label class="form-label">Observações</label>
+                                                    <textarea name="observacoes" class="form-control" placeholder="{{ $cliente['observacoes'] }}"></textarea>
                                                 </div>
                                             </div>
 
@@ -638,7 +643,7 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content" style="border-radius: 16px">
                     <div class="modal-header">
-                        <h4 class="modal-title">Excluir Cliente</h4>
+                        <h4 class="modal-title">Excluir Cliente - {{ $cliente['razao_social'] }}</h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -722,7 +727,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myLargeModalLabel">Editar Cliente</h4>
+                    <h4 class="modal-title" id="myLargeModalLabel">Editar Cliente - {{ $cliente['razao_social'] }}</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -798,7 +803,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myLargeModalLabel">Editar Cliente</h4>
+                    <h4 class="modal-title" id="myLargeModalLabel">Editar Cliente - {{ $cliente['razao_social'] }}</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -952,7 +957,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myLargeModalLabel">Visualizar Cliente</h4>
+                    <h4 class="modal-title" id="myLargeModalLabel">Visualizar Cliente - {{ $cliente['razao_social'] }}</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -1027,7 +1032,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myLargeModalLabel">Visualizar Cliente</h4>
+                    <h4 class="modal-title" id="myLargeModalLabel">Visualizar Cliente - {{ $cliente['razao_social'] }}</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -1155,7 +1160,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myLargeModalLabel">Excluir Cliente</h4>
+                    <h4 class="modal-title" id="myLargeModalLabel">Excluir Cliente - {{ $cliente['razao_social'] }}</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">

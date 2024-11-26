@@ -63,4 +63,25 @@ class Produto extends Controller
         toastr('Produto cadastrado com sucesso', 'success');
         return redirect()->back();
     }
+
+    public function filtrarProdutos(Request $request)
+    {
+        $query = Produtos::query();
+
+        if ($request->has('referencia')) {
+            $query->where('referencia', 'like', '%' . $request->input('referencia') . '%');
+        }
+        if ($request->has('modelo')) {
+            $query->where('modelo', 'like', '%' . $request->input('modelo') . '%');
+        }
+        if ($request->has('fornecedor')) {
+            $query->whereHas('fornecedor', function ($q) use ($request) {
+                $q->where('razao_social', 'like', '%' . $request->input('fornecedor') . '%');
+            });
+        }
+
+        $produtos = $query->with('fornecedor')->get();
+
+        return response()->json($produtos);
+    }
 }

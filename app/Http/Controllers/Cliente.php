@@ -74,11 +74,15 @@ class Cliente extends Controller
             'cep',
             'endereco',
             'bairro',
+            'cidade',
             'uf',
             'numero',
             'tipo_documento',
             'numero_documento',
             'transportadora',
+            'responsavel_transportadora',
+            'numero_transportadora',
+            'observacoes'  
         ]));
 
         toastr('Cliente atualizado com sucesso', 'success');

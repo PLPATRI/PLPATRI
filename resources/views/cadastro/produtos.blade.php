@@ -1,4 +1,4 @@
-@section('title', 'Fornecedores - Combrim')
+@section('title', 'Produtos - Combrim')
 
 @extends('components.main')
 @section('content')

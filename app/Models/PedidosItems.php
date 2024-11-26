@@ -14,6 +14,7 @@ class PedidosItems extends Model
     protected $table = 'pedido_items';
 
     protected $fillable = [
+        'produto_id',
         "pedido_id",
         "quantidade",
         "valor_unitario",
@@ -24,5 +25,10 @@ class PedidosItems extends Model
     public function pedidos()
     {
         return $this->hasOne(Pedidos::class, 'id', 'pedido_id');
+    }
+
+    public function produto()
+    {
+        return $this->hasOne(Produtos::class, 'id', 'produto_id');
     }
 }

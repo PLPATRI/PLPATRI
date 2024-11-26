@@ -22,6 +22,7 @@ class Clientes extends Model
         'cep',
         'endereco',
         'bairro',
+        'cidade',
         'uf',
         'numero',
         'tipo_documento',
@@ -29,5 +30,6 @@ class Clientes extends Model
         'responsavel_transportadora',
         'numero_documento',
         'transportadora',
+        'observacoes',
     ];
 }

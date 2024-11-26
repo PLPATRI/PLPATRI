@@ -98,8 +98,7 @@
                                     <a data-bs-toggle="modal" wire:click="editarPedido({{ $item->id }})"
                                         data-bs-target=".pedido-view-modal" href="#"><i
                                             class="fas fa-eye"></i></a>
-                                    <a data-bs-toggle="modal" data-bs-target=".pedido-check-modal" href="#"
-                                        wire:click="editarPedido({{ $item->id }})">
+                                    <a href="{{ route('editar.pedido.get', $item->id) }}">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                 </td>
@@ -139,28 +138,34 @@
                                         </div>
 
                                         <div class="col-lg-6 col-sm-12 col-md-6">
-
-                                            <h4><b>Cliente: {{ $pedidoSelecionado->razao_social }}</b></h4>
-                                            <h5>CPF/CNPJ: {{ $pedidoSelecionado->cpf_cnpj }}</h5>
-                                            <h5>Telefone: {{ $pedidoSelecionado->telefone }}</h5>
-                                            <h5>Email: {{ $cliente->email }}</h5>
-                                            <h5>Endereço: {{ $cliente->endereco }}, {{ $cliente->numero }} -
-                                                {{ $cliente->bairro }}/{{ $cliente->uf }} </h5>
-                                            <h5>CEP: {{ $cliente->cep }}</h5>
-                                            <h5>Bairro: {{ $cliente->bairro }}</h5>
-                                            <h5>Vendedor:
-                                                @if ($vendedor !== null)
-                                                    {{ $vendedor->usuario }}
-                                                @else
-                                                    Admin
-                                                @endif
-                                            </h5>
-                                            @if ($pedidoSelecionado->balcao == 1)
-                                                <h5>Retirada: Balcão</h5>
-                                            @else
-                                                <h5>Entrega em {{ $pedidoSelecionado->endereco }},
-                                                    {{ $pedidoSelecionado->numero }}</h5>
-                                            @endif
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <h4><b>Cliente: {{ $pedidoSelecionado->razao_social }}</b></h4>
+                                                    <h5>CPF/CNPJ: {{ $pedidoSelecionado->cpf_cnpj }}</h5>
+                                                    <h5>Telefone: {{ $pedidoSelecionado->telefone }}</h5>
+                                                    <h5>Email: {{ $cliente->email }}</h5>
+                                                </div>
+                                                <div class="col-6">
+                                                    <h5>Endereço: {{ $cliente->endereco }}, {{ $cliente->numero }} -
+                                                        {{ $cliente->cidade }}/{{ $cliente->uf }} </h5>
+                                                    <h5>CEP: {{ $cliente->cep }}</h5>
+                                                    <h5>Bairro: {{ $cliente->bairro }}</h5>
+                                                    <h5>Vendedor:
+                                                        @if ($vendedor !== null)
+                                                            {{ $vendedor->usuario }}
+                                                        @else
+                                                            Admin
+                                                        @endif
+                                                    </h5>
+                                                    @if ($pedidoSelecionado->balcao == 1)
+                                                        <h5>Retirada: Balcão</h5>
+                                                    @else
+                                                        <h5>Entrega em {{ $pedidoSelecionado->endereco }},
+                                                            {{ $pedidoSelecionado->numero }}</h5>
+                                                    @endif
+                                                </div>
+                                            </div> 
+                                            <h5>Observações: {{ $pedidoSelecionado->observacoes }}</h5>
                                         </div>
                                         <div class="col-lg-4 col-sm-12 col-md-6">
                                             <button wire:click="pedidoPronto({{ $pedidoSelecionado->id }})" type="button"
@@ -175,8 +180,7 @@
                                     </div>
 
                                     <!-- Tabela de Itens -->
-
-                                    <div class="table-responsive" style="height: 400px">
+                                    <div class="table-responsive" style="max-height: 400px">
                                         <table id="example1" class="table table-bordered table-striped">
                                             <thead>
                                                 <tr>
@@ -192,7 +196,7 @@
                                             <tbody>
                                                 @foreach ($pedidoSelecionado->items as $item)
                                                     <tr>
-                                                        <td>{{ $item->referencia }}</td>
+                                                        <td>{{ $item->produto->referencia }}</td>
                                                         <td>{{ $item->modelo }}</td>
                                                         <td>{{ $item->quantidade }}</td>
                                                         <td>
@@ -495,31 +499,35 @@
                                             <img class="img-fluid" src="imgs/logo.jpg" style="width: 150px">
                                             <h4 class="mb-0">Pedido #{{ $pedidoSelecionado->id }}</h4>
                                         </div>
-                                        <div class="col-lg-4 col-sm-12 col-md-6">
-
-
-                                            <h4><b>Cliente: {{ $pedidoSelecionado->razao_social }}</b></h4>
-                                            <h5>CPF/CNPJ: {{ $pedidoSelecionado->cpf_cnpj }}</h5>
-                                            <h5>Telefone: {{ $pedidoSelecionado->telefone }}</h5>
-                                            <h5>Email: {{ $cliente->email }}</h5>
-                                            <h5>Endereço: {{ $cliente->endereco }}, {{ $cliente->numero }} -
-                                                {{ $cliente->bairro }}/{{ $cliente->uf }} </h5>
-                                            <h5>CEP: {{ $cliente->cep }}</h5>
-                                            <h5>Bairro: {{ $cliente->bairro }}</h5>
-                                            <h5>Vendedor:
-                                                @if ($vendedor !== null)
-                                                    {{ $vendedor->usuario }}
-                                                @else
-                                                    Admin
-                                                @endif
-                                            </h5>
-                                            @if ($pedidoSelecionado->balcao == 1)
-                                                <h5>Retirada: Balcão</h5>
-                                            @else
-                                                <h5>Entrega em {{ $pedidoSelecionado->endereco }},
-                                                    {{ $pedidoSelecionado->numero }}</h5>
-                                            @endif
-
+                                        <div class="col-lg-12">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <h4><b>Cliente: {{ $pedidoSelecionado->razao_social }}</b></h4>
+                                                    <h5>CPF/CNPJ: {{ $pedidoSelecionado->cpf_cnpj }}</h5>
+                                                    <h5>Telefone: {{ $pedidoSelecionado->telefone }}</h5>
+                                                    <h5>Email: {{ $cliente->email }}</h5>
+                                                </div>
+                                                <div class="col-6">
+                                                    <h5>Endereço: {{ $cliente->endereco }}, {{ $cliente->numero }} -
+                                                    {{ $cliente->cidade }}/{{ $cliente->uf }} </h5>
+                                                    <h5>CEP: {{ $cliente->cep }}</h5>
+                                                    <h5>Bairro: {{ $cliente->bairro }}</h5>
+                                                    <h5>Vendedor:
+                                                        @if ($vendedor !== null)
+                                                            {{ $vendedor->usuario }}
+                                                        @else
+                                                            Admin
+                                                        @endif
+                                                    </h5>
+                                                    @if ($pedidoSelecionado->balcao == 1)
+                                                        <h5>Retirada: Balcão</h5>
+                                                    @else
+                                                        <h5>Entrega em {{ $pedidoSelecionado->endereco }},
+                                                            {{ $pedidoSelecionado->numero }}</h5>
+                                                    @endif
+                                                </div>
+                                            </div>                                            
+                                            <h5>Observações: {{ $pedidoSelecionado->observacoes }}</h5>
                                         </div>
                                         {{-- <div class="col-lg-4 col-sm-12 col-md-6">
                                             <button wire:click="pedidoPronto({{ $pedidoSelecionado->id }})"
@@ -534,7 +542,7 @@
 
                                     </div>
 
-                                    <div class="table-responsive" style="height: 400px">
+                                    <div class="table-responsive" style="max-height: 400px">
                                         <table id="example1" class="table table-bordered table-striped">
                                             <thead>
                                                 <tr>
@@ -550,7 +558,7 @@
                                             <tbody>
                                                 @foreach ($pedidoSelecionado->items as $item)
                                                     <tr>
-                                                        <td>{{ $item->referencia }}</td>
+                                                        <td>{{ $item->produto->referencia }}</td>
                                                         <td>{{ $item->modelo }}</td>
                                                         <td>{{ $item->quantidade }}</td>
                                                         <td>
@@ -592,7 +600,7 @@
                                         </table>
                                     </div>
 
-                                    <div class="row justify-content-between">
+                                    {{-- <div class="row justify-content-between">
                                         <div class="col-lg-6 col-sm-12 col-md-6">
                                             <div class="form-group">
                                                 <label>Observações</label>
@@ -604,7 +612,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="d-flex flex-column align-items-end my-10">
                                         <h5>Total: R$ {{ number_format($pedidoSelecionado->valor, 2, ',', '.') }}</h5>
                                         <h4 class="text-danger mt-10">Total com desconto: <b>R$

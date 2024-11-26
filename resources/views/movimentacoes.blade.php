@@ -49,34 +49,22 @@
                                         </div>
                                     </div>
                                     <hr class="my-15">
-                                    <div class="row justify-content-center">
-                                        <div class="col-4 my-15">
-                                            <div class="form-group d-flex mb-0">
-                                                <input type="number" class="form-control w-25" placeholder="ID Inicial"
-                                                    name="filtro_um" value="{{ old('filtro_um', $filtro_um) }}">
+                                    <div class="row justify-content-between aling-items-center my-15">
+                                        <div class="col-6 d-flex aling-items-center">
+                                            <div class="form-group align-items-center d-flex">
+                                                <input type="text" class="form-control" placeholder="Referência de" name="referencia_de" value="{{ request('referencia_de') }}">
                                                 <span class="mx-2">até</span>
-                                                <input type="number" class="form-control w-25" placeholder="ID Final"
-                                                    name="filtro_dois" value="{{ old('filtro_dois', $filtro_dois) }}">
-                                                <button type="submit" class="btn btn-primary ms-2">
-                                                    <i class="fas fa-search"></i> Buscar
+                                                <input type="text" class="form-control" placeholder="Referência até" name="referencia_ate" value="{{ request('referencia_ate') }}">
+                                                <button type="submit" class="btn btn-sm btn-primary ms-2">
+                                                    <i class="fas fa-search"></i>
                                                 </button>
                                             </div>
                                         </div>
-                                        <div class="col-4 d-flex justify-content-center my-15">
-                                            <div class="form-group d-flex mb-0">
-                                                <input type="text" class="form-control w-100" placeholder="Modelo"
-                                                    name="" value="">
-                                                <button type="submit" class="btn btn-primary ms-2">
-                                                    <i class="fas fa-search"></i> Buscar
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="col-4  d-flex justify-content-end my-15">
-                                            <div class="form-group d-flex mb-0">
-                                                <input type="text" class="form-control w-100" placeholder="Fornecedor"
-                                                    name="" value="">
-                                                <button type="submit" class="btn btn-primary ms-2">
-                                                    <i class="fas fa-search"></i> Buscar
+                                        <div class="col-6 d-flex justify-content-end aling-items-center">
+                                            <div class="form-group align-items-center d-flex">
+                                                <input type="text" class="form-control" placeholder="Modelo" name="modelo" value="{{ request('modelo') }}">
+                                                <button type="submit" class="btn btn-sm btn-primary ms-2">
+                                                    <i class="fas fa-search"></i>
                                                 </button>
                                             </div>
                                         </div>
@@ -84,13 +72,13 @@
                                             <table id="example1" class="table table-bordered table-striped">
                                                 <thead>
                                                     <tr>
-                                                        <th>#ID</th>
-                                                        <th>Modelo</th>
+                                                        <th>Referência</th>
+                                                        <th>Estoque</th>
                                                         <th>Compra</th>
                                                         <th>Baixa</th>
-                                                        <th>Estoque</th>
                                                         <th>Dt. Reposição</th>
                                                         <th>Dt. Baixa</th>
+                                                        <th>Modelo</th>
                                                         <th>Fornecedor</th>
                                                         <th>Valor Unitário</th>
                                                         <th>Valor Total</th>
@@ -110,28 +98,27 @@
                                                                 $totalValorTotal += $produto->valor_total;
                                                             @endphp
                                                             <tr>
-                                                                <td>{{ $produto->id }}</td>
-                                                                <td>{{ $produto->modelo }}</td>
-                                                                <td><b>{{ number_format($produto->compra, 0) }}</b></td>
-                                                                <td><b>{{ number_format($produto->baixa, 0) }}</b></td>
-
+                                                                <td>{{ $produto->referencia }}</td>
                                                                 @if ($produto->estoque < 0)
                                                                     <td style="color:rgb(255, 0, 0);">
                                                                         <i class="fas fa-warning"
                                                                             style="margin-right: 10px;"></i>
-                                                                        <b>{{ number_format($produto->estoque, 0) }}</b>
+                                                                        <b>{{ number_format($produto->estoque, 0, '.', '.') }}</b>
                                                                     </td>
                                                                 @else
                                                                     <td style="color:green;">
                                                                         <i class="fas fa-check"
                                                                             style="margin-right: 10px;"></i>
-                                                                        <b>{{ number_format($produto->estoque, 0) }}</b>
+                                                                        <b>{{ number_format($produto->estoque, 0, '.', '.') }}</b>
                                                                     </td>
                                                                 @endif
+                                                                <th><b>{{ number_format($totalCompra, 0, '.', '.') }}</b></th>
+                                                                <th><b>{{ number_format($totalBaixa, 0, '.', '.') }}</b></th>
                                                                 <td>{{ \Carbon\Carbon::parse($produto->data_reposicao)->format('d/m/Y') }}
                                                                 </td>
                                                                 <td>{{ \Carbon\Carbon::parse($produto->data_baixa)->format('d/m/Y') }}
                                                                 </td>
+                                                                <td>{{ $produto->modelo }}</td>
                                                                 <td>{{ $fornecedor->razao_social ?? 'N/A' }}</td>
                                                                 <td>R$
                                                                     {{ number_format($produto->valor_unitario, 4, ',', '.') }}
@@ -151,10 +138,10 @@
                                                 <tfoot style="background-color: #cccccc;">
                                                     <tr>
                                                         <th>Qtd. Total</th>
+                                                        <th><b>{{ number_format($totalEstoque, 0, '.', '.') }}</b></th>
+                                                        <th><b>{{ number_format($totalCompra, 0, '.', '.') }}</b></th>
+                                                        <th><b>{{ number_format($totalBaixa, 0, '.', '.') }}</b></th>
                                                         <th></th>
-                                                        <th><b>{{ number_format($totalCompra, 0) }}</b></th>
-                                                        <th><b>{{ number_format($totalBaixa, 0) }}</b></th>
-                                                        <th><b>{{ number_format($totalEstoque, 0) }}</b></th>
                                                         <th></th>
                                                         <th></th>
                                                         <th></th>
@@ -166,7 +153,7 @@
                                                 </tfoot>
                                             </table>
                                             @if ($produtos->count())
-                                                <div class="d-flex justify-content-center">
+                                                <div class="d-flex justify-content-center mb-10 mt-40">
                                                     {{ $produtos->links() }}
                                                 </div>
                                             @endif

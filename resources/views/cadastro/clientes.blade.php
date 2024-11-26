@@ -64,6 +64,44 @@
                                                             <div class="row">
                                                                 <div class="col-md-6">
                                                                     <div class="form-group">
+                                                                        <label class="form-label">Documento (CPF)</label>
+                                                                        <input type="text" name="numero_documento"
+                                                                            class="form-control"
+                                                                            placeholder="123.456.789-10" id="numero_documento_cpf">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label class="form-label">Telefone de
+                                                                            Contato</label>
+                                                                        <input type="text" name="telefone"
+                                                                            class="form-control"
+                                                                            placeholder="(00) 9999-9999"
+                                                                            oninput="maskPhone(this)">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label class="form-label">Email</label>
+                                                                        <input type="email" name="email"
+                                                                            class="form-control"
+                                                                            placeholder="name@mail.com">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label class="form-label">Segundo Email</label>
+                                                                        <input type="text" name="second_email"
+                                                                            class="form-control"
+                                                                            placeholder="razaosocial@mail.com">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
                                                                         <label class="form-label">CEP</label>
                                                                         <input type="text" name="cep" id="cep_cpf"
                                                                             class="form-control" placeholder="9999999">
@@ -111,41 +149,9 @@
                                                                 </div>
                                                             </div>
                                                             <div class="row">
-                                                                <div class="col-md-12">
-                                                                    <div class="form-group">
-                                                                        <label class="form-label">Telefone de
-                                                                            Contato</label>
-                                                                        <input type="text" name="telefone"
-                                                                            class="form-control"
-                                                                            placeholder="(00) 9999-9999"
-                                                                            oninput="maskPhone(this)">
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-5">
-                                                                    <div class="form-group">
-                                                                        <label class="form-label">Documento (CPF)</label>
-                                                                        <input type="text" name="numero_documento"
-                                                                            class="form-control"
-                                                                            placeholder="123.456.789-10" id="numero_documento_cpf">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-7">
-                                                                    <div class="form-group">
-                                                                        <label class="form-label">Email</label>
-                                                                        <input type="email" name="email"
-                                                                            class="form-control"
-                                                                            placeholder="name@mail.com">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group">
-                                                                        <label class="form-label">Segundo Email</label>
-                                                                        <input type="text" name="second_email"
-                                                                            class="form-control"
-                                                                            placeholder="razaosocial@mail.com">
-                                                                    </div>
+                                                                <div class="form-group">
+                                                                    <label class="form-label">Observações</label>
+                                                                    <textarea name="observacoes" class="form-control" placeholder="Digite observações aqui..."></textarea>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -173,7 +179,7 @@
                                                         @method('POST')
                                                         <div class="box-body">
                                                             <div class="row">
-                                                                <div class="col-md-6">
+                                                                <div class="col-md-12">
                                                                     <input type="hidden" name="tipo_documento"
                                                                         value="CNPJ">
                                                                     <div class="form-group">
@@ -182,16 +188,6 @@
                                                                         <input type="text" name="razao_social"
                                                                             class="form-control"
                                                                             placeholder="Razão Social">
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group">
-                                                                        <label class="form-label">Documento
-                                                                            (CNPJ)</label>
-                                                                        <input type="text" name="numero_documento"
-                                                                            class="form-control"
-                                                                            placeholder="12.345.678/001-10" id="numero_documento_cnpj">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -204,6 +200,15 @@
                                                                             placeholder="Inscrição estadual"
                                                                             name="inscricao_estadual"
                                                                             class="form-control">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label class="form-label">Documento
+                                                                            (CNPJ)</label>
+                                                                        <input type="text" name="numero_documento"
+                                                                            class="form-control"
+                                                                            placeholder="12.345.678/001-10" id="numero_documento_cnpj">
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-6">
@@ -295,6 +300,12 @@
                                                                             id="uf" class="form-control"
                                                                             placeholder="UF" readonly>
                                                                     </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="form-group">
+                                                                    <label class="form-label">Observações</label>
+                                                                    <textarea name="observacoes" class="form-control" placeholder="Digite observações aqui..."></textarea>
                                                                 </div>
                                                             </div>
 

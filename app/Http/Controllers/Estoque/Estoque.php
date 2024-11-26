@@ -11,30 +11,37 @@ use App\Models\Configuracoes;
 
 class Estoque extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        // Captura dos filtros
+        $modelo = $request->input('modelo');
+        $fornecedor = $request->input('fornecedor');
+        
         $produtos = Produtos::join('fornecedores', 'fornecedores.id', '=', 'produtos.fornecedor_id')
-            ->select('produtos.*', 'fornecedores.razao_social AS fornecedor')
-            ->orderBy('produtos.id', 'desc');
+            ->select('produtos.*', 'fornecedores.razao_social AS fornecedor');
 
-        $numeroPaginate = Configuracoes::first();
-        if (empty($numeroPaginate)) {
-            $paginas = 10;
-        } else {
-            $paginas = $numeroPaginate->numero_itens_tabelas;
+        if ($modelo) {
+            $produtos->where('produtos.modelo', 'like', '%' . $modelo . '%');
         }
+
+        if ($fornecedor) {
+            $produtos->where('fornecedores.id', $fornecedor);
+        }
+
+        // Paginação
+        $numeroPaginate = Configuracoes::first();
+        $paginas = $numeroPaginate ? $numeroPaginate->numero_itens_tabelas : 10;
 
         $paginate = $produtos->paginate($paginas);
 
-
-        $fornecedores = Fornecedores::all()->toArray();
-        $data = [
-            'produtos' => $produtos->get()->toArray(),
-            'fornecedores' => $fornecedores,
-            'paginate' => $paginate
-        ];
-
-        return view("estoque/estoque", ['data' => $data]);
+        // Dados para a view
+        return view("estoque/estoque", [
+            'data' => [
+                'produtos' => $paginate->items(),
+                'paginate' => $paginate,
+                'fornecedores' => Fornecedores::all()
+            ]
+        ]);
     }
 
 

@@ -93,7 +93,7 @@ class Pedidos extends Component
             $pedidosQuery->where('id', '<=', $this->numero_pedido_final);
         }
 
-        $pedidos = $pedidosQuery->paginate($paginas);
+        $pedidos = $pedidosQuery->orderBy('id', 'desc')->paginate($paginas);
 
         foreach ($pedidos as $pedido) {
             $this->observacao[$pedido->id] = $pedido->observacoes;

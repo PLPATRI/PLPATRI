@@ -14,13 +14,13 @@
     <title>@yield('title', 'Dashboard - Combrim')</title>
 
     <!-- Vendors Style-->
-    <link rel="stylesheet" href="css/vendors_css.css">
+    <link rel="stylesheet" href="{{ asset('css/vendors_css.css') }}">
 
     <!-- Style-->
-    <link rel="stylesheet" href="css/horizontal-menu.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/skin_color.css">
-    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="{{ asset('css/horizontal-menu.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/skin_color.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     @livewireStyles
 
@@ -55,7 +55,7 @@
 
 
         <!-- Vendor JS -->
-        <script src="js/vendors.min.js"></script>
+        <script src="{{ asset('js/vendors.min.js') }}"></script>
         {{-- <script src="js/pages/chat-popup.js"></script> --}}
         <script src="https://etikto-admin-dashboard.multipurposethemes.com/bs5/assets/icons/feather-icons/feather.min.js">
         </script>

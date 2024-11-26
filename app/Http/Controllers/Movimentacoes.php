@@ -18,8 +18,9 @@ class Movimentacoes extends Controller
         $paginate = $config ? $config->numero_itens_tabelas : 10;
 
         $fornecedor_id = $request->input('fornecedor_id', '');
-        $filtro_um = $request->input('filtro_um', null);
-        $filtro_dois = $request->input('filtro_dois', null);
+        $referenciaDe = $request->input('referencia_de');
+        $referenciaAte = $request->input('referencia_ate');
+        $modelo = $request->input('modelo');
 
         $query = MovimentacoesModel::query();
 
@@ -29,24 +30,32 @@ class Movimentacoes extends Controller
             $query->where('fornecedor', '!=', null);
         }
 
-        if (!is_null($filtro_um)) {
-            $query->where('id', '>=', $filtro_um);
+        // Aplicar filtros
+        if ($referenciaDe) {
+            $query->where('referencia', '>=', $referenciaDe);
         }
 
-        if (!is_null($filtro_dois)) {
-            $query->where('id', '<=', $filtro_dois);
+        if ($referenciaAte) {
+            $query->where('referencia', '<=', $referenciaAte);
+        }
+
+        if ($modelo) {
+            $query->where('modelo', 'like', '%' . $modelo . '%');
         }
 
         $query->orderBy('id', 'desc');
 
+        // Paginação com os filtros anexados
         $produtos = $query->paginate($paginate)->appends($request->all());
 
+        // Retornar os dados para a view
         return view('movimentacoes', compact(
             'fornecedores',
             'produtos',
             'fornecedor_id',
-            'filtro_um',
-            'filtro_dois',
+            'referenciaDe',
+            'referenciaAte',
+            'modelo'
         ));
     }
 }

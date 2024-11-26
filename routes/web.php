@@ -73,7 +73,7 @@ Route::middleware(['auth.admin'])->group(function () {
 Route::get('/cadastro-clientes', [ClienteCadastro::class, 'index'])->name('clientes.cadastrar.get');
 Route::post('/cadastrar-clientes', [ClienteCadastro::class, 'post'])->name('clientes.cadastrar.post');
 Route::get('/pedidos', [Pedidos::class, 'index'])->name('pedidos.get');
-Route::get('/novo-pedido', [NovoPedido::class, 'index'])->name('novo.pedidos.get');
+Route::match(['get', 'post'], '/novo-pedido', [NovoPedido::class, 'index'])->name('novo.pedidos.get');
 
 Route::middleware(['auth.vendedor'])->group(function () {
     Route::get('/dashboard-vendedor', [DashboardVendedor::class, 'index'])->name('dashboard.vendedor.get');
@@ -82,5 +82,21 @@ Route::middleware(['auth.vendedor'])->group(function () {
 
     Route::delete('/logout', [LoginAdmin::class, 'logout'])->name('logout');
 });
+
+Route::get('editar-pedido/{id}', [Pedidos::class, 'editarPedido'])->name('editar.pedido.get');
+
+Route::post('/excluir-pedido', [Pedidos::class, 'excluirPedido'])->name('pedido.delete');
+
+Route::post('/excluir-pedido-item', [Pedidos::class, 'excluirItemPedido'])->name('pedido.item.delete');
+
+Route::post('/validar-pedido', [Pedidos::class, 'validarPedido'])->name('pedido.validar');
+
+Route::post('/atualizar-pedido', [Pedidos::class, 'atualizarStatus'])->name('pedido.update');
+
+Route::post('/atualizar-pedido-financeiro', [Pedidos::class, 'atualizarFinanceiro'])->name('pedido.financeiro');
+
+Route::get('/produtos/paginados', [Pedidos::class, 'getProdutosPaginados'])->name('produtos.paginados');
+
+Route::get('/filtrar-produtos', [Produto::class, 'filtrarProdutos']);
 
 Route::post('/gera-pdf-pedido', [Etiquetas::class, 'geraPdfPedido'])->name('pdf.pedido.post');

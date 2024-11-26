@@ -9,8 +9,33 @@
                 <div class="row">
                     <div class="col-xxl-12">
                         <div class="box">
-                            <div class="box-header with-border d-flex align-items-center justify-content-between">
+                            <div class="box-header with-border d-flex align-items-end my-15 justify-content-between">
                                 <h3 class="box-title">Todos os produtos</h3>
+                                <form method="GET" action="{{ route('estoque.get') }}" class="d-flex justify-content-center">
+                                    <div class="form-group d-flex mb-0 me-20 align-items-end">
+                                        <div>
+                                            <label for="">Modelo</label>
+                                            <input type="text" class="form-control "
+                                                name="modelo" value="{{ request('modelo') }}">
+                                        </div>
+                                        <button type="submit" class="btn btn-sm btn-primary ms-2">
+                                            <i class="fas fa-search"></i> 
+                                        </button>    
+                                    </div>
+                                   
+                                    <div class="form-group mb-0">
+                                        <label>Selecione um fornecedor</label>
+                                        <select class="form-control" name="fornecedor" onchange="this.form.submit()">
+                                            <option value="">Selecione um Fornecedor</option>
+                                            @foreach ($data['fornecedores'] as $fornecedor)
+                                                <option value="{{ $fornecedor['id'] }}"
+                                                        {{ request('fornecedor') == $fornecedor['id'] ? 'selected' : '' }}>
+                                                    {{ $fornecedor['razao_social'] }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </form>
                                 <div class="d-flex" style="gap: 15px">
                                     <a href="{{ route('carregar.estoque.get') }}" class="btn btn-primary">
                                         Carregar Estoque
@@ -46,7 +71,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($data['produtos'] as $produto)
+                                            @forelse ($data['paginate'] as $produto)
                                                 <tr>
                                                     {{-- <td class="d-flex justify-content-center">
                                                         <input type="checkbox" id="basic_checkbox_1"
@@ -94,7 +119,7 @@
                                                         <div class="modal-content">
                                                             <div class="modal-header">
                                                                 <h4 class="modal-title" id="myLargeModalLabel">Visualizar
-                                                                    produto</h4>
+                                                                    produto - {{ $produto['modelo'] }}</h4>
                                                                 <button type="button" class="btn-close"
                                                                     data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
@@ -215,7 +240,7 @@
                                                         <div class="modal-content">
                                                             <div class="modal-header">
                                                                 <h4 class="modal-title" id="myLargeModalLabel">Editar
-                                                                    produto</h4>
+                                                                    produto - {{ $produto['modelo'] }}</h4>
                                                                 <button type="button" class="btn-close"
                                                                     data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
@@ -392,7 +417,7 @@
                                                     <!-- /.modal-dialog -->
                                                 </div>
 
-
+                                                <!-- DELETAR -->
                                                 <div class="modal fade trash-product-modal_{{ $produto['id'] }}"
                                                     tabindex="-1" role="dialog" aria-labelledby="trashProductModal"
                                                     aria-hidden="true" style="display: none;">
@@ -400,7 +425,7 @@
                                                         <div class="modal-content">
                                                             <div class="modal-header">
                                                                 <h4 class="modal-title" id="myLargeModalLabel">Excluir
-                                                                    produto</h4>
+                                                                    produto - {{ $produto['modelo'] }}</h4>
                                                                 <button type="button" class="btn-close"
                                                                     data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
@@ -440,14 +465,18 @@
                                                     </div>
                                                     <!-- /.modal-dialog -->
                                                 </div>
-                                            @endforeach
+                                            @empty
+                                                <tr>
+                                                    <td colspan="8" class="text-center">Nenhum produto encontrado.</td>
+                                                </tr>
+                                            @endforelse
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-                            <div class="d-flex justify-content-center">
-                                {{ $data['paginate']->links() }}
-                            </div>
+                            <div class="d-flex justify-content-center mb-20">
+                                    {{ $data['paginate']->links() }}
+                                </div>
 
                             <!-- /.box-body -->
                         </div>

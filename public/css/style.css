@@ -27847,7 +27847,9 @@ textarea.form-control {
   border-radius: 0;
   -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.125);
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.125);
-  border: 0; }
+  border: 0; 
+  max-height: 945px;
+  overflow: auto;}
 
 @media (min-width: 768px) {
   .modal-content {
@@ -32022,7 +32024,7 @@ img.away, img.busy, img.offline, img.online {
   min-width: 1.5em; }
 
 .dataTables_wrapper .form-control {
-  margin: 0 10px;
+  margin: 0;
   padding: 5px 30px 5px 15px; }
 
 @media all and (min-width: 1400px) {

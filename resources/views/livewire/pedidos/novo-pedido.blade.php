@@ -89,31 +89,33 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        @foreach ($produtos as $item)
+                                                        @foreach ($produtos['data'] as $item)
                                                             <tr>
                                                                 <td>
                                                                     <input type="checkbox"
-                                                                        id="basic_checkbox_{{ $item->id }}"
-                                                                        class="filled-in" value="{{ $item->id }}"
+                                                                        id="basic_checkbox_{{ $item['id'] }}"
+                                                                        class="filled-in" value="{{ $item['id'] }}"
                                                                         wire:click="toggleProduto($event.target.value)">
                                                                     <label
-                                                                        for="basic_checkbox_{{ $item->id }}"></label>
+                                                                        for="basic_checkbox_{{ $item['id'] }}"></label>
                                                                 </td>
-                                                                <td>43CRT2</td>
+                                                                <td>{{ $item['referencia'] }}</td>
                                                                 <td class="w-50">
                                                                     <div class="form-group">
                                                                         <input type="number" min="0"
                                                                             class="form-control"
-                                                                            wire:change="calcula($event.target.value, {{ $item->preco_unitario }}, {{ $item->id }})"
+                                                                            wire:change="calcula($event.target.value, {{ $item['preco_unitario'] }}, {{ $item['id'] }})"
                                                                             placeholder="0">
                                                                     </div>
                                                                 </td>
-                                                                <td>{{ $item->modelo }}</td>
-                                                                <td>{{ $item->fornecedor->razao_social }}</td>
-                                                                @if ($item->quantidade < $item->estoque_seguranca)
+                                                                <td>{{ $item['modelo'] }}</td>
+                                                                <td>
+                                                                    {{ $item['fornecedor']['razao_social'] ?? '' }}
+                                                                </td>
+                                                                @if ($item['quantidade'] < $item['estoque_seguranca'])
                                                                     <td style="color:rgb(255, 0, 0);"><i
                                                                             class="fas fa-warning"
-                                                                            style="margin-right: 10px;"></i><b>{{ $item->quantidade }}</b>
+                                                                            style="margin-right: 10px;"></i><b>{{ $item['quantidade'] }}</b>
                                                                     </td>
                                                                     <td>
                                                                         <div style="color:rgb(255, 0, 0); font-size: 25px;"
@@ -124,7 +126,7 @@
                                                                     </td>
                                                                 @else
                                                                     <td style="color:green;">
-                                                                        <b>{{ $item->quantidade }}</b>
+                                                                        <b>{{ $item['quantidade'] }}</b>
                                                                     </td>
                                                                     <td>
                                                                         <div
@@ -135,15 +137,46 @@
                                                                     </td>
                                                                 @endif
                                                                 <td><b>R$
-                                                                        {{ number_format($item->preco_unitario, 4, ',', '.') }}</b>
+                                                                        {{ number_format($item['preco_unitario'], 4, ',', '.') }}</b>
                                                                 </td>
                                                                 <td><b>R$
-                                                                        {{ isset($valorUnitarios[$item->id]) ? number_format($valorUnitarios[$item->id], 2, ',', '.') : '0,00' }}</b>
+                                                                        {{ isset($valorUnitarios[$item['id']]) ? number_format($valorUnitarios[$item['id']], 2, ',', '.') : '0,00' }}</b>
                                                                 </td>
                                                             </tr>
                                                         @endforeach
                                                     </tbody>
                                                 </table>
+                                                <div class="d-flex justify-content-center mt-2">
+                                                    {{-- Paginação --}}
+                                                    @if ($produtos['last_page'] > 1)
+                                                        <nav>
+                                                            <ul class="pagination">
+                                                                @if ($produtos['prev_page_url'])
+                                                                    <li class="page-item">
+                                                                        <a class="page-link"
+                                                                            wire:click="atualizarPagina({{ $produtos['current_page'] - 1 }})"
+                                                                            href="javascript:void(0)">Anterior</a>
+                                                                    </li>
+                                                                @endif
+                                                                @for ($i = 1; $i <= $produtos['last_page']; $i++)
+                                                                    <li
+                                                                        class="page-item {{ $i == $produtos['current_page'] ? 'active' : '' }}">
+                                                                        <a class="page-link"
+                                                                            wire:click="atualizarPagina({{ $i }})"
+                                                                            href="javascript:void(0)">{{ $i }}</a>
+                                                                    </li>
+                                                                @endfor
+                                                                @if ($produtos['next_page_url'])
+                                                                    <li class="page-item">
+                                                                        <a class="page-link"
+                                                                            wire:click="atualizarPagina({{ $produtos['current_page'] + 1 }})"
+                                                                            href="javascript:void(0)">Próxima</a>
+                                                                    </li>
+                                                                @endif
+                                                            </ul>
+                                                        </nav>
+                                                    @endif
+                                                </div>
                                             </div>
                                             <div class="d-flex row justify-content-between">
                                                 <div class="col-lg-2">
@@ -191,8 +224,14 @@
                                             <div class="row mt-30">
                                                 <div class="col-12">
                                                     <button wire:click="gerarPedido" id="pedido-modal"
-                                                        class="btn btn-success" style="width: 100%">Gerar
-                                                        Pedido</button>
+                                                        class="btn btn-success" style="width: 100%"
+                                                        wire:loading.attr="disabled">
+                                                        <span wire:loading.remove wire:target="gerarPedido">Gerar
+                                                            Pedido</span>
+                                                        <span wire:loading wire:target="gerarPedido">
+                                                            <i class="fas fa-spinner fa-spin"></i> Carregando...
+                                                        </span>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -218,8 +257,8 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title" id="myLargeModalLabel">Número do CPF/CNPJ </h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
+                        {{-- <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button> --}}
                     </div>
                     <div class="modal-body">
                         <div class="row justify-content-center">
@@ -228,7 +267,7 @@
                                     <div class="col-lg-6">
                                         <label class="form-label">Nome</label>
                                         <input type="text" wire:model="nomeCliente" class="form-control"
-                                            placeholder="Nome do Cliente" id="" maxlength="18">
+                                            placeholder="Nome do Cliente" maxlength="18">
                                     </div>
                                     <div class="col-lg-5">
                                         <label class="form-label">Documento</label>
@@ -236,8 +275,15 @@
                                             placeholder="CPF/CNPJ" id="numero_documento_cnpj" maxlength="18">
                                     </div>
                                     <div class="col-lg-1">
-                                        <button class="btn btn-primary-light" wire:click="buscarPedidos"><i
-                                                class="fas fa-search"></i></button>
+                                        <button class="btn btn-primary-light" wire:click="buscarPedidos"
+                                            wire:loading.attr="disabled">
+                                            <span wire:loading.remove wire:target="buscarPedidos">
+                                                <i class="fas fa-search"></i>
+                                            </span>
+                                            <span wire:loading wire:target="buscarPedidos">
+                                                <i class="fas fa-spinner fa-spin"></i>
+                                            </span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -247,8 +293,12 @@
                         <button type="button" wire:click="novoCliente" class="btn btn-primary">
                             <i class="fas fa-plus"></i> Novo Cliente
                         </button>
-                        <button type="button" id="customer" class="btn btn-success" wire:click="buscarPedidos">
-                            Avançar
+                        <button type="button" id="customer" class="btn btn-success" wire:click="buscarPedidos"
+                            wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="buscarPedidos">Avançar</span>
+                            <span wire:loading wire:target="buscarPedidos">
+                                <i class="fas fa-spinner fa-spin"></i> Carregando...
+                            </span>
                         </button>
                     </div>
                 </div>
@@ -281,10 +331,6 @@
         });
     </script>
 
-
-
-
-
     <!-- /.modal pedido -->
     @if ($showModal)
         <div class="modal fade pedido-modal show" wire:ignore.self tabindex="-1" role="dialog"
@@ -300,20 +346,28 @@
                         <div class="modal-body">
                             <div class="row justify-content-center">
                                 <div class="col-12 header-pedido">
-                                    <h4>Data: Pedido Teste</hh>
-                                        <img class="img-fluid" src="imgs/logo.jpg" style="width: 100px">
+                                    <h4>Data:
+                                        {{ date('d/m/Y') }}
+                                    </h4>
+                                    <img class="img-fluid" src="imgs/logo.jpg" style="width: 100px">
                                 </div>
                                 <div class="col-md-12">
-                                    <h4>Cliente: {{ $this->cliente->nome }}</h4>
-                                    <h5>CPF/CNPJ: {{ $this->cliente->numero_documento }}</h5>
-                                    <h5>Telefone: {{ $this->cliente->telefone }}</h5>
-                                    <h5>Email: {{ $this->cliente->email }}</h5>
-                                    <h5>Endereço: {{ $this->cliente->endereco }}, {{ $this->cliente->numero }} -
-                                        {{ $this->cliente->cidade }}/{{ $this->cliente->uf }}</h5>
-                                    <h5>Bairro: {{ $this->cliente->bairro }}</h5>
-                                    <h5>CEP:{{ $this->cliente->cep }}</h5>
-                                    <h5>Vendedor</h5>
-                                    <div class="table-responsive">
+                                    <div class="row mb-20">
+                                        <div class="col-6">
+                                            <h4>Cliente: {{ $this->cliente->nome }}</h4>
+                                            <h5>CPF/CNPJ: {{ $this->cliente->numero_documento }}</h5>
+                                            <h5>Telefone: {{ $this->cliente->telefone }}</h5>
+                                            <h5>Email: {{ $this->cliente->email }}</h5>
+                                        </div>
+                                        <div class="col-6">
+                                            <h5>Endereço: {{ $this->cliente->endereco }}, {{ $this->cliente->numero }} -
+                                                {{ $this->cliente->cidade }}/{{ $this->cliente->uf }}</h5>
+                                            <h5>Bairro: {{ $this->cliente->bairro }}</h5>
+                                            <h5>CEP:{{ $this->cliente->cep }}</h5>
+                                            <h5>Vendedor:</h5>
+                                        </div>
+                                    </div>    
+                                    <div class="table-responsive mb-20" style="max-height: 400px">
                                         <table id="example1" class="table table-bordered table-striped">
                                             <thead>
                                                 <tr>
@@ -329,7 +383,7 @@
                                                 @if (!empty($produtosEscolhidos))
                                                     @foreach ($produtosEscolhidos as $key => $item)
                                                         <tr>
-                                                            <td>{{ $item['id'] }}</td>
+                                                            <td>{{ $item['referencia'] }}</td>
                                                             <td>{{ $item['modelo'] }}</td>
                                                             <td><b>{{ $item['quantidade'] }}</b></td>
                                                             <td><b>R$
@@ -370,12 +424,11 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-lg-6 col-sm-12 col-md-6">
-                                            <div class="form-group">
+                                            <div class="form-group mt-10">
                                                 <label>Observações</label>
                                                 <div class="d-flex">
                                                     <input type="text" class="form-control"
+                                                        wire:model="observacao"
                                                         placeholder="Digite a observação" /><br>
                                                     <button class="btn btn-sm btn-success mx-10">
                                                         <i class="fas fa-check"></i> Confirmar
@@ -383,22 +436,23 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="d-flex flex-column align-items-end my-10">
-                                        <h4 class="">Total: <b>R$
-                                                {{ number_format($valorTotal, 2, ',', '.') }}</b></h4>
+                                        <div class="col-lg-6 col-sm-12 col-md-6">
+                                            <div class="d-flex flex-column align-items-end my-10">
+                                                <h4 class="">Total: <b>R$
+                                                        {{ number_format($valorTotal, 2, ',', '.') }}</b></h4>
 
-                                        <h4 class="text-danger mt-10">Total com desconto: <b>R$
-                                                @if ($valorTotalComDesconto == 0.0)
-                                                    {{ number_format($valorTotal, 2, ',', '.') }}
-                                                @else
-                                                    {{ number_format($valorTotalComDesconto, 2, ',', '.') }}
-                                                @endif
-                                            </b>
-                                        </h4>
-                                        <h7>Desconto de {{ number_format($this->descontoAplicado, 2, ',', '.') }}%</h7>
+                                                <h4 class="text-danger mt-10">Total com desconto: <b>R$
+                                                        @if ($valorTotalComDesconto == 0.0)
+                                                            {{ number_format($valorTotal, 2, ',', '.') }}
+                                                        @else
+                                                            {{ number_format($valorTotalComDesconto, 2, ',', '.') }}
+                                                        @endif
+                                                    </b>
+                                                </h4>
+                                                <h7>Desconto de {{ number_format($this->descontoAplicado, 2, ',', '.') }}%</h7>
+                                            </div>
+                                        </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -407,8 +461,12 @@
                                 class="btn btn-primary">
                                 <i class="fas fa-edit"></i> Editar Pedido
                             </button>
-                            <button type="button" wire:click="finalizarPedido" class="btn btn-success">
-                                Gerar Pedido
+                            <button type="button" wire:click="finalizarPedido" class="btn btn-success"
+                                wire:loading.attr="disabled">
+                                <span wire:loading.remove wire:target="finalizarPedido">Gerar Pedido</span>
+                                <span wire:loading wire:target="finalizarPedido">
+                                    <i class="fas fa-spinner fa-spin"></i> Carregando...
+                                </span>
                             </button>
                         </div>
                     </div>

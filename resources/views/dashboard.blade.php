@@ -90,7 +90,17 @@
                                                             <td>{{ $pedidos['telefone'] }}</td>
                                                             <td>{{ $pedidos['data'] }}</td>
                                                             <td>R$ {{ number_format($pedidos['valor'], 2, ',', '.') }}</td>
-                                                            <td>R$ {{ number_format($pedidos['valorDesconto'], 2, ',', '.') }}</td>
+                                                            <td>
+                                                                @php
+                                                                    $valorComDesconto =
+                                                                        ($pedidos['valor'] * $pedidos['desconto']) /
+                                                                        100;
+                                                                    $valorComDesconto =
+                                                                        $pedidos['valor'] - $valorComDesconto;
+                                                                @endphp
+                                                                R$
+                                                                {{ number_format($valorComDesconto, 2, ',', '.') }}
+                                                            </td>
                                                             <td><a href="#"><i class="fas fa-eye"></i></a></td>
                                                         </tr>
                                                     @endforeach

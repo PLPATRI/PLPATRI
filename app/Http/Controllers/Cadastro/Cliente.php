@@ -34,6 +34,9 @@ class Cliente extends Controller
             toastr('Já existe um cliente com esse nome/razão social cadastrado', 'error');
             return redirect()->back();
         }
+        $request->validate([
+            'observacoes' => 'nullable|string|max:300', // Validação para o campo observações
+        ]);
 
         if ($request->tipo_documento == "CPF") {
             $client = new Clientes([
@@ -44,11 +47,13 @@ class Cliente extends Controller
                 'cep' => $request->cep,
                 'endereco' => $request->endereco,
                 'bairro' => $request->bairro,
+                'cidade' => $request->cidade,
                 'uf' => $request->uf,
                 'numero' => $request->numero,
                 'telefone' => $request->telefone,
                 'numero_documento' => $request->numero_documento,
                 'tipo_documento' => $request->tipo_documento,
+                'observacoes' => $request->observacoes,
             ]);
         }
 
@@ -64,6 +69,7 @@ class Cliente extends Controller
                 'cep' => $request->cep,
                 'endereco' => $request->endereco,
                 'bairro' => $request->bairro,
+                'cidade' => $request->cidade,
                 'uf' => $request->uf,
                 'numero' => $request->numero,
                 'numero_transportadora' => $request->numero_transportadora,
@@ -71,6 +77,7 @@ class Cliente extends Controller
                 'tipo_documento' => $request->tipo_documento,
                 'numero_documento' => $request->numero_documento,
                 'transportadora' => $request->transportadora,
+                'observacoes' => $request->observacoes,
             ]);
         }
 

@@ -6,14 +6,14 @@
             <!-- Logo -->
             <a href="" class="logo d-flex align-items-center">
                 <!-- logo-->
-                    <img class="img-fluid" src="imgs/logo.jpg" style="width: 100px">
+                <img class="img-fluid" src="{{ asset('imgs/logo.jpg') }}" style="width: 100px">
                 @if (Auth::guard('admin')->check())
                     <h4 class="logo-lg mb-0 text-dark">
-                       - Admin
+                        - Admin
                     </h4>
                 @else
                     <h4 class="logo-lg mb-0 text-dark">
-                       - Vendedor
+                        - Vendedor
                     </h4>
                 @endif
 

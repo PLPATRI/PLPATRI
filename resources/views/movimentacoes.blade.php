@@ -35,9 +35,7 @@
                                                 <label class="form-label">Fornecedor</label>
                                                 <select name="fornecedor_id" class="form-select"
                                                     onchange="this.form.submit()">
-                                                    <option value="todos" selected>
-                                                        Todos
-                                                    </option>
+                                                    <option value="todos" selected>Todos</option>
                                                     @foreach ($fornecedores as $item)
                                                         <option value="{{ $item->id }}"
                                                             {{ $fornecedor_id == $item->id ? 'selected' : '' }}>
@@ -49,228 +47,173 @@
                                         </div>
                                     </div>
                                     <hr class="my-15">
-                                    <div class="row justify-content-between aling-items-center my-15">
-                                        <div class="col-6 d-flex aling-items-center">
+                                    <div class="row justify-content-between align-items-center my-15">
+                                        <div class="col-6 d-flex align-items-center">
                                             <div class="form-group align-items-center d-flex">
-                                                <input type="text" class="form-control" placeholder="Referência de" name="referencia_de" value="{{ request('referencia_de') }}">
+                                                <input type="text" class="form-control" placeholder="Referência de"
+                                                    name="referencia_de" value="{{ request('referencia_de') }}">
                                                 <span class="mx-2">até</span>
-                                                <input type="text" class="form-control" placeholder="Referência até" name="referencia_ate" value="{{ request('referencia_ate') }}">
+                                                <input type="text" class="form-control" placeholder="Referência até"
+                                                    name="referencia_ate" value="{{ request('referencia_ate') }}">
                                                 <button type="submit" class="btn btn-sm btn-primary ms-2">
                                                     <i class="fas fa-search"></i>
                                                 </button>
                                             </div>
                                         </div>
-                                        <div class="col-6 d-flex justify-content-end aling-items-center">
+                                        <div class="col-6 d-flex justify-content-end align-items-center">
                                             <div class="form-group align-items-center d-flex">
-                                                <input type="text" class="form-control" placeholder="Modelo" name="modelo" value="{{ request('modelo') }}">
+                                                <input type="text" class="form-control" placeholder="Modelo"
+                                                    name="modelo" value="{{ request('modelo') }}">
                                                 <button type="submit" class="btn btn-sm btn-primary ms-2">
                                                     <i class="fas fa-search"></i>
                                                 </button>
                                             </div>
                                         </div>
-                                        <div class="table-responsive">
-                                            <table id="example1" class="table table-bordered table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Referência</th>
-                                                        <th>Estoque</th>
-                                                        <th>Compra</th>
-                                                        <th>Baixa</th>
-                                                        <th>Dt. Reposição</th>
-                                                        <th>Dt. Baixa</th>
-                                                        <th>Modelo</th>
-                                                        <th>Fornecedor</th>
-                                                        <th>Valor Unitário</th>
-                                                        <th>Valor Total</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @if ($produtos->count())
-                                                        @foreach ($produtos as $produto)
-                                                            @php
-                                                                $fornecedor = App\Models\Fornecedores::find(
-                                                                    $produto->fornecedor,
-                                                                );
-                                                                $totalCompra += $produto->compra;
-                                                                $totalBaixa += $produto->baixa;
-                                                                $totalEstoque += $produto->estoque;
-                                                                $totalValorUnitario += $produto->valor_unitario;
-                                                                $totalValorTotal += $produto->valor_total;
-                                                            @endphp
-                                                            <tr>
-                                                                <td>{{ $produto->referencia }}</td>
-                                                                @if ($produto->estoque < 0)
-                                                                    <td style="color:rgb(255, 0, 0);">
-                                                                        <i class="fas fa-warning"
-                                                                            style="margin-right: 10px;"></i>
-                                                                        <b>{{ number_format($produto->estoque, 0, '.', '.') }}</b>
-                                                                    </td>
-                                                                @else
-                                                                    <td style="color:green;">
-                                                                        <i class="fas fa-check"
-                                                                            style="margin-right: 10px;"></i>
-                                                                        <b>{{ number_format($produto->estoque, 0, '.', '.') }}</b>
-                                                                    </td>
-                                                                @endif
-                                                                <th><b>{{ number_format($totalCompra, 0, '.', '.') }}</b></th>
-                                                                <th><b>{{ number_format($totalBaixa, 0, '.', '.') }}</b></th>
-                                                                <td>{{ \Carbon\Carbon::parse($produto->data_reposicao)->format('d/m/Y') }}
-                                                                </td>
-                                                                <td>{{ \Carbon\Carbon::parse($produto->data_baixa)->format('d/m/Y') }}
-                                                                </td>
-                                                                <td>{{ $produto->modelo }}</td>
-                                                                <td>{{ $fornecedor->razao_social ?? 'N/A' }}</td>
-                                                                <td>R$
-                                                                    {{ number_format($produto->valor_unitario, 4, ',', '.') }}
-                                                                </td>
-                                                                <td>R$
-                                                                    {{ number_format($produto->valor_total, 2, ',', '.') }}
-                                                                </td>
-                                                            </tr>
-                                                        @endforeach
-                                                    @else
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table id="example1" class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Referência</th>
+                                                    <th>Estoque</th>
+                                                    <th>Compra</th>
+                                                    <th>Baixa</th>
+                                                    <th>Dt. Reposição</th>
+                                                    <th>Dt. Baixa</th>
+                                                    <th>Modelo</th>
+                                                    <th>Fornecedor</th>
+                                                    <th>Valor Unitário</th>
+                                                    <th>Valor Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if ($produtos->count())
+                                                    @foreach ($produtos as $produto)
+                                                        @php
+                                                            $fornecedor = App\Models\Fornecedores::find(
+                                                                $produto->fornecedor,
+                                                            );
+                                                            $totalEstoque += $produto->estoque;
+                                                            $totalCompra += $produto->compra;
+                                                            $totalBaixa += $produto->baixa;
+                                                            $totalValorUnitario += $produto->valor_unitario;
+                                                            $totalValorTotal += $produto->valor_total;
+                                                        @endphp
                                                         <tr>
-                                                            <td colspan="10" class="text-center">Nenhum registro
-                                                                encontrado</td>
+                                                            <td>{{ $produto->referencia }}</td>
+                                                            <td
+                                                                style="color: {{ $produto->estoque < 0 ? 'red' : 'green' }}">
+                                                                <b>{{ number_format($produto->estoque, 0, '.', '.') }}</b>
+                                                            </td>
+                                                            <td><b>{{ number_format($produto->compra, 0, '.', '.') }}</b>
+                                                            </td>
+                                                            <td><b>{{ number_format($produto->baixa, 0, '.', '.') }}</b>
+                                                            </td>
+                                                            <td>{{ \Carbon\Carbon::parse($produto->data_reposicao)->format('d/m/Y') }}
+                                                            </td>
+                                                            <td>{{ \Carbon\Carbon::parse($produto->data_baixa)->format('d/m/Y') }}
+                                                            </td>
+                                                            <td>{{ $produto->modelo }}</td>
+                                                            <td>{{ $fornecedor->razao_social ?? 'N/A' }}</td>
+                                                            <td>R$
+                                                                {{ number_format($produto->valor_unitario, 4, ',', '.') }}
+                                                            </td>
+                                                            <td>R$ {{ number_format($produto->valor_total, 2, ',', '.') }}
+                                                            </td>
                                                         </tr>
-                                                    @endif
-                                                </tbody>
-                                                <tfoot style="background-color: #cccccc;">
+                                                    @endforeach
+                                                @else
                                                     <tr>
-                                                        <th>Qtd. Total</th>
-                                                        <th><b>{{ number_format($totalEstoque, 0, '.', '.') }}</b></th>
-                                                        <th><b>{{ number_format($totalCompra, 0, '.', '.') }}</b></th>
-                                                        <th><b>{{ number_format($totalBaixa, 0, '.', '.') }}</b></th>
-                                                        <th></th>
-                                                        <th></th>
-                                                        <th></th>
-                                                        <th></th>
-                                                        <th><b>R$ {{ number_format($totalValorUnitario, 4, ',', '.') }}</b>
-                                                        </th>
-                                                        <th><b>R$ {{ number_format($totalValorTotal, 2, ',', '.') }}</b>
-                                                        </th>
+                                                        <td colspan="10" class="text-center">Nenhum registro encontrado
+                                                        </td>
                                                     </tr>
-                                                </tfoot>
-                                            </table>
-                                            @if ($produtos->count())
-                                                <div class="d-flex justify-content-center mb-10 mt-40">
-                                                    {{ $produtos->links() }}
-                                                </div>
-                                            @endif
+                                                @endif
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>Qtd. Total</th>
+                                                    <th>{{ number_format($totalEstoque, 0, '.', '.') }}</th>
+                                                    <th>{{ number_format($totalCompra, 0, '.', '.') }}</th>
+                                                    <th>{{ number_format($totalBaixa, 0, '.', '.') }}</th>
+                                                    <th colspan="4"></th>
+                                                    <th>{{ number_format($totalValorUnitario, 4, ',', '.') }}</th>
+                                                    <th>{{ number_format($totalValorTotal, 2, ',', '.') }}</th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                        <div class="d-flex justify-content-center mt-3">
+                                            {{ $produtos->links() }}
                                         </div>
                                     </div>
                                 </div>
                             </form>
                         </div>
 
-                        <!-- Modal Sintético permanece inalterado -->
-                        <div class="modal modal-fill fade" data-backdrop="false" id="modal-sintetico" tabindex="-1">
-                            <div class="modal-dialog">
-                                <div class="modal-content box">
+                        <!-- Modal Sintético -->
+                        <div class="modal fade" id="modal-sintetico" tabindex="-1" aria-labelledby="modalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title">Relatório Sintético</h5>
+                                        <h5 class="modal-title" id="modalLabel">Relatório Sintético</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <div class="table-responsive">
-                                            <table id="example1" class="table table-bordered table-striped">
-                                                <thead style="background-color: #cccccc;">
+                                            <table class="table table-bordered table-striped">
+                                                <thead>
                                                     <tr>
+                                                        <th>Fornecedor</th>
                                                         <th>Estoque</th>
                                                         <th>Compra</th>
                                                         <th>Baixa</th>
-                                                        <th>Fornecedor</th>
                                                         <th>Valor Total</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     @php
-                                                        $fornecedores = $produtos->groupBy('fornecedor');
+                                                        $groupedFornecedores = $produtos->groupBy('fornecedor');
                                                     @endphp
-                                                    @if ($fornecedores->count())
-                                                        @foreach ($fornecedores as $fornecedorId => $produtosFornecedor)
-                                                            @php
-                                                                $fornecedor = App\Models\Fornecedores::find(
-                                                                    $fornecedorId,
-                                                                );
-                                                                $totalEstoque = $produtosFornecedor->sum('estoque');
-                                                                $totalCompra = $produtosFornecedor->sum('compra');
-                                                                $totalBaixa = $produtosFornecedor->sum('baixa');
-                                                                $totalValor = $produtosFornecedor->sum('valor_total');
-                                                            @endphp
-                                                            <tr>
-                                                                <td><b>{{ number_format($totalEstoque, 0) }}</b></td>
-                                                                <td><b>{{ number_format($totalCompra, 0) }}</b></td>
-                                                                <td><b>{{ number_format($totalBaixa, 0) }}</b></td>
-                                                                <td>{{ $fornecedor->razao_social ?? 'N/A' }}</td>
-                                                                <td>R$ {{ number_format($totalValor, 2, ',', '.') }}</td>
-                                                            </tr>
-                                                        @endforeach
-                                                    @else
+                                                    @foreach ($groupedFornecedores as $fornecedorId => $produtosFornecedor)
+                                                        @php
+                                                            $fornecedor = App\Models\Fornecedores::find($fornecedorId);
+                                                            $totalFornecedorEstoque = $produtosFornecedor->sum(
+                                                                'estoque',
+                                                            );
+                                                            $totalFornecedorCompra = $produtosFornecedor->sum('compra');
+                                                            $totalFornecedorBaixa = $produtosFornecedor->sum('baixa');
+                                                            $totalFornecedorValor = $produtosFornecedor->sum(
+                                                                'valor_total',
+                                                            );
+                                                        @endphp
                                                         <tr>
-                                                            <td colspan="5" class="text-center">Nenhum registro
-                                                                encontrado</td>
+                                                            <td>{{ $fornecedor->razao_social ?? 'N/A' }}</td>
+                                                            <td>{{ number_format($totalFornecedorEstoque, 0, '.', '.') }}
+                                                            </td>
+                                                            <td>{{ number_format($totalFornecedorCompra, 0, '.', '.') }}
+                                                            </td>
+                                                            <td>{{ number_format($totalFornecedorBaixa, 0, '.', '.') }}
+                                                            </td>
+                                                            <td>R$ {{ number_format($totalFornecedorValor, 2, ',', '.') }}
+                                                            </td>
                                                         </tr>
-                                                    @endif
+                                                    @endforeach
                                                 </tbody>
-                                                <tfoot style="background-color: #cccccc;">
-                                                    <tr>
-                                                        <th></th>
-                                                        <th></th>
-                                                        <th></th>
-                                                        <th>Total Geral</th>
-                                                        <th>
-                                                            <b>
-                                                                R$
-                                                                {{ number_format($produtos->sum('valor_total'), 2, ',', '.') }}
-                                                            </b>
-                                                        </th>
-                                                    </tr>
-                                                </tfoot>
                                             </table>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Fechar</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-
                         <!-- Fim do Modal Sintético -->
                     </div>
                 </div>
             </section>
-            <!-- /.content -->
         </div>
     </div>
-    <!-- /.content-wrapper -->
-
-    <!-- Vendor JS -->
-    <script src="js/vendors.min.js"></script>
-    <script src="js/pages/chat-popup.js"></script>
-    <script src="https://etikto-admin-dashboard.multipurposethemes.com/bs5/assets/icons/feather-icons/feather.min.js">
-    </script>
-
-    <script
-        src="https://etikto-admin-dashboard.multipurposethemes.com/bs5/assets/vendor_components/jquery-knob/js/jquery.knob.js">
-    </script>
-
-    <script src="https://etikto-admin-dashboard.multipurposethemes.com/bs5/assets/vendor_components/raphael/raphael.min.js">
-    </script>
-    <script
-        src="https://etikto-admin-dashboard.multipurposethemes.com/bs5/assets/vendor_components/morris.js/morris.min.js">
-    </script>
-    <script
-        src="https://etikto-admin-dashboard.multipurposethemes.com/bs5/assets/vendor_components/apexcharts-bundle/dist/apexcharts.js">
-    </script>
-
-    <!-- Etikto Admin App -->
-    <script src="js/jquery.smartmenus.js"></script>
-    <script src="js/menus.js"></script>
-    <script src="js/template.js"></script>
-    <script src="js/pages/dashboard2.js"></script>
-    <script src="js/pages/calendar.js"></script>
 @endsection

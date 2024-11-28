@@ -225,7 +225,7 @@
                                                                                                 <div class="row">
                                                                                                     @if ($cliente['inscricao_estadual'])
                                                                                                         <div
-                                                                                                            class="col-md-6">
+                                                                                                            class="col-md-12">
                                                                                                             <div
                                                                                                                 class="form-group">
                                                                                                                 <label
@@ -239,12 +239,9 @@
                                                                                                                     value="{{ $cliente['inscricao_estadual'] }}">
                                                                                                             </div>
                                                                                                         </div>
-                                                                                                        <div'
-                                                                                                            class="col-md-6">
-                                                                                                            <div
-                                                                                                                class="form-group">
-                                                                                                                <label
-                                                                                                                    class="form-label">Email</label>
+                                                                                                        <div class="col-md-6">
+                                                                                                            <div class="form-group">
+                                                                                                                <label class="form-label">Email</label>
                                                                                                                 <input
                                                                                                                     type="email"
                                                                                                                     name="email"
@@ -253,9 +250,21 @@
                                                                                                                     value="{{ $cliente['email'] }}"
                                                                                                                     required>
                                                                                                             </div>
-                                                                                                </div>
-                                                                                            @else
-                                                                                                <div class="col-md-12">
+                                                                                                        </div>
+                                                                                                        <div class="col-md-6">
+                                                                                                            <div class="form-group">
+                                                                                                                <label class="form-label">Segundo Email</label>
+                                                                                                                <input
+                                                                                                                    type="second_email"
+                                                                                                                    name="second_email"
+                                                                                                                    class="form-control"
+                                                                                                                    disabled
+                                                                                                                    value="{{ $cliente['second_email'] }}"
+                                                                                                                    required>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                @else
+                                                                                                <div class="col-md-6">
                                                                                                     <div
                                                                                                         class="form-group">
                                                                                                         <label
@@ -269,13 +278,27 @@
                                                                                                             required>
                                                                                                     </div>
                                                                                                 </div>
+                                                                                                <div class="col-md-6">
+                                                                                                    <div
+                                                                                                        class="form-group">
+                                                                                                        <label
+                                                                                                            class="form-label">Segundo Email</label>
+                                                                                                        <input
+                                                                                                            type="second_email"
+                                                                                                            name="second_email"
+                                                                                                            disabled
+                                                                                                            class="form-control"
+                                                                                                            value="{{ $cliente['second_email'] }}"
+                                                                                                            required>
+                                                                                                    </div>
+                                                                                                </div>
                                                         @endif
 
                                             </div>
                                             <div class="row">
 
                                                 @if ($cliente['celular'])
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
                                                             <label class="form-label">Telefone</label>
                                                             <input type="text" name="telefone" disabled
@@ -283,7 +306,7 @@
                                                                 value="{{ $cliente['telefone'] }}">
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
                                                             <label class="form-label">Celular</label>
                                                             <input type="text" name="celular" class="form-control"
@@ -291,6 +314,31 @@
                                                                 value="{{ $cliente['celular'] }}">
                                                         </div>
                                                     </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label class="form-label">CEP</label>
+                                                            <input type="text" disabled name="cep"
+                                                                class="form-control" value="{{ $cliente['cep'] }}"
+                                                                required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label class="form-label">Cidade</label>
+                                                            <input type="text" disabled name="cidade"
+                                                                class="form-control" value="{{ $cliente['cidade'] }}"
+                                                                required>
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="form-label">Telefone</label>
+                                                            <input type="text" name="telefone" disabled
+                                                                oninput="maskCell(this)" class="form-control"
+                                                                value="{{ $cliente['telefone'] }}">
+                                                        </div>
+                                                    </div>
                                                     <div class="col-md-4">
                                                         <div class="form-group">
                                                             <label class="form-label">CEP</label>
@@ -299,61 +347,60 @@
                                                                 required>
                                                         </div>
                                                     </div>
-                                                @else
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-5">
                                                         <div class="form-group">
-                                                            <label class="form-label">Telefone</label>
-                                                            <input type="text" name="telefone" disabled
-                                                                oninput="maskCell(this)" class="form-control"
-                                                                value="{{ $cliente['telefone'] }}">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label class="form-label">CEP</label>
-                                                            <input type="text" disabled name="cep"
-                                                                class="form-control" value="{{ $cliente['cep'] }}"
+                                                            <label class="form-label">Cidade</label>
+                                                            <input type="text" disabled name="cidade"
+                                                                class="form-control" value="{{ $cliente['cidade'] }}"
                                                                 required>
                                                         </div>
                                                     </div>
                                                 @endif
 
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-5">
+                                                        <div class="form-group">
+                                                            <label class="form-label">Endereço</label>
+                                                            <input type="text" disabled name="endereco"
+                                                                class="form-control" value="{{ $cliente['endereco'] }}"
+                                                                required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                            <label class="form-label">Número</label>
+                                                            <input type="text" disabled name="numero"
+                                                                class="form-control" value="{{ $cliente['numero'] }}"
+                                                                required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="form-label">Bairro</label>
+                                                            <input type="text" name="bairro" disabled
+                                                                class="form-control" value="{{ $cliente['bairro'] }}"
+                                                                disabled required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                            <label class="form-label">UF</label>
+                                                            <input type="text" name="uf" disabled
+                                                                class="form-control" value="{{ $cliente['uf'] }}" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label class="form-label">Observações</label>
+                                                            <textarea  name="observacoes" disabled
+                                                                class="form-control" placeholder="{{ $cliente['observacoes'] }}" required></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="row">
-                                                <div class="col-md-5">
-                                                    <div class="form-group">
-                                                        <label class="form-label">Endereço</label>
-                                                        <input type="text" disabled name="endereco"
-                                                            class="form-control" value="{{ $cliente['endereco'] }}"
-                                                            required>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label class="form-label">Número</label>
-                                                        <input type="text" disabled name="numero"
-                                                            class="form-control" value="{{ $cliente['numero'] }}"
-                                                            required>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <label class="form-label">Bairro</label>
-                                                        <input type="text" name="bairro" disabled
-                                                            class="form-control" value="{{ $cliente['bairro'] }}"
-                                                            disabled required>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <label class="form-label">UF</label>
-                                                        <input type="text" name="uf" disabled
-                                                            class="form-control" value="{{ $cliente['uf'] }}" required>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </div>
                                         </form>
                                     </div>
                                 </div>
@@ -951,7 +998,7 @@
         <!-- /.modal-dialog -->
     </div>
 
-    <!-- /.modal edit CPF -->
+    <!-- /.modal view CPF -->
     <div class="modal fade view-client-cpf-modal" tabindex="-1" role="dialog" aria-labelledby="viewClientCPFModal"
         aria-hidden="true" style="display: none;">
         <div class="modal-dialog modal-lg">

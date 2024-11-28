@@ -314,24 +314,34 @@
                                                                                                     id="preco_unitario_{{ $produto['id'] }}"
                                                                                                     name="preco_unitario"
                                                                                                     value="{{ number_format($produto['preco_unitario'], 4, ',', '.') }}"
-                                                                                                    class="form-control"
+                                                                                                    class="form-control preco-unitario"
                                                                                                     placeholder="R$0,00">
                                                                                             </div>
                                                                                         </div>
 
                                                                                         <script>
-                                                                                            document.getElementById(`preco_unitario_${ {{ $produto['id'] }}}`).addEventListener('input', function(e) {
-                                                                                                let value = e.target.value.replace(/\D/g, '');
+                                                                                            // Seleciona todos os inputs com a classe 'preco-unitario'
+                                                                                            document.querySelectorAll('.preco-unitario').forEach(input => {
+                                                                                                input.addEventListener('input', function(e) {
+                                                                                                    let value = e.target.value.replace(/\D/g, '');
 
-                                                                                                if (value) {
-                                                                                                    value = (parseInt(value, 10) / 100).toLocaleString('pt-BR', {
-                                                                                                        style: 'currency',
-                                                                                                        currency: 'BRL'
-                                                                                                    });
-                                                                                                    e.target.value = value;
-                                                                                                } else {
-                                                                                                    e.target.value = '';
-                                                                                                }
+                                                                                                    if (value) {
+                                                                                                        let reais = value.slice(0, -4) || '0';
+                                                                                                        let centavos = value.slice(-4).padStart(4, '0');
+
+                                                                                                        // Formatação
+                                                                                                        let formattedValue = (parseInt(reais) + (parseInt(centavos) / 10000)).toLocaleString('pt-BR', {
+                                                                                                            style: 'currency',
+                                                                                                            currency: 'BRL',
+                                                                                                            minimumFractionDigits: 4,
+                                                                                                            maximumFractionDigits: 4
+                                                                                                        });
+
+                                                                                                        e.target.value = formattedValue;
+                                                                                                    } else {
+                                                                                                        e.target.value = '';
+                                                                                                    }
+                                                                                                });
                                                                                             });
                                                                                         </script>
 

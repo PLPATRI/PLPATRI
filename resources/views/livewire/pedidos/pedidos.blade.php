@@ -164,7 +164,7 @@
                                                             {{ $pedidoSelecionado->numero }}</h5>
                                                     @endif
                                                 </div>
-                                            </div> 
+                                            </div>
                                             <h5>Observações: {{ $pedidoSelecionado->observacoes }}</h5>
                                         </div>
                                         <div class="col-lg-4 col-sm-12 col-md-6">
@@ -303,6 +303,7 @@
                                                 }
                                             }
                                         </script>
+
                                         <div class="col-lg-6 col-sm-12 col-md-6">
                                             <div class="form-group">
                                                 <label>Observações</label>
@@ -509,7 +510,7 @@
                                                 </div>
                                                 <div class="col-6">
                                                     <h5>Endereço: {{ $cliente->endereco }}, {{ $cliente->numero }} -
-                                                    {{ $cliente->cidade }}/{{ $cliente->uf }} </h5>
+                                                        {{ $cliente->cidade }}/{{ $cliente->uf }} </h5>
                                                     <h5>CEP: {{ $cliente->cep }}</h5>
                                                     <h5>Bairro: {{ $cliente->bairro }}</h5>
                                                     <h5>Vendedor:
@@ -526,7 +527,7 @@
                                                             {{ $pedidoSelecionado->numero }}</h5>
                                                     @endif
                                                 </div>
-                                            </div>                                            
+                                            </div>
                                             <h5>Observações: {{ $pedidoSelecionado->observacoes }}</h5>
                                         </div>
                                         {{-- <div class="col-lg-4 col-sm-12 col-md-6">

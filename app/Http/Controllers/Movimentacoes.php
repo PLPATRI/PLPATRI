@@ -38,7 +38,7 @@ class Movimentacoes extends Controller
         if ($referenciaAte) {
             $query->where('referencia', '<=', $referenciaAte);
         }
-
+ 
         if ($modelo) {
             $query->where('modelo', 'like', '%' . $modelo . '%');
         }

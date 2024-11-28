@@ -11,8 +11,8 @@
                         <label class="form-label">Fornecedor</label>
                         <select wire:model="fornecedor_id" wire:change="pegarProdutos" class="form-select">
                             <option selected>Selecionar Fornecedor</option>
-                            @foreach($fornecedor as $item)
-                                <option value="{{$item->id}}">{{$item->razao_social}}</option>
+                            @foreach ($fornecedor as $item)
+                                <option value="{{ $item->id }}">{{ $item->razao_social }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -24,55 +24,62 @@
                     <div>
                         <h5 class="mb-5">Selecione os itens</h5>
                         <div class="d-flex align-items-end">
-                            <input type="checkbox" id="basic_checkbox_select_all" class="filled-in" wire:model="selectAll" wire:change="toggleSelectAll">
+                            <input type="checkbox" id="basic_checkbox_select_all" class="filled-in"
+                                wire:model="selectAll" wire:change="toggleSelectAll">
                             <label for="basic_checkbox_select_all"></label>
                             <p class="mx-10 mb-0">Selecionar todos</p>
                         </div>
                     </div>
                     <div class="form-group d-flex mb-0">
                         <input type="text" class="form-control w-75" placeholder="1" wire:model="filtro_um">
-                        <input type="text" class="form-control w-75 mx-10" placeholder="100" wire:model="filtro_dois">
+                        <input type="text" class="form-control w-75 mx-10" placeholder="100"
+                            wire:model="filtro_dois">
                         <a class="btn btn-primary-light" wire:click="filtroProdutos"><i class="fas fa-search"></i></a>
                     </div>
                 </div>
                 <div class="table-responsive">
                     <table id="example1" class="table table-bordered table-striped">
                         <thead>
-                        <tr>
-                            <th></th>
-                            <th>ID</th>
-                            <th>Referência</th>
-                            <th>Modelo</th>
-                            <th>Fornecedor</th>
-                            <th>Valor Unitário</th>
-                            <th>Porcentagem</th>
-                            <th>Ações</th>
-                        </tr>
+                            <tr>
+                                <th></th>
+                                <th>ID</th>
+                                <th>Referência</th>
+                                <th>Modelo</th>
+                                <th>Fornecedor</th>
+                                <th>Valor Unitário</th>
+                                <th>Porcentagem</th>
+                                <th>Ações</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        @foreach($produtos as $produto)
-                            <tr>
-                                <td class="d-flex justify-content-center" style="height: 62px">
-                                    <input type="checkbox" wire:model="produtoAlterado.{{ $produto->id }}.selecionado" id="basic_checkbox_{{ $produto->id }}" class="filled-in">
-                                    <label for="basic_checkbox_{{ $produto->id }}"></label>
-                                </td>
-                                <td>#{{ $produto->id }}</td>
-                                <td>{{ $produto->referencia }}</td>
-                                <td>{{ $produto->modelo }}</td>
-                                <td>{{ $produto->fornecedor->razao_social }}</td>
-                                <td>R$ {{ number_format($produto->preco_unitario, 4, ',', '.') }}</td>
-                                <td>
-                                    <div class="form-group mb-0">
-                                        <input type="text" wire:model="produtoAlterado.{{ $produto->id }}.porcentagem" class="form-control w-75" placeholder="% 0,0">
-                                    </div>
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-xs btn-success" wire:click="alterarProdutos">
-                                        <i class="fas fa-check"></i> Alterar
-                                    </button>
-                                </td>
-                            </tr>
-                        @endforeach
+                            @foreach ($produtos as $produto)
+                                <tr>
+                                    <td class="d-flex justify-content-center" style="height: 62px">
+                                        <input type="checkbox"
+                                            wire:model="produtoAlterado.{{ $produto->id }}.selecionado"
+                                            id="basic_checkbox_{{ $produto->id }}" class="filled-in">
+                                        <label for="basic_checkbox_{{ $produto->id }}"></label>
+                                    </td>
+                                    <td>#{{ $produto->id }}</td>
+                                    <td>{{ $produto->referencia }}</td>
+                                    <td>{{ $produto->modelo }}</td>
+                                    <td>{{ $produto->fornecedor->razao_social }}</td>
+                                    <td>R$ {{ number_format($produto->preco_unitario, 4, ',', '.') }}</td>
+                                    <td>
+                                        <div class="form-group mb-0">
+                                            <input type="text"
+                                                wire:model="produtoAlterado.{{ $produto->id }}.porcentagem"
+                                                class="form-control w-75" placeholder="% 0,0">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-xs btn-success"
+                                            wire:click="alterarProdutos">
+                                            <i class="fas fa-check"></i> Alterar
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -86,31 +93,32 @@
             <div class="table-responsive">
                 <table id="example1" class="table table-bordered table-striped">
                     <thead>
-                    <tr>
-                        <th>Referência</th>
-                        <th>Modelo</th>
-                        <th>Fornecedor</th>
-                        <th>Porcentagem</th>
-                        <th>Valor Atualizado</th>
-                        <th>Ações</th>
-                    </tr>
+                        <tr>
+                            <th>Referência</th>
+                            <th>Modelo</th>
+                            <th>Fornecedor</th>
+                            <th>Porcentagem</th>
+                            <th>Valor Atualizado</th>
+                            <th>Ações</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    @foreach($produtosAlterados as $alterado)
-                        <tr>
-                            <td>{{ $alterado['referencia'] }}</td>
-                            <td>{{ $alterado['modelo'] }}</td>
-                            <td>{{ $alterado['fornecedor'] }}</td>
-                            <td>{{ $alterado['porcentagem'] }} %</td>
-                            <td>R$ {{ number_format($alterado['valor_atualizado'], 4, ',', '.') }}</td>
-                            <td class="d-flex justify-content-center" style="gap: 15px">
-                                <button wire:click="deleteProdutoAlterado({{ $alterado['íd_produto'] }})" style="border: none">
-                                    <i
-                                       style="line-height: 1.7; font-size: 20px; cursor: pointer" class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    @endforeach
+                        @foreach ($produtosAlterados as $alterado)
+                            <tr>
+                                <td>{{ $alterado['referencia'] }}</td>
+                                <td>{{ $alterado['modelo'] }}</td>
+                                <td>{{ $alterado['fornecedor'] }}</td>
+                                <td>{{ $alterado['porcentagem'] }} %</td>
+                                <td>R$ {{ number_format($alterado['valor_atualizado'], 4, ',', '.') }}</td>
+                                <td class="d-flex justify-content-center" style="gap: 15px">
+                                    <button wire:click="deleteProdutoAlterado({{ $alterado['id_produto'] }})"
+                                        style="border: none">
+                                        <i style="line-height: 1.7; font-size: 20px; cursor: pointer"
+                                            class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -152,7 +160,8 @@
                         class="btn btn-danger me-1">
                         <i class="fas fa-trash"></i> Não
                     </button>
-                    <button type="button" id="btn-yes" wire:click="salvar" class="btn btn-success" onclick="reloadPage()">
+                    <button type="button" id="btn-yes" wire:click="salvar" class="btn btn-success"
+                        onclick="reloadPage()">
                         <i class="fas fa-check"></i> Sim
                     </button>
                     <script>
@@ -183,7 +192,7 @@
                             <div class="d-flex flex-column align-items-center justify-content-center">
                                 <i class="fas fa-warning" style="font-size: 50px; color:rgb(255, 196, 0);"></i>
                                 <h4 class="text-center">Ao confirmar, a aplicação da porcentagem será deletada!
-                                    </h4>
+                                </h4>
                             </div>
                         </div>
                     </div>

@@ -49,8 +49,8 @@
                                                     <label>Referência:</label>
                                                     <input type="text" wire:model="referencia_inicial"
                                                         class="form-control w-75 ms-10" placeholder="1">
-                                                    <input type="text" wire:model="referencia_final"
-                                                        class="form-control w-75 mx-10" placeholder="100">
+                                                    {{-- <input type="text" wire:model="referencia_final"
+                                                        class="form-control w-75 mx-10" placeholder="100"> --}}
                                                     <button class="btn btn-primary-light btn-sm"
                                                         wire:click="atualizarProdutos"><i
                                                             class="fas fa-search"></i></button>
@@ -95,15 +95,18 @@
                                                                     <input type="checkbox"
                                                                         id="basic_checkbox_{{ $item['id'] }}"
                                                                         class="filled-in" value="{{ $item['id'] }}"
-                                                                        wire:click="toggleProduto($event.target.value)">
+                                                                        wire:click="toggleProduto($event.target.value)"
+                                                                        @if (in_array($item['id'], $produtosMarcados)) checked @endif>
                                                                     <label
                                                                         for="basic_checkbox_{{ $item['id'] }}"></label>
                                                                 </td>
+
                                                                 <td>{{ $item['referencia'] }}</td>
                                                                 <td class="w-50">
                                                                     <div class="form-group">
                                                                         <input type="number" min="0"
                                                                             class="form-control"
+                                                                            wire:model="quantidades.{{ $item['id'] }}"
                                                                             wire:change="calcula($event.target.value, {{ $item['preco_unitario'] }}, {{ $item['id'] }})"
                                                                             placeholder="0">
                                                                     </div>
@@ -315,17 +318,24 @@
             input.addEventListener('input', function(e) {
                 let value = input.value.replace(/\D/g, ''); // Remove tudo que não é dígito
 
+                // Limita o número máximo de caracteres (11 para CPF e 14 para CNPJ)
+                if (value.length > 14) {
+                    value = value.slice(0, 14);
+                }
+
                 if (value.length <= 11) {
-                    // Máscara para CPF
-                    input.value = value.replace(/(\d{3})(\d)/, '$1.$2')
-                        .replace(/(\d{3})(\d)/, '$1.$2')
-                        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                    // Máscara para CPF (11 dígitos)
+                    input.value = value
+                        .replace(/(\d{3})(\d)/, '$1.$2') // Primeiro bloco
+                        .replace(/(\d{3})(\d)/, '$1.$2') // Segundo bloco
+                        .replace(/(\d{3})(\d{1,2})$/, '$1-$2'); // Bloco final
                 } else {
-                    // Máscara para CNPJ
-                    input.value = value.replace(/(\d{2})(\d)/, '$1.$2')
-                        .replace(/(\d{3})(\d)/, '$1.$2')
-                        .replace(/(\d{3})(\d{1,4})$/, '$1/$2')
-                        .replace(/(\d{4})(\d)$/, '$1-$2');
+                    // Máscara para CNPJ (14 dígitos)
+                    input.value = value
+                        .replace(/^(\d{2})(\d)/, '$1.$2') // Primeiro bloco
+                        .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3') // Segundo bloco
+                        .replace(/\.(\d{3})(\d)/, '.$1/$2') // Bloco da filial
+                        .replace(/(\d{4})(\d{2})$/, '$1-$2'); // Dígitos verificadores
                 }
             });
         });
@@ -360,13 +370,14 @@
                                             <h5>Email: {{ $this->cliente->email }}</h5>
                                         </div>
                                         <div class="col-6">
-                                            <h5>Endereço: {{ $this->cliente->endereco }}, {{ $this->cliente->numero }} -
+                                            <h5>Endereço: {{ $this->cliente->endereco }}, {{ $this->cliente->numero }}
+                                                -
                                                 {{ $this->cliente->cidade }}/{{ $this->cliente->uf }}</h5>
                                             <h5>Bairro: {{ $this->cliente->bairro }}</h5>
                                             <h5>CEP:{{ $this->cliente->cep }}</h5>
                                             <h5>Vendedor:</h5>
                                         </div>
-                                    </div>    
+                                    </div>
                                     <div class="table-responsive mb-20" style="max-height: 400px">
                                         <table id="example1" class="table table-bordered table-striped">
                                             <thead>
@@ -449,7 +460,8 @@
                                                         @endif
                                                     </b>
                                                 </h4>
-                                                <h7>Desconto de {{ number_format($this->descontoAplicado, 2, ',', '.') }}%</h7>
+                                                <h7>Desconto de
+                                                    {{ number_format($this->descontoAplicado, 2, ',', '.') }}%</h7>
                                             </div>
                                         </div>
                                     </div>

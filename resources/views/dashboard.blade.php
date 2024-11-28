@@ -79,7 +79,7 @@
                                                         <th>Data</th>
                                                         <th>Valor</th>
                                                         <th>Valor com desconto</th>
-                                                        <th>Ações</th>
+                                                        {{-- <th>Ações</th> --}}
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -101,7 +101,7 @@
                                                                 R$
                                                                 {{ number_format($valorComDesconto, 2, ',', '.') }}
                                                             </td>
-                                                            <td><a href="#"><i class="fas fa-eye"></i></a></td>
+                                                            {{-- <td><a href="#"><i class="fas fa-eye"></i></a></td> --}}
                                                         </tr>
                                                     @endforeach
                                                 </tbody>

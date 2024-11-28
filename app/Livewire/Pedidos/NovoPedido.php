@@ -27,19 +27,21 @@ class NovoPedido extends Component
     public $produtos;
     public $quantidades = [];
     public $valorUnitarios = [];
-    public $valorTotal = 0.00;
-    public $valorTotalComDesconto = 0.00;
+    public $valorTotal = 0.0;
+    public $valorTotalComDesconto = 0.0;
     public $observacao = '';
 
     public $configuracoes;
     public $paginate;
     public $totalPaginate;
 
-    public $desconto = 0.00;
+    public $desconto = 0.0;
     public $produtosSelecionados = [];
 
     public $referencia_inicial = 1;
     public $referencia_final = '';
+
+    public $produtosMarcados = [];
 
     public $modelo = '';
 
@@ -82,18 +84,16 @@ class NovoPedido extends Component
         $this->paginate = $this->configuracoes ? $this->configuracoes->numero_itens_tabelas : 10;
 
         if ($this->referencia_inicial != '') {
-            $query = Produtos::where('id', '>=', $this->referencia_inicial);
+            $query = Produtos::where('referencia', 'like', '%' . $this->referencia_inicial . '%');
         }
 
-        if ($this->referencia_final != '') {
-            $query->where('id', '<=', $this->referencia_final);
-        }
-
+        // if ($this->referencia_final != '') {
+        //     $query->where('id', '<=', $this->referencia_final);
+        // }
 
         if ($this->modelo != '') {
             $query->where('modelo', 'like', '%' . $this->modelo . '%');
         }
-
 
         if ($this->fornecedor != '') {
             $fornecedores = Fornecedores::where('razao_social', 'like', '%' . $this->fornecedor . '%')->first();
@@ -102,7 +102,10 @@ class NovoPedido extends Component
             }
         }
 
-        $this->produtos = $query->paginate($this->paginate)->toArray();
+        $this->produtos = $query
+            ->with('fornecedor')
+            ->paginate($this->paginate)
+            ->toArray();
         // dd($this->produtos);
     }
 
@@ -111,7 +114,6 @@ class NovoPedido extends Component
         $this->setPage($pagina);
         $this->atualizarProdutos();
     }
-
 
     public function buscarPedidos()
     {
@@ -129,20 +131,24 @@ class NovoPedido extends Component
             return;
         }
 
-        if (!$this->cliente) { 
+        if (!$this->cliente) {
             toastr('Cliente não encontrado.', 'error');
             return;
         }
 
         if ($this->cliente) {
-            $pedido = Pedidos::where('cliente_id', $this->cliente->id)->orderBy('id', 'desc')->get();
+            $pedido = Pedidos::where('cliente_id', $this->cliente->id)
+                ->orderBy('id', 'desc')
+                ->get();
             if ($pedido->count() > 0) {
                 foreach ($pedido as $key => $value) {
-                    $items = PedidosItems::where('pedido_id', $value['id'])->get()->toArray();
+                    $items = PedidosItems::where('pedido_id', $value['id'])
+                        ->get()
+                        ->toArray();
 
                     $this->pedidos[$value['id']] = [
                         'id' => $value['id'],
-                        "quantidade" => $value['quantidade'],
+                        'quantidade' => $value['quantidade'],
                         'referencia' => $value['referencia'],
                         'desconto' => $value['desconto'],
                         'razao_social' => $value['razao_social'],
@@ -154,16 +160,16 @@ class NovoPedido extends Component
                         'financeiro' => $value['financeiro'],
                         'status' => $value['status'],
                         'confirmacao' => $value['confirmacao'],
-                        'items' => []
+                        'items' => [],
                     ];
 
                     foreach ($items as $keyItems => $valueItems) {
                         $this->pedidos[$value['id']]['items'][] = [
-                            "id" => $valueItems["id"],
-                            "quantidade" => $valueItems["quantidade"],
-                            "valor_unitario" => $valueItems["valor_unitario"],
-                            "modelo" => $valueItems["modelo"],
-                            "valor_total" => $valueItems["valor_total"],
+                            'id' => $valueItems['id'],
+                            'quantidade' => $valueItems['quantidade'],
+                            'valor_unitario' => $valueItems['valor_unitario'],
+                            'modelo' => $valueItems['modelo'],
+                            'valor_total' => $valueItems['valor_total'],
                         ];
                     }
                 }
@@ -182,24 +188,24 @@ class NovoPedido extends Component
         return view('livewire.pedidos.novo-pedido', [
             'pedidos' => $this->pedidos,
             'cliente' => $this->cliente,
-            'produtos' => $this->produtos,
+            'produtos' => array_map(function ($produto) {
+                $produto['quantidade'] = $this->quantidades[$produto['id']] ?? 0;
+                $produto['valor_total'] = $this->valorUnitarios[$produto['id']] ?? 0;
+                return $produto;
+            }, $this->produtos['data']),
         ]);
     }
 
-
     public function calcula($quantidade, $valorUnitario, $produto_id)
     {
+        $this->quantidades[$produto_id] = $quantidade;
         $retorno = $valorUnitario * $quantidade;
-        // $produto = $this->produtos->find($produto_id);
-        $produto = Produtos::find($produto_id);
 
         $this->produtosSelecionados[$produto_id] = [
-            'id' => $produto->id,
-            'produto_id' => $produto->id,
-            'modelo' => $produto->modelo,
+            'id' => $produto_id,
             'quantidade' => $quantidade,
-            'preco_unitario' => $produto->preco_unitario,
-            'valor_total' => $retorno
+            'preco_unitario' => $valorUnitario,
+            'valor_total' => $retorno,
         ];
 
         $this->valorUnitarios[$produto_id] = $retorno;
@@ -210,21 +216,19 @@ class NovoPedido extends Component
 
     public function toggleProduto($produtoId)
     {
-        $produto = Produtos::find($produtoId);
-
-        if ($produto === null) {
-            return;
-        }
-
-        if (array_key_exists($produtoId, $this->produtosSelecionados)) {
+        if (in_array($produtoId, $this->produtosMarcados)) {
+            $this->produtosMarcados = array_filter($this->produtosMarcados, function ($id) use ($produtoId) {
+                return $id != $produtoId;
+            });
             unset($this->produtosSelecionados[$produtoId]);
             unset($this->valorUnitarios[$produtoId]);
         } else {
+            $this->produtosMarcados[] = $produtoId;
             $quantidade = $this->quantidades[$produtoId] ?? 0;
-            $preco_unitario = $produto->preco_unitario;
-
-
-            $this->calcula($quantidade, $preco_unitario, $produtoId);
+            $produto = Produtos::find($produtoId);
+            if ($produto) {
+                $this->calcula($quantidade, $produto->preco_unitario, $produtoId);
+            }
         }
         $this->valorTotal = array_sum($this->valorUnitarios);
     }
@@ -252,7 +256,7 @@ class NovoPedido extends Component
     public function limparCesta()
     {
         $this->produtosSelecionados = [];
-        $this->valorTotal = 0.00;
+        $this->valorTotal = 0.0;
         $this->quantidades = [];
         return redirect('/novo-pedido');
     }
@@ -318,7 +322,9 @@ class NovoPedido extends Component
                     $produtos->quantidade -= $value['quantidade'];
                     $produtos->save();
 
-                    $movimentacoes = Movimentacoes::where('modelo', $produtos->modelo)->where('fornecedor', $produtos->fornecedor_id)->first();
+                    $movimentacoes = Movimentacoes::where('modelo', $produtos->modelo)
+                        ->where('fornecedor', $produtos->fornecedor_id)
+                        ->first();
                     $novaMovimentacao = new Movimentacoes();
                     if (!$movimentacoes) {
                         $novaMovimentacao->referencia = bin2hex(random_bytes(6));
@@ -328,9 +334,9 @@ class NovoPedido extends Component
                         $novaMovimentacao->estoque = $produtos->quantidade;
                         $novaMovimentacao->data_reposicao = now();
                         $novaMovimentacao->data_baixa = now();
-                        $novaMovimentacao->fornecedor =  $produtos->fornecedor_id;
-                        $novaMovimentacao->valor_unitario = (float)$value['preco_unitario'];
-                        $novaMovimentacao->valor_total = (float)$value['preco_unitario'] * $value['quantidade'];
+                        $novaMovimentacao->fornecedor = $produtos->fornecedor_id;
+                        $novaMovimentacao->valor_unitario = (float) $value['preco_unitario'];
+                        $novaMovimentacao->valor_total = (float) $value['preco_unitario'] * $value['quantidade'];
                         $novaMovimentacao->save();
                     } else {
                         $novaMovimentacao->referencia = $movimentacoes->referencia;
@@ -340,9 +346,9 @@ class NovoPedido extends Component
                         $novaMovimentacao->estoque = $produtos->quantidade;
                         $novaMovimentacao->data_reposicao = $movimentacoes->data_reposicao;
                         $novaMovimentacao->data_baixa = now();
-                        $novaMovimentacao->fornecedor =  $produtos->fornecedor_id;
-                        $novaMovimentacao->valor_unitario = (float)$value['preco_unitario'];
-                        $novaMovimentacao->valor_total = (float)$value['preco_unitario'] * $value['quantidade'];
+                        $novaMovimentacao->fornecedor = $produtos->fornecedor_id;
+                        $novaMovimentacao->valor_unitario = (float) $value['preco_unitario'];
+                        $novaMovimentacao->valor_total = (float) $value['preco_unitario'] * $value['quantidade'];
                         $novaMovimentacao->save();
                     }
                     if ($movimentacoes) {
@@ -352,7 +358,9 @@ class NovoPedido extends Component
             }
 
             toastr('Pedido Gerado com sucesso.', 'success');
-            return redirect('/pedidos');
+
+            return redirect()->route('editar.pedido.get', $pedidoId);
+            // return redirect('/pedidos');
         }
     }
 
@@ -371,7 +379,6 @@ class NovoPedido extends Component
 
         if ($pedido) {
             $pedido->valor -= $pedidoItem->valor_total;
-
 
             if ($produto) {
                 $produto->quantidade += $pedidoItem->quantidade;

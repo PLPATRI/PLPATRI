@@ -24,7 +24,7 @@ class Dashboard extends Controller
             return $produto->quantidade * $produto->preco_unitario;
         });
 
-        $ultimosCarregamentos = Produtos::orderBy("created_at", "desc")->get()->toArray();
+        $ultimosCarregamentos = Produtos::orderBy("created_at", "desc")->limit(10)->get()->toArray();
 
         $totalVendas = Pedidos::whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)

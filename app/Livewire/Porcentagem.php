@@ -54,17 +54,17 @@ class Porcentagem extends Component
         $this->produtosAlterados = [];
 
         foreach ($this->produtoAlterado as $id => $data) {
-            if ($data['selecionado'] && !empty($data['porcentagem'])) {
+            if (isset($data['selecionado']) && $data['selecionado'] && !empty($data['porcentagem'])) {
                 $produto = Produtos::find($id);
 
                 if ($produto) {
                     $this->produtosAlterados[] = [
-                        'íd_produto' => $produto->id,
+                        'id_produto' => $produto->id,
                         'referencia' => $produto->referencia,
                         'modelo' => $produto->modelo,
                         'fornecedor' => $produto->fornecedor->razao_social,
                         'porcentagem' => $data['porcentagem'],
-                        'valor_atualizado' => $produto->preco_unitario * (1 + ($data['porcentagem'] / 100)),
+                        'valor_atualizado' => $produto->preco_unitario * (1 + $data['porcentagem'] / 100),
                     ];
                 }
             }
@@ -85,7 +85,7 @@ class Porcentagem extends Component
 
     public function salvar()
     {
-        if($this->produtosAlterados != []){
+        if ($this->produtosAlterados != []) {
             foreach ($this->produtosAlterados as $index => $alterado) {
                 $produto = Produtos::find($alterado['íd_produto']);
                 $produto->preco_unitario = $alterado['valor_atualizado'];
@@ -107,7 +107,7 @@ class Porcentagem extends Component
     {
         return view('livewire.porcentagem', [
             'produtos' => $this->produtos,
-            'produtosAlterados' => $this->produtosAlterados
+            'produtosAlterados' => $this->produtosAlterados,
         ]);
     }
 }

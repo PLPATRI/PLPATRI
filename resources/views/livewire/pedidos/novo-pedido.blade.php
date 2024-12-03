@@ -49,8 +49,8 @@
                                                     <label>Referência:</label>
                                                     <input type="text" wire:model="referencia_inicial"
                                                         class="form-control w-75 ms-10" placeholder="1">
-                                                    {{-- <input type="text" wire:model="referencia_final"
-                                                        class="form-control w-75 mx-10" placeholder="100"> --}}
+                                                    <input type="text" wire:model="referencia_final"
+                                                        class="form-control w-75 mx-10" placeholder="100">
                                                     <button class="btn btn-primary-light btn-sm"
                                                         wire:click="atualizarProdutos"><i
                                                             class="fas fa-search"></i></button>
@@ -254,61 +254,91 @@
 
     <!-- /.modal cliente -->
     @if ($showModalCliente)
-        <div class="modal fade cliente-modal" data-bs-backdrop="static" tabindex="-1" role="dialog"
-            aria-labelledby="clienteModal" aria-hidden="true" style="display: none;" wire:ignore.self>
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="myLargeModalLabel">Número do CPF/CNPJ </h4>
-                        {{-- <button type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Close"></button> --}}
-                    </div>
-                    <div class="modal-body">
-                        <div class="row justify-content-center">
-                            <div class="col-md-12">
-                                <div class="row form-group align-items-end">
-                                    <div class="col-lg-6">
-                                        <label class="form-label">Nome</label>
-                                        <input type="text" wire:model="nomeCliente" class="form-control"
-                                            placeholder="Nome do Cliente" maxlength="18">
-                                    </div>
-                                    <div class="col-lg-5">
-                                        <label class="form-label">Documento</label>
-                                        <input type="text" wire:model="numero_documento" class="form-control"
-                                            placeholder="CPF/CNPJ" id="numero_documento_cnpj" maxlength="18">
-                                    </div>
-                                    <div class="col-lg-1">
-                                        <button class="btn btn-primary-light" wire:click="buscarPedidos"
-                                            wire:loading.attr="disabled">
-                                            <span wire:loading.remove wire:target="buscarPedidos">
-                                                <i class="fas fa-search"></i>
-                                            </span>
-                                            <span wire:loading wire:target="buscarPedidos">
-                                                <i class="fas fa-spinner fa-spin"></i>
-                                            </span>
-                                        </button>
-                                    </div>
+    <div class="modal fade cliente-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog"
+    aria-labelledby="clienteModal" aria-hidden="true"
+    style="display: none;" wire:ignore.self>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myLargeModalLabel">Selecione um cliente </h4>
+                    {{-- <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button> --}}
+                </div>
+                <div class="modal-body">
+                    <div class="row justify-content-center">
+                        <div class="col-md-12">
+                            <!-- Campos de pesquisa -->
+                            <div class="row form-group align-items-end">
+                                <div class="col-lg-6">
+                                    <label class="form-label">Nome</label>
+                                    <input type="text" wire:model="nomeCliente" class="form-control"
+                                        placeholder="Nome do Cliente" maxlength="18">
                                 </div>
+                                <div class="col-lg-5">
+                                    <label class="form-label">Documento</label>
+                                    <input type="text" wire:model="numero_documento" class="form-control"
+                                        placeholder="CPF/CNPJ" id="numero_documento_cnpj" maxlength="18">
+                                </div>
+                                <div class="col-lg-1">
+                                    <button class="btn btn-primary-light" wire:click="buscarClientes"
+                                        wire:loading.attr="disabled">
+                                        <span wire:loading.remove wire:target="buscarClientes">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                        <span wire:loading wire:target="buscarClientes">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Resultados da pesquisa -->
+                            <div class="mt-3">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Documento</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($clientes as $cliente)
+                                            <tr>
+                                                <td>{{ $cliente->nome }}</td>
+                                                <td>{{ $cliente->numero_documento }}</td>
+                                                <td>
+                                                    <button class="btn btn-success-light" wire:click="selecionarCliente({{ $cliente->id }})">
+                                                        Selecionar
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="3">Nenhum cliente encontrado.</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer d-flex justify-content-between">
+                </div>
+                <div class="modal-footer">
+                    <div class="d-flex justify-content-between">
                         <button type="button" wire:click="novoCliente" class="btn btn-primary">
                             <i class="fas fa-plus"></i> Novo Cliente
                         </button>
-                        <button type="button" id="customer" class="btn btn-success" wire:click="buscarPedidos"
-                            wire:loading.attr="disabled">
-                            <span wire:loading.remove wire:target="buscarPedidos">Avançar</span>
-                            <span wire:loading wire:target="buscarPedidos">
-                                <i class="fas fa-spinner fa-spin"></i> Carregando...
-                            </span>
+                        <button type="button" data-bs-dismiss="modal"
+                            aria-label="Close" class="btn btn-success me-1">
+                            Próximo
                         </button>
                     </div>
                 </div>
-                <!-- /.modal-content -->
             </div>
-            <!-- /.modal-dialog -->
+            <!-- /.modal-content -->
         </div>
+        <!-- /.modal-dialog -->
+    </div>
     @endif
 
     <script>
@@ -378,7 +408,7 @@
                                             <h5>Vendedor:</h5>
                                         </div>
                                     </div>
-                                    <div class="table-responsive mb-20" style="max-height: 400px">
+                                    <div class="table-responsive mb-20" style="max-height: 400px; padding: 10px 30px">
                                         <table id="example1" class="table table-bordered table-striped">
                                             <thead>
                                                 <tr>
@@ -397,15 +427,14 @@
                                                             <td>{{ $item['referencia'] }}</td>
                                                             <td>{{ $item['modelo'] }}</td>
                                                             <td><b>{{ $item['quantidade'] }}</b></td>
-                                                            <td><b>R$
-                                                                    {{ number_format($item['preco_unitario'], 4, ',', '.') }}</b>
-                                                            </td>
-                                                            <td><b>R$
-                                                                    {{ number_format($item['valor_total'], 2, ',', '.') }}</b>
-                                                            </td>
-                                                            <td><a data-bs-toggle="modal"
-                                                                    wire:click="excluiProduto({{ $item['id'] }})"
-                                                                    href="#"><i class="fas fa-trash"></i></a>
+                                                            <td><b>R$ {{ number_format($item['preco_unitario'], 4, ',', '.') }}</b></td>
+                                                            <td><b>R$ {{ number_format($item['valor_total'], 2, ',', '.') }}</b></td>
+                                                            <td>
+                                                                <a data-bs-toggle="modal" 
+                                                                   wire:click="excluiProduto({{ $item['id'] }})" 
+                                                                   href="#">
+                                                                   <i class="fas fa-trash"></i>
+                                                                </a>
                                                             </td>
                                                         </tr>
                                                     @endforeach
@@ -414,24 +443,26 @@
                                         </table>
                                     </div>
                                     <div class="row justify-content-between">
-                                        <div class="col-lg-6 col-sm-12 col-md-6 d-flex">
-                                            <div class="form-group">
-                                                <input name="group5" wire:model.live="metodoEntrega" type="radio"
-                                                    id="balcao" class="with-gap radio-col-success" value="balcao">
-                                                <label for="balcao">Balcão</label>
-                                            </div>
-                                            <div class="ms-10 form-group">
-                                                <input name="group5" wire:model.live="metodoEntrega" type="radio"
-                                                    id="entrega" class="with-gap radio-col-success"
-                                                    value="entrega">
-                                                <label for="entrega">Entrega</label>
-                                                <div id="endereco"
-                                                    class="{{ $metodoEntrega == 'entrega' ? '' : 'hidden' }}">
-                                                    <div class="d-flex my-10">
-                                                        <input type="text" wire:model="endereco"
-                                                            class="form-control" placeholder="Endereço">
-                                                        <input type="text" wire:model="numero"
-                                                            class="form-control mx-10" placeholder="Número">
+                                        <div class="col-lg-6 col-sm-12 col-md-6 d-flex flex-column">
+                                            <div class="d-flex">
+                                                <div class="form-group">
+                                                    <input name="group5" wire:model.live="metodoEntrega" type="radio"
+                                                        id="balcao" class="with-gap radio-col-success" value="balcao">
+                                                    <label for="balcao">Balcão</label>
+                                                </div>
+                                                <div class="ms-10 form-group">
+                                                    <input name="group5" wire:model.live="metodoEntrega" type="radio"
+                                                        id="entrega" class="with-gap radio-col-success"
+                                                        value="entrega">
+                                                    <label for="entrega">Entrega</label>
+                                                    <div id="endereco"
+                                                        class="{{ $metodoEntrega == 'entrega' ? '' : 'hidden' }}">
+                                                        <div class="d-flex my-10">
+                                                            <input type="text" wire:model="endereco"
+                                                                class="form-control" placeholder="Endereço">
+                                                            <input type="text" wire:model="numero"
+                                                                class="form-control mx-10" placeholder="Número">
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -494,6 +525,23 @@
     document.addEventListener('livewire:init', () => {
         Livewire.on('closeModal', (event) => {
             $('.cliente-modal').modal('hide');
+        });
+    });
+    document.addEventListener('livewire:load', () => {
+        Livewire.hook('message.processed', (component, message) => {
+            if (!component.get('modalAberta')) {
+                $('.cliente-modal').modal('hide'); // Fecha a modal
+            }
+        });
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+        // Escuta os cliques em todos os botões com a classe "btn-success"
+        document.querySelectorAll('.btn-success-light').forEach(button => {
+            button.addEventListener('click', function () {
+                // Alterar o texto do botão para "Selecionado"
+                this.innerHTML = 'Selecionado';
+                this.disabled = true; // Opcional: desativa o botão após o clique
+            });
         });
     });
 </script>

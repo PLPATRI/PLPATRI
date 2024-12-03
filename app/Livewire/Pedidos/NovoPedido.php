@@ -60,6 +60,9 @@ class NovoPedido extends Component
     public $endereco = '';
     public $numero = '';
 
+    public $clientes = [];
+    public $modalAberta = true;
+
     public function mount()
     {
         if (session()->has('clientePedido')) {
@@ -84,12 +87,12 @@ class NovoPedido extends Component
         $this->paginate = $this->configuracoes ? $this->configuracoes->numero_itens_tabelas : 10;
 
         if ($this->referencia_inicial != '') {
-            $query = Produtos::where('referencia', 'like', '%' . $this->referencia_inicial . '%');
+            $query = Produtos::where('referencia', '>=', $this->referencia_inicial);
         }
 
-        // if ($this->referencia_final != '') {
-        //     $query->where('id', '<=', $this->referencia_final);
-        // }
+        if ($this->referencia_final != '') {
+            $query->where('referencia', '<=', $this->referencia_final);
+        }
 
         if ($this->modelo != '') {
             $query->where('modelo', 'like', '%' . $this->modelo . '%');
@@ -188,6 +191,8 @@ class NovoPedido extends Component
         return view('livewire.pedidos.novo-pedido', [
             'pedidos' => $this->pedidos,
             'cliente' => $this->cliente,
+            'clientes' => $this->clientes,
+            'modalAberta' => $this->modalAberta,
             'produtos' => array_map(function ($produto) {
                 $produto['quantidade'] = $this->quantidades[$produto['id']] ?? 0;
                 $produto['valor_total'] = $this->valorUnitarios[$produto['id']] ?? 0;
@@ -201,9 +206,13 @@ class NovoPedido extends Component
         $this->quantidades[$produto_id] = $quantidade;
         $retorno = $valorUnitario * $quantidade;
 
+        $produto = Produtos::find($produto_id);
+
         $this->produtosSelecionados[$produto_id] = [
             'id' => $produto_id,
             'quantidade' => $quantidade,
+            'modelo' => $produto->modelo,
+            'referencia' => $produto->referencia,
             'preco_unitario' => $valorUnitario,
             'valor_total' => $retorno,
         ];
@@ -249,6 +258,7 @@ class NovoPedido extends Component
             toastr('Selecione os itens e a quantidade de cada item corretamente', 'error');
             return;
         }
+
         $this->produtosEscolhidos = $this->produtosSelecionados;
         $this->showModal = true;
     }
@@ -310,7 +320,7 @@ class NovoPedido extends Component
             foreach ($this->produtosEscolhidos as $value) {
                 $pedidoItems = new PedidosItems();
                 $pedidoItems->pedido_id = $pedidoId;
-                $pedidoItems->produto_id = $value['produto_id'];
+                $pedidoItems->produto_id = $value['id'];
                 $pedidoItems->quantidade = $value['quantidade'];
                 $pedidoItems->valor_unitario = $value['preco_unitario'];
                 $pedidoItems->modelo = $value['modelo'];
@@ -318,7 +328,7 @@ class NovoPedido extends Component
                 $resultPedidoItems = $pedidoItems->save();
 
                 if ($resultPedidoItems) {
-                    $produtos = Produtos::find($value['produto_id']);
+                    $produtos = Produtos::find($value['id']);
                     $produtos->quantidade -= $value['quantidade'];
                     $produtos->save();
 
@@ -432,4 +442,38 @@ class NovoPedido extends Component
         session()->put(['telaPedidos' => 1]);
         return redirect('/cadastro-clientes');
     }
+
+    public function buscarClientes()
+    {
+        if ($this->numero_documento == '' && $this->nomeCliente == '') {
+            toastr('Informe o número do documento ou o nome do cliente.', 'error');
+            return;
+        }
+
+        $query = Clientes::query();
+
+        if (!empty($this->numero_documento)) {
+            $query->where('numero_documento', 'like', '%' . $this->numero_documento . '%');
+        }
+
+        if (!empty($this->nomeCliente)) {
+            $query->where('nome', 'like', '%' . $this->nomeCliente . '%');
+        }
+
+        $this->clientes = $query->get();
+    }
+
+    public function selecionarCliente($clienteId)
+    {
+        $this->cliente = Clientes::find($clienteId);
+
+        if ($this->cliente) {
+            toastr('Cliente selecionado com sucesso!', 'success');
+            $this->modalAberta = false; // Fechar a modal
+        } else {
+            toastr('Cliente não encontrado.', 'error');
+        }
+    }
+
+
 }

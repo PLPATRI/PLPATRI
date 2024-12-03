@@ -76,9 +76,9 @@ Route::get('/pedidos', [Pedidos::class, 'index'])->name('pedidos.get');
 Route::match(['get', 'post'], '/novo-pedido', [NovoPedido::class, 'index'])->name('novo.pedidos.get');
 
 Route::middleware(['auth.vendedor'])->group(function () {
-    Route::get('/dashboard-vendedor', [DashboardVendedor::class, 'index'])->name('dashboard.vendedor.get');
-    //    Route::get('/pedidos', [Pedidos::class, 'index'])->name('pedidos.get');
-    //    Route::get('/novo-pedido', [NovoPedido::class, 'index'])->name('novo.pedidos.get');
+    // Route::get('/dashboard-vendedor', [DashboardVendedor::class, 'index'])->name('dashboard.vendedor.get');
+       Route::get('/pedidos', [Pedidos::class, 'index'])->name('pedidos.get');
+       Route::get('/novo-pedido', [NovoPedido::class, 'index'])->name('novo.pedidos.get');
 
     Route::delete('/logout', [LoginAdmin::class, 'logout'])->name('logout');
 });

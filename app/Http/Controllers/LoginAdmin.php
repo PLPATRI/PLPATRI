@@ -83,7 +83,7 @@ class LoginAdmin extends Controller
                 return redirect()->route('dashboard.get');
             } else {
                 Auth::guard('vendedor')->login($usuario);
-                return redirect()->route('dashboard.vendedor.get');
+                return redirect()->route('pedidos.get');
             }
         } else {
             toastr('Senha incorreta.', 'error', 'Erro');

@@ -80,6 +80,17 @@
         {{-- <script src="js/pages/dashboard2.js"></script> --}}
         {{-- <script src="js/pages/calendar.js"></script> --}}
 
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const today = new Date().toISOString().split('T')[0]; // Data atual no formato "YYYY-MM-DD"
+                document.querySelectorAll('input[type="date"]').forEach(function (input) {
+                    if (!input.value) { // Apenas define se não houver valor
+                        input.value = today;
+                    }
+                });
+            });
+        </script>
+
 </body>
 
 </html>

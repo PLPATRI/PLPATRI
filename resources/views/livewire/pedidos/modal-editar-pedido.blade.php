@@ -14,25 +14,28 @@
                 </div>
                 <div class="modal-body">
                     <div class="d-flex justify-content-between">
-                        <div class="form-group d-flex align-items-end mb-15">
-                            <div>
-                                <label>Referência:</label>
-                                <input type="text" wire:model.live='referencia' class="form-control"
-                                    placeholder="1">
+                        <div class=" mb-15">
+                            <label>Referência:</label>
+                            <div class="form-group d-flex align-items-center">
+                                <input type="text" class="form-control w-75 ms-10"
+                                    wire:model.debounce.500ms="referencia_de" placeholder="Referência de">
+                                <input type="text" class="form-control w-75 mx-10"
+                                    wire:model.debounce.500ms="referencia_ate" placeholder="Referência até">
+                                <button class="btn btn-primary-light btn-sm" wire:click="updateProdutos">
+                                    <i class="fas fa-search"></i>
+                                </button>
                             </div>
                         </div>
                         <div class="form-group d-flex align-items-end mb-15">
                             <div>
                                 <label>Modelo:</label>
-                                <input type="text" wire:model.live='modelo' class="form-control"
-                                    placeholder="1">
+                                <input type="text" wire:model.live='modelo' class="form-control" placeholder="1">
                             </div>
                         </div>
                         <div class="form-group d-flex align-items-end mb-15">
                             <div>
                                 <label>Fornecedor:</label>
-                                <input type="text" wire:model.live='fornecedor' class="form-control"
-                                    placeholder="1">
+                                <input type="text" wire:model.live='fornecedor' class="form-control" placeholder="1">
                             </div>
                         </div>
                     </div>
@@ -87,7 +90,7 @@
                                         @else
                                             <td><b>{{ $produto->quantidade }}</b></td>
                                         @endif
-                                        <td><b>R$ {{ number_format($produto->preco_unitario, 2, ',', '.') }}</b></td>
+                                        <td><b>R$ {{ number_format($produto->preco_unitario, 4, ',', '.') }}</b></td>
                                     </tr>
                                 @endforeach
                             </tbody>

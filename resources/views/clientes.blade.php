@@ -77,10 +77,6 @@
                                                 <div class="col-12 col-md-2 mb-2">
                                                     <button class="btn btn-primary w-100">Filtrar</button>
                                                 </div>
-                                                <div class="col-12 col-md-2 mb-2">
-                                                    <a href="http://localhost:8000/clientes" class="btn btn-secondary w-100"
-                                                        style="">Limpar</a>
-                                                </div>
                                             </form>
                                         </div>
                                         <div class="row">
@@ -90,10 +86,6 @@
                                                     role="grid" aria-describedby="example1_info">
                                                     <thead>
                                                         <tr role="row">
-                                                            <th class="sorting_asc" tabindex="0" aria-controls="example1"
-                                                                rowspan="1" colspan="1" aria-sort="ascending"
-                                                                aria-label="ID: activate to sort column descending"
-                                                                style="width: 15.8125px;">ID</th>
                                                             <th class="sorting" tabindex="0" aria-controls="example1"
                                                                 rowspan="1" colspan="1"
                                                                 aria-label="Nome(Razão Social): activate to sort column ascending"
@@ -111,8 +103,7 @@
                                                     <tbody>
                                                         @foreach ($data as $cliente)
                                                             <tr role="row" class="odd">
-                                                                <td class="sorting_1">#{{ $cliente['id'] }}</td>
-                                                                <td>{{ $cliente['razao_social'] }}</td>
+                                                                <td>{{ $cliente['nome'] }}</td>
                                                                 <td>{{ $cliente['numero_documento'] }}</td>
                                                                 <td class="d-flex justify-content-center" style="gap: 15px">
                                                                     <i data-bs-toggle="modal"
@@ -739,20 +730,11 @@
         <div class="col-sm-12 col-md-7">
             <div class="dataTables_paginate paging_simple_numbers" id="example1_paginate">
                 <ul class="pagination">
-                    <li class="paginate_button page-item {{ $data->onFirstPage() ? 'disabled' : '' }}">
-                        <a href="{{ $data->previousPageUrl() }}" class="page-link" aria-controls="example1"
-                            tabindex="0">Voltar</a>
-                    </li>
-                    @foreach ($data->getUrlRange(1, $data->lastPage()) as $page => $url)
-                        <li class="paginate_button page-item {{ $page == $data->currentPage() ? 'active' : '' }}">
-                            <a href="{{ $url }}" class="page-link" aria-controls="example1"
-                                tabindex="0">{{ $page }}</a>
+                    @foreach ($visiblePages as $page)
+                        <li class="{{ $page == $data->currentPage() ? 'active' : '' }}">
+                            <a href="{{ $data->url($page) }}">{{ $page }}</a>
                         </li>
                     @endforeach
-                    <li class="paginate_button page-item {{ $data->hasMorePages() ? '' : 'disabled' }}">
-                        <a href="{{ $data->nextPageUrl() }}" class="page-link" aria-controls="example1"
-                            tabindex="0">Proximo</a>
-                    </li>
                 </ul>
             </div>
         </div>

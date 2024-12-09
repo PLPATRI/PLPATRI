@@ -26,12 +26,18 @@ class Pedidos extends Controller
 
         $items = $pedido->items();
 
-        if (request()->has('referencia') && !empty(request('referencia'))) {
+        // Aplica os filtros
+        if (request()->has('referencia_de') && !empty(request('referencia_de'))) {
             $items = $items->whereHas('produto', function ($query) {
-                $query->where('referencia', 'like', '%' . request('referencia') . '%');
+                $query->where('referencia', '>=', request('referencia_de'));
             });
         }
 
+        if (request()->has('referencia_ate') && !empty(request('referencia_ate'))) {
+            $items = $items->whereHas('produto', function ($query) {
+                $query->where('referencia', '<=', request('referencia_ate'));
+            });
+        }
         if (request()->has('modelo') && !empty(request('modelo'))) {
             $items = $items->where('modelo', 'like', '%' . request('modelo') . '%');
         }

@@ -20,6 +20,11 @@ class CarregarEstoque extends Component
         'produtosCarregamento.*.quantidade' => 'required|numeric|min:0',
     ];
 
+    public $referencia_inicial = '';
+    public $referencia_final = '';
+    public $modelo = '';
+
+
     public function salvarAgora()
     {
         $this->aplicar();
@@ -74,7 +79,6 @@ class CarregarEstoque extends Component
                 $produto = Produtos::find($id);
                 if ($produto) {
                     $produto->quantidade += $data['quantidade'];
-                    $produto->preco_unitario = $data['preco_unitario'];
                     $produto->data = $data['data_carregamento'];
                     $produto->save();
                 }
@@ -98,7 +102,28 @@ class CarregarEstoque extends Component
 
     public function getProdutosProperty()
     {
-        return Produtos::where('fornecedor_id', $this->id_fornecedor)->get();
+        $query = Produtos::query();
+
+        // Filtra por fornecedor, se selecionado
+        if ($this->id_fornecedor) {
+            $query->where('fornecedor_id', $this->id_fornecedor);
+        }
+    
+        // Aplica os filtros de referência inicial e final, se fornecidos
+        if ($this->referencia_inicial) {
+            $query->where('referencia', '>=', $this->referencia_inicial);
+        }
+    
+        if ($this->referencia_final) {
+            $query->where('referencia', '<=', $this->referencia_final);
+        }
+
+        // Filtrar por modelo (parcialmente, case-insensitive)
+        if ($this->modelo) {
+            $query->where('modelo', 'like', '%' . $this->modelo . '%');
+        }
+        
+        return $query->get();
     }
 
     public function getCarregamentos()
@@ -119,6 +144,15 @@ class CarregarEstoque extends Component
             'produtos' => $this->produtos,
             'fornecedores' => $this->fornecedores,
             'getFornecedor' => $this->getFornecedor(),
+        ]);
+    }
+
+    public function atualizarProdutos()
+    {
+        $this->validate([
+            'referencia_inicial' => 'nullable|numeric|min:0',
+            'referencia_final' => 'nullable|numeric|min:0|gte:referencia_inicial',
+            'modelo' => 'nullable|string|max:255',
         ]);
     }
 }

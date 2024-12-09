@@ -87,10 +87,15 @@ class Etiquetas extends Controller
 
         $pedidoItems = PedidosItems::where('pedido_id', $pedido->id)->get();
         $cliente = Clientes::findOrFail($pedido->cliente_id);
+
+        // Calculo do valor do desconto
+        $valorDescontado = $pedido->valor * ($pedido->desconto / 100);
+        $valorComDesconto = $pedido->valor - $valorDescontado;
         $data = [
             'pedido' => $pedido,
             'pedidoItems' => $pedidoItems,
-            'cliente' => $cliente
+            'cliente' => $cliente,
+            'valorComDesconto' => $valorComDesconto, // Adiciona o valor do desconto nos dados
         ];
 
         $pdf = PDF::loadView('pdf.pedidoA4', $data)

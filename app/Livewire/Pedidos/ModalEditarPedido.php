@@ -12,7 +12,8 @@ class ModalEditarPedido extends Component
 {
     public $produtos = [];
     public $pedido;
-    public $referencia;
+    public $referencia_de;
+    public $referencia_ate;
     public $modelo;
     public $fornecedor;
     public $selectedProdutos = [];
@@ -122,24 +123,41 @@ class ModalEditarPedido extends Component
         return redirect()->route('editar.pedido.get', $this->pedido->id)->with('success', 'Pedido atualizado com sucesso.');
     }
 
-    private function updateProdutos()
-    {
-        $query = Produtos::query();
+    public function updateProdutos()
+{
+    $query = Produtos::query();
 
-        if ($this->referencia) {
-            $query->where('referencia', 'like', '%' . $this->referencia . '%');
-        }
-
-        if ($this->modelo) {
-            $query->where('modelo', 'like', '%' . $this->modelo . '%');
-        }
-
-        if ($this->fornecedor) {
-            $query->whereHas('fornecedor', function ($q) {
-                $q->where('razao_social', 'like', '%' . $this->fornecedor . '%');
-            });
-        }
-
-        $this->produtos = $query->take(10)->get();
+    if ($this->modelo) {
+        $query->where('modelo', 'like', '%' . $this->modelo . '%');
     }
+
+    if ($this->fornecedor) {
+        $query->whereHas('fornecedor', function ($q) {
+            $q->where('razao_social', 'like', '%' . $this->fornecedor . '%');
+        });
+    }
+
+    // Novos Filtros de Referência (de e até)
+    if ($this->referencia_de) {
+        $query->where('referencia', '>=', $this->referencia_de);
+    }
+
+    if ($this->referencia_ate) {
+        $query->where('referencia', '<=', $this->referencia_ate);
+    }
+
+    // Obtenha os produtos já selecionados no pedido
+    $produtosSelecionados = PedidosItems::where('pedido_id', $this->pedido->id)
+        ->pluck('produto_id')
+        ->toArray();
+
+    // Exclua os produtos selecionados da consulta
+    if (!empty($produtosSelecionados)) {
+        $query->whereNotIn('id', $produtosSelecionados);
+    }
+
+    // Limite o número de resultados
+    $this->produtos = $query->take(10)->get();
+}
+
 }

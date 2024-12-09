@@ -13,7 +13,7 @@
                                     <div class="box ">
                                         <div class="d-flex align-items-center justify-content-between box-header">
                                             @if ($cliente)
-                                                <h4 class="box-title fw-600">Novo Pedido - {{ $cliente->razao_social }}
+                                                <h4 class="box-title fw-600">Novo Pedido - {{ $cliente->nome }}
                                                 </h4>
                                             @else
                                                 <h4 class="box-title fw-600">Novo Pedido</h4>
@@ -143,7 +143,7 @@
                                                                         {{ number_format($item['preco_unitario'], 4, ',', '.') }}</b>
                                                                 </td>
                                                                 <td><b>R$
-                                                                        {{ isset($valorUnitarios[$item['id']]) ? number_format($valorUnitarios[$item['id']], 2, ',', '.') : '0,00' }}</b>
+                                                                        {{ isset($valorUnitarios[$item['id']]) ? number_format($valorUnitarios[$item['id']], 4, ',', '.') : '0,00' }}</b>
                                                                 </td>
                                                             </tr>
                                                         @endforeach
@@ -151,33 +151,14 @@
                                                 </table>
                                                 <div class="d-flex justify-content-center mt-2">
                                                     {{-- Paginação --}}
-                                                    @if ($produtos['last_page'] > 1)
-                                                        <nav>
-                                                            <ul class="pagination">
-                                                                @if ($produtos['prev_page_url'])
-                                                                    <li class="page-item">
-                                                                        <a class="page-link"
-                                                                            wire:click="atualizarPagina({{ $produtos['current_page'] - 1 }})"
-                                                                            href="javascript:void(0)">Anterior</a>
-                                                                    </li>
-                                                                @endif
-                                                                @for ($i = 1; $i <= $produtos['last_page']; $i++)
-                                                                    <li
-                                                                        class="page-item {{ $i == $produtos['current_page'] ? 'active' : '' }}">
-                                                                        <a class="page-link"
-                                                                            wire:click="atualizarPagina({{ $i }})"
-                                                                            href="javascript:void(0)">{{ $i }}</a>
-                                                                    </li>
-                                                                @endfor
-                                                                @if ($produtos['next_page_url'])
-                                                                    <li class="page-item">
-                                                                        <a class="page-link"
-                                                                            wire:click="atualizarPagina({{ $produtos['current_page'] + 1 }})"
-                                                                            href="javascript:void(0)">Próxima</a>
-                                                                    </li>
-                                                                @endif
-                                                            </ul>
-                                                        </nav>
+                                                    @if ($produtos['visiblePages'])
+                                                        <ul class="pagination">
+                                                            @foreach ($produtos['visiblePages'] as $page)
+                                                                <li class="{{ $page == $produtos['current_page'] ? 'active' : '' }}">
+                                                                    <a href="#" wire:click.prevent="atualizarPagina({{ $page }})">{{ $page }}</a>
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
                                                     @endif
                                                 </div>
                                             </div>
@@ -208,10 +189,10 @@
                                                                 wire:click="aplicaDesconto">Aplicar Desconto</button>
                                                         </div>
                                                     </div>
-                                                    <h4 class="">Total: <b>R$
+                                                    <h4 class="">Total a prazo: <b>R$
                                                             {{ number_format($valorTotal, 2, ',', '.') }}</b></h4>
 
-                                                    <h4 class="text-danger mt-10">Total com desconto: <b>R$
+                                                    <h4 class="text-danger mt-10">Total à vista: <b>R$
                                                             @if ($valorTotalComDesconto == 0.0)
                                                                 {{ number_format($valorTotal, 2, ',', '.') }}
                                                             @else
@@ -405,7 +386,8 @@
                                                 {{ $this->cliente->cidade }}/{{ $this->cliente->uf }}</h5>
                                             <h5>Bairro: {{ $this->cliente->bairro }}</h5>
                                             <h5>CEP:{{ $this->cliente->cep }}</h5>
-                                            <h5>Vendedor:</h5>
+                                            <h5>Vendedor:
+                                            </h5>
                                         </div>
                                     </div>
                                     <div class="table-responsive mb-20" style="max-height: 400px; padding: 10px 30px">
@@ -480,10 +462,10 @@
                                         </div>
                                         <div class="col-lg-6 col-sm-12 col-md-6">
                                             <div class="d-flex flex-column align-items-end my-10">
-                                                <h4 class="">Total: <b>R$
+                                                <h4 class="">Total à prazo: <b>R$
                                                         {{ number_format($valorTotal, 2, ',', '.') }}</b></h4>
 
-                                                <h4 class="text-danger mt-10">Total com desconto: <b>R$
+                                                <h4 class="text-danger mt-10">Total à vista: <b>R$
                                                         @if ($valorTotalComDesconto == 0.0)
                                                             {{ number_format($valorTotal, 2, ',', '.') }}
                                                         @else

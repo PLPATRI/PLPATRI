@@ -20,7 +20,7 @@
                 <td>{{ $produto->modelo }}</td>
                 <td>{{ $produto->fornecedor->razao_social }}</td>
                 <td>{{ $produto->quantidade }}</td>
-                <td><b>R$ {{ number_format($produto->valor_unitario, 2, ',', '.') }}</b></td>
+                <td><b>R$ {{ number_format($produto->valor_unitario, 4, ',', '.') }}</b></td>
             </tr>
         @endforeach
     </tbody>

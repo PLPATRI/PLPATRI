@@ -40,7 +40,7 @@
                         <th>Valor</th>
                         <th>Financeiro</th>
                         <th>Status</th>
-                        <th>Confirmação</th>
+                        <!-- <th>Confirmação</th> -->
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -83,8 +83,10 @@
                                         @endif
                                     </div>
                                 </td>
-                                <td>
-                                    @if ($item->confirmacao == 'Ag Estoque')
+                                <div>
+                                    
+                                {{-- <td>
+                                    @if ($item->confirmacao == 'Ag Estoque') 
                                         <div class="badge badge-primary">Ag. Estoque</div>
                                     @endif
                                     @if ($item->confirmacao == 'Ag Confirmacao')
@@ -93,7 +95,7 @@
                                     @if ($item->confirmacao == 'Confirmado')
                                         <div class="badge badge-success">Confirmado</div>
                                     @endif
-                                </td>
+                                </td>--}}
                                 <td class="">
                                     <a data-bs-toggle="modal" wire:click="editarPedido({{ $item->id }})"
                                         data-bs-target=".pedido-view-modal" href="#"><i
@@ -322,8 +324,8 @@
 
                                     <!-- Total e Desconto -->
                                     <div class="d-flex flex-column align-items-end my-10">
-                                        <h5>Total: R$ {{ number_format($pedidoSelecionado->valor, 2, ',', '.') }}</h5>
-                                        <h4 class="text-danger mt-10">Total com desconto: <b>R$
+                                        <h5>Total à prazo: R$ {{ number_format($pedidoSelecionado->valor, 2, ',', '.') }}</h5>
+                                        <h4 class="text-danger mt-10">Total à vista: <b>R$
                                                 {{ number_format($pedidoSelecionado->valor * (1 - $pedidoSelecionado->desconto / 100), 2, ',', '.') }}</b>
                                         </h4>
                                         <span>{{ number_format($pedidoSelecionado->desconto, 2, ',', '.') }}% de
@@ -615,8 +617,8 @@
                                         </div>
                                     </div> --}}
                                     <div class="d-flex flex-column align-items-end my-10">
-                                        <h5>Total: R$ {{ number_format($pedidoSelecionado->valor, 2, ',', '.') }}</h5>
-                                        <h4 class="text-danger mt-10">Total com desconto: <b>R$
+                                        <h5>Total à prazo: R$ {{ number_format($pedidoSelecionado->valor, 2, ',', '.') }}</h5>
+                                        <h4 class="text-danger mt-10">Total à vista: <b>R$
                                                 {{ number_format($pedidoSelecionado->valor * (1 - $pedidoSelecionado->desconto / 100), 2, ',', '.') }}</b>
                                         </h4>
                                         <span>{{ number_format($pedidoSelecionado->desconto, 2, ',', '.') }}% de

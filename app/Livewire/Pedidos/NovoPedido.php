@@ -83,34 +83,45 @@ class NovoPedido extends Component
     public function atualizarProdutos()
     {
         $this->configuracoes = Configuracoes::first();
-
         $this->paginate = $this->configuracoes ? $this->configuracoes->numero_itens_tabelas : 10;
-
+    
+        $query = Produtos::query();
+    
         if ($this->referencia_inicial != '') {
-            $query = Produtos::where('referencia', '>=', $this->referencia_inicial);
+            $query->where('referencia', '>=', $this->referencia_inicial);
         }
-
+    
         if ($this->referencia_final != '') {
             $query->where('referencia', '<=', $this->referencia_final);
         }
-
+    
         if ($this->modelo != '') {
             $query->where('modelo', 'like', '%' . $this->modelo . '%');
         }
-
+    
         if ($this->fornecedor != '') {
             $fornecedores = Fornecedores::where('razao_social', 'like', '%' . $this->fornecedor . '%')->first();
             if ($fornecedores) {
                 $query->where('fornecedor_id', $fornecedores->id);
             }
         }
-
-        $this->produtos = $query
-            ->with('fornecedor')
-            ->paginate($this->paginate)
-            ->toArray();
-        // dd($this->produtos);
+    
+        // Paginação padrão
+        $produtosPaginator = $query->with('fornecedor')->paginate($this->paginate);
+    
+        // Ajustando para limitar os links visíveis
+        $currentPage = $produtosPaginator->currentPage();
+        $lastPage = $produtosPaginator->lastPage();
+    
+        $startPage = max(1, $currentPage - 1); // Mostra uma página antes
+        $endPage = min($lastPage, $currentPage + 1); // Mostra uma página depois
+    
+        $visiblePages = range($startPage, $endPage);
+    
+        $this->produtos = $produtosPaginator->toArray();
+        $this->produtos['visiblePages'] = $visiblePages; // Adiciona as páginas visíveis para o Livewire
     }
+    
 
     public function atualizarPagina($pagina)
     {

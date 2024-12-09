@@ -32,16 +32,15 @@ class LoginAdmin extends Controller
             'email' => 'nullable|string|email',
             'usuario' => 'nullable|string'
         ]);
-
+    
         $request_tipo_login = $request->tipo_login == 'admin' ? 'email' : 'usuario';
         $credentials = $request->only($request_tipo_login, 'senha');
-
+    
         if (empty($credentials[$request_tipo_login])) {
             toastr("Digite o email/usuario corretamente", 'warning', 'Aviso');
             return redirect()->route('login');
         }
-
-
+    
         $usuario = null;
         $usuario_senha = '';
         switch ($request->tipo_login) {
@@ -53,7 +52,7 @@ class LoginAdmin extends Controller
                 }
                 $usuario_senha = $usuario->password;
                 break;
-
+    
             case 'vendedor':
                 $usuario = $this->vendedores::where('usuario', $credentials[$request_tipo_login])->first();
                 if (!$usuario) {
@@ -63,36 +62,37 @@ class LoginAdmin extends Controller
                 $usuario_senha = $usuario->senha;
                 break;
         }
-
+    
         if (!password_verify($credentials['senha'], $usuario_senha)) {
-
             toastr('Senha incorreta.', 'error', 'Erro');
             return redirect()->back();
         }
-
+    
         if (!$usuario) {
             toastr('Usuário não encontrado.', 'error', 'Erro');
             return redirect()->back();
         }
-
+    
         $guard = $request->tipo_login == 'admin' ? 'admin' : 'vendedor';
-
+    
         if (password_verify($credentials['senha'], $usuario_senha)) {
             if ($guard == 'admin') {
                 Auth::guard('admin')->login($usuario);
-                return redirect()->route('dashboard.get');
+                return redirect()->route('dashboard.get'); // Admin redireciona para o dashboard do admin
             } else {
                 Auth::guard('vendedor')->login($usuario);
-                return redirect()->route('pedidos.get');
+                return redirect()->route('pedidos.get'); // Vendedor redireciona para a página de pedidos do vendedor
             }
         } else {
             toastr('Senha incorreta.', 'error', 'Erro');
             return redirect()->back();
         }
-
+    
         toastr('Houve um erro ao tentar realizar o login', 'error', 'Erro');
         return redirect()->back();
     }
+    
+    
 
 
     public function logout(Request $request)

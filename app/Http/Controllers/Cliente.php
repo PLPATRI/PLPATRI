@@ -15,12 +15,11 @@ class Cliente extends Controller
 
     public function index(Request $request)
     {
-
         if ($request->has('paginacao') && !is_null($request->paginacao)) {
             Session::put('paginacao', $request->paginacao);
         }
         $exibirTabela = Configuracoes::first();
-
+    
         if (Session::get('paginacao')) {
             if (Session::get('paginacao') > 1) {
                 $quantidade = Session::get('paginacao');
@@ -34,26 +33,42 @@ class Cliente extends Controller
                 $quantidade = $exibirTabela->numero_itens_tabelas;
             }
         }
-
+    
         $query = Clientes::query();
-
+    
         if ($request->nome != '' && $request->nome != null && $request->documento == '' && $request->documento == null) {
             $query->where('razao_social', 'like', '%' . $request->nome . '%');
         }
-
+    
         if ($request->documento != '' && $request->documento != null && $request->nome == '' && $request->nome == null) {
             $query->where('numero_documento',  $request->documento);
         }
-
+    
         if ($request->documento != '' && $request->nome !== '' && $request->documento != null && $request->nome !== null) {
             $query->where('razao_social', $request->nome)->where('numero_documento', $request->documento)->get()->toArray();
         }
-
-
+    
+        // Paginação padrão
         $clientes = $query->paginate($quantidade);
-
-        return view("clientes", ['data' => $clientes]);
+    
+        // Lógica para limitar páginas visíveis
+        $currentPage = $clientes->currentPage(); // Página atual
+        $lastPage = $clientes->lastPage(); // Última página
+    
+        $startPage = max(1, $currentPage - 1); // Página inicial
+        $endPage = min($lastPage, $currentPage + 1); // Página final
+    
+        // Sobrescrever os links para exibir apenas o intervalo calculado
+        $visiblePages = range($startPage, $endPage);
+    
+        $clientes->links = collect($visiblePages);
+    
+        return view("clientes", [
+            'data' => $clientes,
+            'visiblePages' => $visiblePages, // Passar páginas visíveis para o Blade (se necessário)
+        ]);
     }
+    
 
     public function edit(Request $request, string $id)
     {

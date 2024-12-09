@@ -22,6 +22,9 @@ class Pedidos extends Component
 
     public $pedidoSelecionado;
 
+    public $referencia_de;
+    public $referencia_ate;
+
     public $observacao;
     public $valorPedido = [];
 
@@ -91,6 +94,14 @@ class Pedidos extends Component
 
         if ($this->numero_pedido_final > 0) {
             $pedidosQuery->where('id', '<=', $this->numero_pedido_final);
+        }
+
+        if (!empty($this->referencia_de)) {
+            $pedidosQuery->where('referencia', '>=', $this->referencia_de);
+        }
+
+        if (!empty($this->referencia_ate)) {
+            $pedidosQuery->where('referencia', '<=', $this->referencia_ate);
         }
 
         $pedidos = $pedidosQuery->orderBy('id', 'desc')->paginate($paginas);

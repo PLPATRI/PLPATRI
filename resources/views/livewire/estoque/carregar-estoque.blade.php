@@ -31,7 +31,6 @@
                 <thead>
                     <tr>
                         {{-- <th></th> --}}
-                        <th>ID</th>
                         <th>Referência</th>
                         <th>Modelo</th>
                         <th>Fornecedor</th>
@@ -47,10 +46,15 @@
                                 <input type="checkbox" id="basic_checkbox_1" class="filled-in">
                                 <label for="basic_checkbox_1"></label>
                             </td> --}}
-                            <td>#{{ $produto->id }}</td>
                             <td>{{ $produto->referencia }}</td>
                             <td>{{ $produto->modelo }}</td>
-                            <td>{{ $getFornecedor->razao_social }}</td>
+                            <td>
+                                @if ($getFornecedor)
+                                    {{ $getFornecedor->razao_social }}
+                                @else
+                                    Fornecedor não encontrado.
+                                @endif
+                            </td>
 
                             @if ($produto->quantidade <= $produto->estoque_seguranca)
                                 <td style="color:rgb(255, 0, 0);"><i class="fas fa-warning"
@@ -74,11 +78,36 @@
     <div class="box-body">
         <div class="row">
             <div class="col-md-12">
+                <div class="d-flex justify-content-between">
+                    <div class="form-group mb-15">
+                        <label>Referência:</label>
+                        <div class="d-flex align-items-center" style="width: 400px">
+                            <input type="text" wire:model="referencia_inicial"
+                                class="form-control" placeholder="1">
+                                <p class="mx-3 mb-0">Até</p>
+                            <input type="text" wire:model="referencia_final"
+                                class="form-control me-10" placeholder="100">
+                            <button class="btn btn-primary-light btn-sm"
+                                wire:click="atualizarProdutos"><i
+                                    class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group  mb-15" style="width: 2s00px">
+                        <label>Modelo:</label>
+                        <div class="d-flex align-items-center">
+                            <input type="text" wire:model="modelo" class="form-control w-75 me-10" placeholder="Modelo">
+                            <button class="btn btn-primary-light btn-sm" wire:click="atualizarProdutos">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>    
+                </div>
                 <form wire:submit.prevent="aplicar" class="form">
                     <div class="box-body">
                         @foreach ($produtos as $produto)
                             <hr class="my-15">
                             <div class="row">
+                                <h3>{{ $produto->modelo }}</h3>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label class="form-label">Referência</label>
@@ -106,7 +135,7 @@
                                     <div class="form-group">
                                         <label for="data_carregamento_{{ $produto->id }}" class="form-label">Data de
                                             carregamento*</label>
-                                        <input class="form-control" required type="date"
+                                        <input class="form-control" type="date"
                                             wire:model.defer="produtosCarregamento.{{ $produto->id }}.data_carregamento"
                                             id="data_carregamento_{{ $produto->id }}">
                                         @error('produtosCarregamento.' . $produto->id . '.data_carregamento')
@@ -117,9 +146,9 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label class="form-label">Preço unitário*</label>
-                                        <input type="number" required
+                                        <input type="number"
                                             wire:model.defer="produtosCarregamento.{{ $produto->id }}.preco_unitario"
-                                            class="form-control" placeholder="R$0,00">
+                                            class="form-control" disabled placeholder="{{ number_format($produto->preco_unitario, 4, ',', '.') }}"  value="{{ number_format($produto->preco_unitario, 4, ',', '.') }}">
                                         @error('produtosCarregamento.' . $produto->id . '.preco_unitario')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -128,9 +157,9 @@
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label class="form-label">Quantidade*</label>
-                                        <input class="form-control" required
+                                        <input class="form-control"
                                             wire:model.defer="produtosCarregamento.{{ $produto->id }}.quantidade"
-                                            type="number" placeholder="0">
+                                            type="number" placeholder="{{ $produto->quantidade }}" value="{{ $produto->quantidade }}">
                                         @error('produtosCarregamento.' . $produto->id . '.quantidade')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
@@ -195,7 +224,7 @@
                                                         <td>{{ $carregamento['modelo'] ?? 'Modelo Desconhecido' }}</td>
                                                         <td>{{ $carregamento['quantidade'] }}</td>
                                                         <td>R$
-                                                            {{ number_format($carregamento['preco_unitario'] * $carregamento['quantidade'], 2, ',', '.') }}
+                                                            {{ number_format($carregamento['preco_unitario'] * $carregamento['quantidade'], 4, ',', '.') }}
                                                         </td>
                                                     </tr>
                                                 @endforeach

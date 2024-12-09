@@ -74,7 +74,7 @@ class Porcentagem extends Component
     public function deleteProdutoAlterado($idProduto)
     {
         foreach ($this->produtosAlterados as $index => $alterado) {
-            if ($alterado['íd_produto'] == $idProduto) {
+            if ($alterado['id_produto'] == $idProduto) {
                 unset($this->produtosAlterados[$index]);
                 break;
             }
@@ -87,13 +87,14 @@ class Porcentagem extends Component
     {
         if ($this->produtosAlterados != []) {
             foreach ($this->produtosAlterados as $index => $alterado) {
-                $produto = Produtos::find($alterado['íd_produto']);
+                $produto = Produtos::find($alterado['id_produto']);
                 $produto->preco_unitario = $alterado['valor_atualizado'];
                 $produto->save();
             }
             toastr('Produtos atualizados com sucesso!');
             redirect()->to('/porcentagem');
         }
+        
         toastr('Nenhum produto adicionado!', 'error');
     }
 
@@ -105,6 +106,7 @@ class Porcentagem extends Component
 
     public function render()
     {
+      
         return view('livewire.porcentagem', [
             'produtos' => $this->produtos,
             'produtosAlterados' => $this->produtosAlterados,

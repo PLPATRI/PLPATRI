@@ -93,7 +93,7 @@
                                                             <input type="hidden" name="id_pedido"
                                                                 value="{{ $pedido->id }}" />
                                                             <input type="hidden" name="financeiro" value="pago">
-                                                            <button type="button" class="btn btn-primary">
+                                                            <button type="submit" class="btn btn-primary">
                                                                 <i class="fas fa-dollar"></i> Pedido Pago
                                                             </button>
                                                         </form>
@@ -106,7 +106,7 @@
                                                             <input type="hidden" name="id_pedido"
                                                                 value="{{ $pedido->id }}" />
                                                             <input type="hidden" name="financeiro" value="deve">
-                                                            <button type="button" class="btn btn-danger">
+                                                            <button type="submit" class="btn btn-danger">
                                                                 <i class="fas fa-dollar"></i> Pedido Não Pago
                                                             </button>
                                                     @endif
@@ -119,9 +119,12 @@
                                             method="GET" class="d-flex p-20 justify-content-between" style="width: 100%">
                                             <div class="form-group d-flex align-items-center mb-15">
                                                 <label>Referência:</label>
-                                                <input type="text" name="referencia" value="{{ request('referencia') }}"
-                                                    class="form-control w-75 mx-10" placeholder="1">
-                                                <button type="submit" class="btn btn-primary-light btn-sm"><i
+                                                <input type="text"
+                                                    class="form-control w-75 ms-10"  value="{{ request('referencia_de') }}" name="referencia_de" placeholder="Referência de">
+                                                <input type="text" 
+                                                    class="form-control w-75 mx-10" name="referencia_ate" value="{{ request('referencia_ate') }}" placeholder="Referencia até">
+                                                <button class="btn btn-primary-light btn-sm"
+                                                    wire:click="atualizarProdutos"><i
                                                         class="fas fa-search"></i></button>
                                             </div>
                                             <div class="form-group d-flex align-items-center mb-15">
@@ -149,12 +152,11 @@
                                                     <thead>
                                                         <tr>
                                                             <th></th>
-                                                            <th>ID</th>
                                                             <th>Referência</th>
                                                             <th>Quantidade</th>
                                                             <th>Modelo</th>
                                                             <th>Fornecedor</th>
-                                                            <th>Movimentação</th>
+                                                            <th>Falta</th>
                                                             <th>Status</th>
                                                             <th>Valor Unitário</th>
                                                             <th>Valor Total</th>
@@ -170,7 +172,6 @@
                                                                         class="filled-in">
                                                                     <label for="basic_checkbox_1"></label>
                                                                     </input>
-                                                                <td>#{{ $item->id }}</td>
                                                                 <td>
                                                                     {{ $item->produto->referencia }}
                                                                 </td>
@@ -226,7 +227,7 @@
                                                                     </td>
                                                                 @endif
                                                                 <td><b>R$
-                                                                        {{ number_format($item->valor_unitario, 2, ',', '.') }}</b>
+                                                                        {{ number_format($item->valor_unitario, 4, ',', '.') }}</b>
                                                                 </td>
                                                                 <td><b>R$
                                                                         {{ number_format($item->valor_total, 2, ',', '.') }}</b>
@@ -258,8 +259,8 @@
                                             </div>
                                             <!-- Total e Desconto -->
                                             <div class="d-flex flex-column align-items-end my-10">
-                                                <h5>Total: R$ {{ number_format($pedido->valor, 2, ',', '.') }}</h5>
-                                                <h4 class="text-danger mt-10">Total com desconto: <b>R$
+                                                <h5>Total à prazo: R$ {{ number_format($pedido->valor, 2, ',', '.') }}</h5>
+                                                <h4 class="text-danger mt-10">Total à vista: <b>R$
                                                         {{ number_format($pedido->valor * (1 - $pedido->desconto / 100), 2, ',', '.') }}</b>
                                                 </h4>
                                                 <span>{{ number_format($pedido->desconto, 2, ',', '.') }}% de

@@ -9,48 +9,50 @@
                 <div class="row">
                     <div class="col-xxl-12">
                         <div class="box">
-                            <div class="box-header with-border d-flex align-items-end my-15 justify-content-between">
-                                <h3 class="box-title">Todos os produtos</h3>
-                                <form method="GET" action="{{ route('estoque.get') }}" class="d-flex justify-content-center">
-                                    <div class="form-group d-flex mb-0 me-20 align-items-end">
-                                        <div>
-                                            <label for="">Modelo</label>
-                                            <input type="text" class="form-control "
-                                                name="modelo" value="{{ request('modelo') }}">
+                            <div class="box-header with-border my-15">
+                                <h3 class="box-title mb-5">Todos os produtos</h3>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <form method="GET" action="{{ route('estoque.get') }}" class="d-flex align-items-center">
+                                        <div class="form-group d-flex mb-0 me-20 align-items-end">
+                                            <div>
+                                                <label for="">Modelo</label>
+                                                <input type="text" class="form-control "
+                                                    name="modelo" value="{{ request('modelo') }}">
+                                            </div>
+                                            <button type="submit" class="btn btn-sm btn-primary ms-2">
+                                                <i class="fas fa-search"></i> 
+                                            </button>    
                                         </div>
-                                        <button type="submit" class="btn btn-sm btn-primary ms-2">
-                                            <i class="fas fa-search"></i> 
-                                        </button>    
+                                    
+                                        <div class="form-group mb-0">
+                                            <label>Selecione um fornecedor</label>
+                                            <select class="form-control" name="fornecedor" onchange="this.form.submit()">
+                                                <option value="">Selecione um Fornecedor</option>
+                                                @foreach ($data['fornecedores'] as $fornecedor)
+                                                    <option value="{{ $fornecedor['id'] }}"
+                                                            {{ request('fornecedor') == $fornecedor['id'] ? 'selected' : '' }}>
+                                                        {{ $fornecedor['razao_social'] }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </form>
+                                    <div class="d-flex" style="gap: 15px">
+                                        <a href="{{ route('carregar.estoque.get') }}" class="btn btn-primary">
+                                            Carregar Estoque
+                                        </a>
+                                        <a data-bs-toggle="modal" data-bs-target=".value-product-modal"
+                                            class="btn btn-primary-light">
+                                            Alterar valor unitário
+                                        </a>
+                                        <a data-bs-toggle="modal" data-bs-target=".value-product-geral-modal"
+                                            class="btn btn-primary-light">
+                                            Alterar valor geral
+                                        </a>
+                                        <a href="{{ route('produtos.cadastrar.get') }}" class="btn btn-primary-light">
+                                            Adicionar Produto
+                                        </a>
                                     </div>
-                                   
-                                    <div class="form-group mb-0">
-                                        <label>Selecione um fornecedor</label>
-                                        <select class="form-control" name="fornecedor" onchange="this.form.submit()">
-                                            <option value="">Selecione um Fornecedor</option>
-                                            @foreach ($data['fornecedores'] as $fornecedor)
-                                                <option value="{{ $fornecedor['id'] }}"
-                                                        {{ request('fornecedor') == $fornecedor['id'] ? 'selected' : '' }}>
-                                                    {{ $fornecedor['razao_social'] }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </form>
-                                <div class="d-flex" style="gap: 15px">
-                                    <a href="{{ route('carregar.estoque.get') }}" class="btn btn-primary">
-                                        Carregar Estoque
-                                    </a>
-                                    <a data-bs-toggle="modal" data-bs-target=".value-product-modal"
-                                        class="btn btn-primary-light">
-                                        Alterar valor unitário
-                                    </a>
-                                    <a data-bs-toggle="modal" data-bs-target=".value-product-geral-modal"
-                                        class="btn btn-primary-light">
-                                        Alterar valor geral
-                                    </a>
-                                    <a href="{{ route('produtos.cadastrar.get') }}" class="btn btn-primary-light">
-                                        Adicionar Produto
-                                    </a>
                                 </div>
                             </div>
                             <!-- /.box-header -->
@@ -60,7 +62,6 @@
                                         <thead>
                                             <tr>
                                                 {{-- <th></th> --}}
-                                                <th>ID</th>
                                                 <th>Referência</th>
                                                 <th>Modelo</th>
                                                 <th>Fornecedor</th>
@@ -79,7 +80,6 @@
                                                             class="filled-in">
                                                         <label for="basic_checkbox_1"></label>
                                                     </td> --}}
-                                                    <td>#{{ $produto['id'] }}</td>
                                                     <td>{{ $produto['referencia'] }}</td>
                                                     <td>{{ $produto['modelo'] }}</td>
                                                     <td>{{ $produto['fornecedor'] }}</td>

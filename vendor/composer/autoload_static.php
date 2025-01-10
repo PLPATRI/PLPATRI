@@ -388,8 +388,8 @@ class ComposerStaticInit55adf1023978ef20e9c98fe92de61d54
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -626,6 +626,7 @@ class ComposerStaticInit55adf1023978ef20e9c98fe92de61d54
         'App\\Livewire\\Estoque\\CarregarEstoque' => __DIR__ . '/../..' . '/app/Livewire/Estoque/CarregarEstoque.php',
         'App\\Livewire\\Estoque\\SubirValorUnitario' => __DIR__ . '/../..' . '/app/Livewire/Estoque/SubirValorUnitario.php',
         'App\\Livewire\\Movimentacoes' => __DIR__ . '/../..' . '/app/Livewire/Movimentacoes.php',
+        'App\\Livewire\\Pedidos\\ModalEditarPedido' => __DIR__ . '/../..' . '/app/Livewire/Pedidos/ModalEditarPedido.php',
         'App\\Livewire\\Pedidos\\NovoPedido' => __DIR__ . '/../..' . '/app/Livewire/Pedidos/NovoPedido.php',
         'App\\Livewire\\Pedidos\\Pedidos' => __DIR__ . '/../..' . '/app/Livewire/Pedidos/Pedidos.php',
         'App\\Livewire\\Porcentagem' => __DIR__ . '/../..' . '/app/Livewire/Porcentagem.php',

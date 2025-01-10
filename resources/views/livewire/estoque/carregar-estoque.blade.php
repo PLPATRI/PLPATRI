@@ -2,9 +2,6 @@
 <div>
     <div class="box-header with-border d-flex align-items-center justify-content-between">
         <h4 class="box-title">Carregamento de estoque</h4>
-        <a data-bs-toggle="modal" data-bs-target=".view-carregamento-modal" class="btn btn-primary">
-            Visualizar Carregamentos
-        </a>
     </div>
     <!-- /.box-header -->
     <div class="box-body">
@@ -25,8 +22,10 @@
                 </form>
             </div>
         </div>
-        <hr class="my-15">
-        <div class="table-responsive">
+    </div>
+    @if ($id_fornecedor)
+    <hr class="my-15">
+        <div class="table-responsive" style="max-height: 500px; overflow: scroll">
             <table id="example1" class="table table-bordered table-striped">
                 <thead>
                     <tr>
@@ -72,7 +71,6 @@
                 </tbody>
             </table>
         </div>
-    </div>
     <hr class="my-15">
     <!-- /.box-header -->
     <div class="box-body">
@@ -103,7 +101,7 @@
                     </div>    
                 </div>
                 <form wire:submit.prevent="aplicar" class="form">
-                    <div class="box-body">
+                    <div class="box-body" style="max-height: 500px; overflow: scroll">
                         @foreach ($produtos as $produto)
                             <hr class="my-15">
                             <div class="row">
@@ -136,7 +134,7 @@
                                         <label for="data_carregamento_{{ $produto->id }}" class="form-label">Data de
                                             carregamento*</label>
                                         <input class="form-control" type="date"
-                                            wire:model.defer="produtosCarregamento.{{ $produto->id }}.data_carregamento"
+                                            wire:model="produtosCarregamento.{{ $produto->id }}.data_carregamento"
                                             id="data_carregamento_{{ $produto->id }}">
                                         @error('produtosCarregamento.' . $produto->id . '.data_carregamento')
                                             <span class="text-danger">{{ $message }}</span>
@@ -145,20 +143,17 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label class="form-label">Preço unitário*</label>
+                                        <label class="form-label">Preço unitário</label>
                                         <input type="number"
-                                            wire:model.defer="produtosCarregamento.{{ $produto->id }}.preco_unitario"
-                                            class="form-control" disabled placeholder="{{ number_format($produto->preco_unitario, 4, ',', '.') }}"  value="{{ number_format($produto->preco_unitario, 4, ',', '.') }}">
-                                        @error('produtosCarregamento.' . $produto->id . '.preco_unitario')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
+                                            class="form-control" disabled  placeholder="{{ number_format($produto->preco_unitario, 4, ',', '.') }}" 
+                                            value="{{ number_format($produto->preco_unitario, 4, '.', '') }}">
                                     </div>
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label class="form-label">Quantidade*</label>
                                         <input class="form-control"
-                                            wire:model.defer="produtosCarregamento.{{ $produto->id }}.quantidade"
+                                            wire:model="produtosCarregamento.{{ $produto->id }}.quantidade"
                                             type="number" placeholder="{{ $produto->quantidade }}" value="{{ $produto->quantidade }}">
                                         @error('produtosCarregamento.' . $produto->id . '.quantidade')
                                             <span class="text-danger">{{ $message }}</span>
@@ -190,8 +185,9 @@
 
         </div>
     </div>
+    @endif
 
-    <div class="modal fade view-carregamento-modal" tabindex="-1" role="dialog"
+    {{-- <div class="modal fade view-carregamento-modal" tabindex="-1" role="dialog"
         aria-labelledby="viewCarregamentoModal" aria-hidden="true" style="display: none;">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -249,6 +245,6 @@
             <!-- /.modal-content -->
         </div>
         <!-- /.modal-dialog -->
-    </div>
+    </div> --}}
 
 </div>

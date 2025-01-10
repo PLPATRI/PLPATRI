@@ -7,6 +7,7 @@
             <section class="content">
                 <div class="row">
                     <div class="col-xxl-12">
+                        @if (Auth::guard('admin')->check())
                         <div class="row">
                             <div class="col-xl-3 col-lg-3 col-md-6 col-12">
                                 <div class="box pull-up">
@@ -46,22 +47,30 @@
                                     </div>
                                 </div>
                             </div>
-                            @if (!auth()->guard('vendedor'))
-                                <div class="col-xl-3 col-lg-3 col-md-6 col-12">
-                                    <div class="box pull-up">
-                                        <div class="first-section">
-                                            <div class="d-flex align-items-center justify-content-between first-plan">
-                                                <div>
-                                                    <p class="text-mute mb-0">Vendas no mês</p>
-                                                    <h3 class="text-dark mb-0 mt-1 fw-500">R$
-                                                        {{ number_format($data['totalVendasNoMes'], 2, ',', '.') }}</h3>
-                                                </div>
+                            <div class="col-xl-3 col-lg-3 col-md-6 col-12">
+                                <div class="box pull-up">
+                                    <div class="first-section">
+                                        <div class="d-flex align-items-center justify-content-between first-plan">
+                                            <div>
+                                                <p class="text-mute mb-0">Vendas no mês</p>
+                                                <h3 class="text-dark mb-0 mt-1 fw-500">R$
+                                                    {{ number_format($data['totalVendasNoMes'], 2, ',', '.') }}</h3>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            @endif
+                            </div>
                         </div>
+                        @else
+                        <div class="row mb-3">
+                            <div class="col-xxl-12">
+                                <a href="{{ route('novo.pedidos.get') }}" class="btn btn-lg btn-success" style="width: 100%;">
+                                    Novo pedido <i class="mx-10 fas fa-plus"></i>
+                                </a>
+                            </div>
+                        </div>    
+                        @endif
+                        
                         <div class="row">
                             <div class="col-xxl-12 col-lg-12 col-12">
                                 <div class="box">
@@ -111,7 +120,7 @@
                                 </div>
                             </div>
                         </div>
-
+                        @if (Auth::guard('admin')->check())
                         <div class="row">
                             <div class="col-xxl-12 col-lg-12 col-12">
                                 <div class="box">
@@ -149,6 +158,7 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
                     </div>
                 </div>
             </section>

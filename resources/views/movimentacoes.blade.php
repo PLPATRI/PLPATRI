@@ -78,6 +78,7 @@
                                                     <th>Estoque</th>
                                                     <th>Compra</th>
                                                     <th>Baixa</th>
+                                                    <th>Tipo</th>
                                                     <th>Dt. Reposição</th>
                                                     <th>Dt. Baixa</th>
                                                     <th>Modelo</th>
@@ -101,13 +102,22 @@
                                                         @endphp
                                                         <tr>
                                                             <td>{{ $produto->referencia }}</td>
-                                                            <td
-                                                                style="color: {{ $produto->estoque < 0 ? 'red' : 'green' }}">
-                                                                <b>{{ number_format($produto->estoque, 0, '.', '.') }}</b>
+                                                            <td class="{{ $produto->estoque <= 0 ? 'estoque-vermelho' : 'estoque-verde' }}">
+                                                                <i class="{{ $produto->estoque <= 0 ? 'fas fa-warning' : 'fas fa-check' }}" style="margin-right: 2px;"></i>
+                                                                <b>{{ number_format($produto->estoque, 0) }}</b>
+                                                            </td>
                                                             </td>
                                                             <td><b>{{ number_format($produto->compra, 0, '.', '.') }}</b>
                                                             </td>
                                                             <td><b>{{ number_format($produto->baixa, 0, '.', '.') }}</b>
+                                                            </td>
+                                                            <td>
+                                                                @if ($produto->baixa == 0)
+                                                                    <b class="status-compra">Compra</b>
+                                                                @endif  
+                                                                @if ($produto->compra == 0)   
+                                                                    <b class="status-venda">Venda</b>
+                                                                @endif    
                                                             </td>
                                                             <td>{{ \Carbon\Carbon::parse($produto->data_reposicao)->format('d/m/Y') }}
                                                             </td>
@@ -132,10 +142,10 @@
                                             <tfoot>
                                                 <tr>
                                                     <th>Qtd. Total</th>
-                                                    <th>{{ number_format($totalEstoque, 0, '.', '.') }}</th>
+                                                    <th></th>
                                                     <th>{{ number_format($totalCompra, 0, '.', '.') }}</th>
                                                     <th>{{ number_format($totalBaixa, 0, '.', '.') }}</th>
-                                                    <th colspan="4"></th>
+                                                    <th colspan="5"></th>
                                                     <th>{{ number_format($totalValorUnitario, 4, ',', '.') }}</th>
                                                     <th>{{ number_format($totalValorTotal, 2, ',', '.') }}</th>
                                                 </tr>

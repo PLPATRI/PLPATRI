@@ -294,6 +294,11 @@ class NovoPedido extends Component
 
     public function finalizarPedido()
     {
+        if (empty($this->produtosSelecionados)) {
+            toastr('Selecione pelo menos um produto.', 'error');
+            return;
+        }
+
         if ($this->metodoEntrega == 'entrega') {
             if (empty($this->numero) || empty($this->endereco)) {
                 toastr('Adicione o endereço e o número de entrega', 'error');
@@ -305,6 +310,8 @@ class NovoPedido extends Component
             toastr('Selecione o método de entrega', 'error');
             return;
         }
+
+        $numeroProdutosSelecionados = count($this->produtosSelecionados);
 
         $pedido = new Pedidos();
         $pedido->cliente_id = $this->cliente->id;
@@ -318,6 +325,8 @@ class NovoPedido extends Component
         $pedido->telefone = $this->cliente->telefone;
         $pedido->data = Carbon::now()->format('Y-m-d');
         $pedido->observacoes = $this->observacao;
+        $pedido->numero_produtos = $numeroProdutosSelecionados;
+
 
         if (Auth::guard('vendedor')->check()) {
             $pedido->vendedor_id = Auth::guard('vendedor')->id();
@@ -350,7 +359,7 @@ class NovoPedido extends Component
                     if (!$movimentacoes) {
                         $novaMovimentacao->referencia = bin2hex(random_bytes(6));
                         $novaMovimentacao->modelo = $produtos->modelo;
-                        $novaMovimentacao->compra = $produtos->quantidade;
+                        $novaMovimentacao->compra = 0;
                         $novaMovimentacao->baixa = $value['quantidade'];
                         $novaMovimentacao->estoque = $produtos->quantidade;
                         $novaMovimentacao->data_reposicao = now();
@@ -362,7 +371,7 @@ class NovoPedido extends Component
                     } else {
                         $novaMovimentacao->referencia = $movimentacoes->referencia;
                         $novaMovimentacao->modelo = $movimentacoes->modelo;
-                        $novaMovimentacao->compra = $value['quantidade'];
+                        $novaMovimentacao->compra = 0;
                         $novaMovimentacao->baixa = $value['quantidade'];
                         $novaMovimentacao->estoque = $produtos->quantidade;
                         $novaMovimentacao->data_reposicao = $movimentacoes->data_reposicao;

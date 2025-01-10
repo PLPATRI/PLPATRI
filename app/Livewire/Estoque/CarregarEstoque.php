@@ -5,6 +5,7 @@ namespace App\Livewire\Estoque;
 use Livewire\Component;
 use App\Models\Fornecedores;
 use App\Models\Produtos;
+use App\Models\Movimentacoes;
 use Illuminate\Support\Facades\Session;
 
 class CarregarEstoque extends Component
@@ -16,7 +17,6 @@ class CarregarEstoque extends Component
     public $salvado = false;
     protected $rules = [
         'produtosCarregamento.*.data_carregamento' => 'required|date',
-        'produtosCarregamento.*.preco_unitario' => 'required|numeric|min:0',
         'produtosCarregamento.*.quantidade' => 'required|numeric|min:0',
     ];
 
@@ -36,24 +36,24 @@ class CarregarEstoque extends Component
 
         $produtosAplicados = [];
 
-        foreach ($this->produtosCarregamento as $id => $dataCarregamento) {
-            $produtoSelecionado = Produtos::where('id', $id)->first();
-
+        foreach ($this->produtosCarregamento as $id => $dados) {
             if (
-                !empty($this->produtosCarregamento[$id]['data_carregamento']) &&
-                !empty($this->produtosCarregamento[$id]['preco_unitario']) &&
-                !empty($this->produtosCarregamento[$id]['quantidade'])
+                !empty($dados['data_carregamento']) &&
+                !empty($dados['quantidade'])
             ) {
-
-                $produtosAplicados[] = [
-                    'id' => $id,
-                    'referencia' => $produtoSelecionado->referencia,
-                    'data' => $produtoSelecionado->data,
-                    'modelo' => $produtoSelecionado->modelo,
-                    'data_carregamento' => $this->produtosCarregamento[$id]['data_carregamento'],
-                    'preco_unitario' => $this->produtosCarregamento[$id]['preco_unitario'],
-                    'quantidade' => $this->produtosCarregamento[$id]['quantidade'],
-                ];
+                $produtoSelecionado = Produtos::find($id);
+    
+                if ($produtoSelecionado) {
+                    $produtosAplicados[] = [
+                        'id' => $id,
+                        'referencia' => $produtoSelecionado->referencia,
+                        'data' => $produtoSelecionado->data,
+                        'modelo' => $produtoSelecionado->modelo,
+                        'data_carregamento' => $dados['data_carregamento'],
+                        'preco_unitario' => $produtoSelecionado->preco_unitario, // Valor direto do banco
+                        'quantidade' => $dados['quantidade'],
+                    ];
+                }
             }
         }
 
@@ -69,26 +69,43 @@ class CarregarEstoque extends Component
 
     public function confirmarCadastro()
     {
-
         foreach ($this->produtosCarregamento as $id => $data) {
             if (
                 !empty($this->produtosCarregamento[$id]['data_carregamento']) &&
-                !empty($this->produtosCarregamento[$id]['preco_unitario']) &&
                 !empty($this->produtosCarregamento[$id]['quantidade'])
             ) {
                 $produto = Produtos::find($id);
                 if ($produto) {
-                    $produto->quantidade += $data['quantidade'];
+                    $quantidadeAdicionada = $data['quantidade'];
+                    $precoUnitario = $produto->preco_unitario;
+    
+                    // Atualiza o produto
+                    $produto->quantidade += $quantidadeAdicionada;
                     $produto->data = $data['data_carregamento'];
                     $produto->save();
+    
+                    // Gera uma movimentação
+                    $movimentacao = new Movimentacoes();
+                    $movimentacao->referencia = $produto->referencia;
+                    $movimentacao->modelo = $produto->modelo;
+                    $movimentacao->compra = $quantidadeAdicionada;
+                    $movimentacao->baixa = 0;
+                    $movimentacao->estoque = $produto->quantidade;
+                    $movimentacao->data_reposicao = now();
+                    $movimentacao->data_baixa = null;
+                    $movimentacao->fornecedor = $this->id_fornecedor;
+                    $movimentacao->valor_unitario = $precoUnitario;
+                    $movimentacao->valor_total = $precoUnitario * $quantidadeAdicionada;
+                    $movimentacao->save();
                 }
-                Session::forget('produtos_aplicados');
-                $this->salvado = false;
-                toastr('Cadastro confirmado com sucesso!', 'success');
             }
-            $this->salvado = false;
         }
+    
+        Session::forget('produtos_aplicados');
+        $this->salvado = false;
+        toastr('Cadastro confirmado com sucesso!', 'success');
     }
+    
 
     public function mount()
     {

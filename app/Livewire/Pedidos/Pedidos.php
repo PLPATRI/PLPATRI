@@ -6,8 +6,10 @@ use App\Models\Configuracoes;
 use App\Models\Pedidos as  ModelsPedidos;
 use App\Models\PedidosItems;
 use Livewire\Component;
+use App\Models\Movimentacoes;
 use Barryvdh\DomPDF\Facade\Pdf;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\RedirectResponse;
 
 class Pedidos extends Component
 {
@@ -144,14 +146,54 @@ class Pedidos extends Component
     }
 
 
-    public function excluirPedido($pedidoId)
+    public function excluirPedido($id): RedirectResponse
     {
-        $pedido = ModelsPedidos::find($pedidoId);
-        PedidosItems::where('pedido_id')->delete();
-        $pedido->delete();
+        // Busca o pedido pelo ID
+        $pedido = Pedidos::with('items.produto')->findOrFail($id);
+
+        // Inicia uma transação para garantir a consistência dos dados
+        DB::beginTransaction();
+
+        try {
+            // Percorre os itens do pedido para ajustar o estoque e registrar a movimentação
+            foreach ($pedido->items as $item) {
+                $produto = $item->produto;
+
+                if ($produto) {
+                    // Atualiza a quantidade do estoque
+                    $produto->quantidade += $item->quantidade;
+                    $produto->save();
+
+                    // Registra a movimentação
+                    Movimentacoes::create([
+                        'referencia' => $produto->referencia,
+                        'modelo' => 'Entrada',
+                        'compra' => $item->quantidade,
+                        'baixa' => 0,
+                        'fornecedor' => $produto->fornecedor->nome ?? 'Desconhecido',
+                    ]);
+                }
+            }
+
+            // Remove os itens do pedido
+            $pedido->items()->delete();
+
+            // Remove o pedido
+            $pedido->delete();
+
+            // Confirma a transação
+            DB::commit();
+
+            session()->flash('success', 'Pedido excluído com sucesso e movimentação registrada.');
+        } catch (\Exception $e) {
+            // Reverte a transação em caso de erro
+            DB::rollBack();
+            session()->flash('error', 'Erro ao excluir o pedido: ' . $e->getMessage());
+        }
 
         return redirect()->to('/pedidos');
     }
+    
 
     public function deletarItemPedido($itemId, $pedidoId, $valorDoItem)
     {
@@ -238,5 +280,22 @@ class Pedidos extends Component
 
             $this->pedidoSelecionado->refresh();
         }
+    }
+
+    public function salvarObservacao($pedidoId)
+    {
+        dd('Método chamado');  // Isso vai verificar se o método é executado
+
+        $pedido = ModelsPedidos::find($pedidoId);
+
+        if (isset($this->observacao[$pedidoId]) && !empty($this->observacao[$pedidoId])) {
+            $pedido->observacoes = $this->observacao[$pedidoId];
+            $pedido->save();
+            session()->flash('success', 'Observação salva com sucesso.');
+        } else {
+            session()->flash('error', 'Confirme sua anotação.');
+        }
+
+        $this->pedidoSelecionado = $pedido;
     }
 }

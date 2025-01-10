@@ -50,6 +50,8 @@ class ModalEditarPedido extends Component
     public function confirmar()
     {
         $pedido = Pedidos::find($this->pedido->id);
+        $numeroProdutosAdicionados = count($this->selectedProdutos);
+
         foreach ($this->selectedProdutos as $produtoId) {
             $produto = Produtos::find($produtoId);
             $quantidade = $this->quantidades[$produtoId] ?? 0;
@@ -63,11 +65,6 @@ class ModalEditarPedido extends Component
                 toastr()->error('Quantidade inválida para o produto ' . $produto->referencia);
                 continue;
             }
-
-            // if ($produto->quantidade < $quantidade) {
-            //     toastr()->error('Quantidade indisponível para o produto ' . $produto->referencia);
-            //     continue;
-            // }
 
             $newPedido = PedidosItems::create([
                 'pedido_id' => $this->pedido->id,
@@ -116,6 +113,9 @@ class ModalEditarPedido extends Component
             }
         }
 
+        $pedido->numero_produtos += $numeroProdutosAdicionados;
+        $pedido->save();
+
         toastr()->success('Produtos adicionados com sucesso.');
         $this->reset(['selectedProdutos', 'quantidades']);
         $this->updateProdutos();
@@ -124,40 +124,40 @@ class ModalEditarPedido extends Component
     }
 
     public function updateProdutos()
-{
-    $query = Produtos::query();
+    {
+        $query = Produtos::query();
 
-    if ($this->modelo) {
-        $query->where('modelo', 'like', '%' . $this->modelo . '%');
+        if ($this->modelo) {
+            $query->where('modelo', 'like', '%' . $this->modelo . '%');
+        }
+
+        if ($this->fornecedor) {
+            $query->whereHas('fornecedor', function ($q) {
+                $q->where('razao_social', 'like', '%' . $this->fornecedor . '%');
+            });
+        }
+
+        // Novos Filtros de Referência (de e até)
+        if ($this->referencia_de) {
+            $query->where('referencia', '>=', $this->referencia_de);
+        }
+
+        if ($this->referencia_ate) {
+            $query->where('referencia', '<=', $this->referencia_ate);
+        }
+
+        // Obtenha os produtos já selecionados no pedido
+        $produtosSelecionados = PedidosItems::where('pedido_id', $this->pedido->id)
+            ->pluck('produto_id')
+            ->toArray();
+
+        // Exclua os produtos selecionados da consulta
+        if (!empty($produtosSelecionados)) {
+            $query->whereNotIn('id', $produtosSelecionados);
+        }
+
+        // Limite o número de resultados
+        $this->produtos = $query->take(10)->get();
     }
-
-    if ($this->fornecedor) {
-        $query->whereHas('fornecedor', function ($q) {
-            $q->where('razao_social', 'like', '%' . $this->fornecedor . '%');
-        });
-    }
-
-    // Novos Filtros de Referência (de e até)
-    if ($this->referencia_de) {
-        $query->where('referencia', '>=', $this->referencia_de);
-    }
-
-    if ($this->referencia_ate) {
-        $query->where('referencia', '<=', $this->referencia_ate);
-    }
-
-    // Obtenha os produtos já selecionados no pedido
-    $produtosSelecionados = PedidosItems::where('pedido_id', $this->pedido->id)
-        ->pluck('produto_id')
-        ->toArray();
-
-    // Exclua os produtos selecionados da consulta
-    if (!empty($produtosSelecionados)) {
-        $query->whereNotIn('id', $produtosSelecionados);
-    }
-
-    // Limite o número de resultados
-    $this->produtos = $query->take(10)->get();
-}
 
 }

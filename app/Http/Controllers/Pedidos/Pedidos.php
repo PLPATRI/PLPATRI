@@ -147,4 +147,20 @@ class Pedidos extends Controller
 
         return redirect()->route("editar.pedido.get", $pedido->id)->with("success", "Status do pedido atualizado com sucesso");
     }
+    public function salvarObservacao($pedidoId)
+    {
+        dd('Método chamado');  // Isso vai verificar se o método é executado
+
+        $pedido = ModelsPedidos::find($pedidoId);
+
+        if (isset($this->observacao[$pedidoId]) && !empty($this->observacao[$pedidoId])) {
+            $pedido->observacoes = $this->observacao[$pedidoId];
+            $pedido->save();
+            session()->flash('success', 'Observação salva com sucesso.');
+        } else {
+            session()->flash('error', 'Confirme sua anotação.');
+        }
+
+        $this->pedidoSelecionado = $pedido;
+    }
 }

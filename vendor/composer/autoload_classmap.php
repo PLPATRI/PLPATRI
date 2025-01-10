@@ -41,6 +41,7 @@ return array(
     'App\\Livewire\\Estoque\\CarregarEstoque' => $baseDir . '/app/Livewire/Estoque/CarregarEstoque.php',
     'App\\Livewire\\Estoque\\SubirValorUnitario' => $baseDir . '/app/Livewire/Estoque/SubirValorUnitario.php',
     'App\\Livewire\\Movimentacoes' => $baseDir . '/app/Livewire/Movimentacoes.php',
+    'App\\Livewire\\Pedidos\\ModalEditarPedido' => $baseDir . '/app/Livewire/Pedidos/ModalEditarPedido.php',
     'App\\Livewire\\Pedidos\\NovoPedido' => $baseDir . '/app/Livewire/Pedidos/NovoPedido.php',
     'App\\Livewire\\Pedidos\\Pedidos' => $baseDir . '/app/Livewire/Pedidos/Pedidos.php',
     'App\\Livewire\\Porcentagem' => $baseDir . '/app/Livewire/Porcentagem.php',

@@ -129,7 +129,41 @@ body {
   font-family: "IBM Plex Sans", sans-serif;
   line-height: 1.5;
   background-color: #fafbfd; }
+.estoque-verde {
+    color: green;
+}
+.estoque-vermelho {
+    color: red;
+}
+.status-compra {
+    color: green;
+}
+.status-venda {
+    color: red;
+}
+.quantidade-baixa {
+  color: red;
+}
 
+.quantidade-alta {
+  color: green;
+}
+.icon-alerta-baixo {
+  color: rgb(255, 0, 0);
+  font-size: 25px;
+}
+.icon-alerta-alto {
+  color: rgb(5, 150, 7);
+  font-size: 25px;
+}
+.icon-check {
+  color: rgb(5, 150, 7);
+  font-size: 25px;
+}
+.icon-warning {
+  color: rgb(255, 0, 0);
+  font-size: 25px;
+}
 /*---basic---*/
 .hidden {
   display: none;

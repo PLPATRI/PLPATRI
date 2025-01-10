@@ -66,6 +66,8 @@
                                                 <th>Modelo</th>
                                                 <th>Fornecedor</th>
                                                 <th>Movimentação</th>
+                                                <th>Compra</th>
+                                                <th>Venda</th>
                                                 <th>Estoque de segurança</th>
                                                 <th>Valor Unitário</th>
                                                 <th>Ações</th>
@@ -92,6 +94,8 @@
                                                                 style="margin-right: 10px;"></i><b>{{ number_format($produto['quantidade'], 0, '', '.') }}</b>
                                                         </td>
                                                     @endif
+                                                    <td>{{ number_format($produto->total_compras, 0, '.', '.') }}</td>
+                                                    <td>{{ number_format($produto->total_baixas, 0, '.', '.') }}</td>
                                                     <td>{{ number_format($produto['estoque_seguranca'], 0, '', '.') }}</td>
                                                     <td>R$ {{ number_format($produto['preco_unitario'], 4, ',', '.') }}
                                                     </td>

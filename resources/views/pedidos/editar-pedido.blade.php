@@ -257,14 +257,44 @@
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            <!-- Total e Desconto -->
-                                            <div class="d-flex flex-column align-items-end my-10">
-                                                <h5>Total à prazo: R$ {{ number_format($pedido->valor, 2, ',', '.') }}</h5>
-                                                <h4 class="text-danger mt-10">Total à vista: <b>R$
-                                                        {{ number_format($pedido->valor * (1 - $pedido->desconto / 100), 2, ',', '.') }}</b>
-                                                </h4>
-                                                <span>{{ number_format($pedido->desconto, 2, ',', '.') }}% de
-                                                    desconto</span>
+                                            <p><strong>Produtos Selecionados:</strong> {{ $pedido->numero_produtos }} produto(s)</p>
+                                            <div class="row justify-content-between align-items-center">
+                                                <div class="col-6">
+                                                    <div class="form-group mt-10">
+                                                        <label>Observações</label>
+                                                        <div class="d-flex align-items-center">
+                                                            <textarea class="form-control" 
+                                                                    wire:model="observacao.{{ $pedido->id }}" 
+                                                                    placeholder="Digite suas observações aqui...">
+                                                            </textarea>
+                                                            <a class="btn btn-sm btn-success mx-10" 
+                                                                wire:click="salvarObservacao({{ $pedido->id }})">
+                                                                <i class="fas fa-check"></i> Confirmar
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>                                                                    
+                                                <!-- Total e Desconto -->
+                                                <div class="col-3">
+                                                    @if ($pedido->desconto > 0)
+                                                    <div class="d-flex flex-column align-items-end my-10">
+                                                        <h5 class="">Valor Total: <b>R$
+                                                        {{ number_format($pedido->valor, 2, ',', '.') }}</b></h5>
+                                                        <h4 class="text-danger mt-10">Total à vista: <b>R$
+                                                                {{ number_format($pedido->valor * (1 - $pedido->desconto / 100), 2, ',', '.') }}</b>
+                                                        </h4>
+                                                        <span>{{ number_format($pedido->desconto, 2, ',', '.') }}% de
+                                                            desconto</span>
+                                                        <h6 class="text-dark mt-10">Prazo para pagamento: À vista</h6>        
+                                                    </div>
+                                                    @else
+                                                    <div class="d-flex flex-column align-items-end my-10">
+                                                        <h4>Total à prazo: R$ {{ number_format($pedido->valor, 2, ',', '.') }}</h4>
+                                                        <span>Sem desconto</span>
+                                                        <h6 class="text-dark mt-10">Prazo para pagamento: 30 dias</h6>        
+                                                    </div>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="row px-20 pb-10">

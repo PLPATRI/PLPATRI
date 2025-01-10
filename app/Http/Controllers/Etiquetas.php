@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pedidos as ModelsPedidos;
 use App\Models\PedidosItems;
+use App\Models\Produtos;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
@@ -84,24 +85,39 @@ class Etiquetas extends Controller
     public function geraPdfPedido(Request $request)
     {
         $pedido = ModelsPedidos::findOrFail($request->id_pedido);
-
         $pedidoItems = PedidosItems::where('pedido_id', $pedido->id)->get();
         $cliente = Clientes::findOrFail($pedido->cliente_id);
 
-        // Calculo do valor do desconto
+        // Cálculo do valor do desconto
         $valorDescontado = $pedido->valor * ($pedido->desconto / 100);
         $valorComDesconto = $pedido->valor - $valorDescontado;
+
+        // Incluindo as informações de referência e fornecedor no pedidoItem
+        foreach ($pedidoItems as $item) {
+            $produto = Produtos::find($item->produto_id);
+            
+            if ($produto) {
+                $item->referencia = $produto->referencia;
+                $item->fornecedor = $produto->fornecedor->razao_social;
+            } else {
+                $item->referencia = 'Não encontrado';
+                $item->fornecedor = 'Não encontrado';
+            }
+        }
+
         $data = [
             'pedido' => $pedido,
             'pedidoItems' => $pedidoItems,
             'cliente' => $cliente,
-            'valorComDesconto' => $valorComDesconto, // Adiciona o valor do desconto nos dados
+            'valorComDesconto' => $valorComDesconto,
         ];
 
-        $pdf = PDF::loadView('pdf.pedidoA4', $data)
+        $pdf = Pdf::loadView('pdf.pedidoA4', $data)
+            ->setPaper('a4', 'portrait') // Defina o tamanho e orientação do papel
             ->setOption('isHtml5ParserEnabled', true)
             ->setOption('isPhpEnabled', true);
 
-        return $pdf->download('pedido_' . $request->id_pedido . '.pdf');
+        return $pdf->download('pedido_' . $pedido->id . '.pdf'); // Use $pedido->id
     }
+
 }

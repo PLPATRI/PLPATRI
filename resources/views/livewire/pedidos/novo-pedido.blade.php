@@ -115,27 +115,23 @@
                                                                 <td>
                                                                     {{ $item['fornecedor']['razao_social'] ?? '' }}
                                                                 </td>
-                                                                @if ($item['quantidade'] < $item['estoque_seguranca'])
-                                                                    <td style="color:rgb(255, 0, 0);"><i
-                                                                            class="fas fa-warning"
-                                                                            style="margin-right: 10px;"></i><b>{{ $item['quantidade'] }}</b>
-                                                                    </td>
-                                                                    <td>
-                                                                        <div style="color:rgb(255, 0, 0); font-size: 25px;"
-                                                                            class="icon-alert-animation">
-                                                                            <i class="fas fa-warning"
-                                                                                style="margin-right: 10px;"></i>
-                                                                        </div>
-                                                                    </td>
-                                                                @else
-                                                                    <td style="color:green;">
+                                                                @if ($item['quantidade'] <= $item['estoque_seguranca'])
+                                                                    <td class="quantidade-baixa">
+                                                                        <i class="fas fa-warning" style="margin-right: 10px;"></i>
                                                                         <b>{{ $item['quantidade'] }}</b>
                                                                     </td>
                                                                     <td>
-                                                                        <div
-                                                                            style="color:rgb(5, 150, 7); font-size: 25px;">
-                                                                            <i class="fas fa-check"
-                                                                                style="margin-right: 10px;"></i>
+                                                                        <div class="icon-alerta-baixo">
+                                                                            <i class="fas fa-warning" style="margin-right: 10px;"></i>
+                                                                        </div>
+                                                                    </td>
+                                                                @else
+                                                                    <td class="quantidade-alta">
+                                                                        <b>{{ $item['quantidade'] }}</b>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="icon-alerta-alto">
+                                                                            <i class="fas fa-check" style="margin-right: 10px;"></i>
                                                                         </div>
                                                                     </td>
                                                                 @endif
@@ -161,6 +157,7 @@
                                                         </ul>
                                                     @endif
                                                 </div>
+                                                <p><strong>Produtos Selecionados:</strong> {{ count($produtosSelecionados) }} produto(s)</p>
                                             </div>
                                             <div class="d-flex row justify-content-between">
                                                 <div class="col-lg-2">
@@ -185,24 +182,24 @@
                                                                 style="width: 85px;">
 
                                                             <button class="btn btn-primary-light btn-sm"
-                                                                style="margin-left: 10px;width: 240px;"
+                                                                style="margin-left: 10px;width: 240px;" id="aplicaDesconto"
                                                                 wire:click="aplicaDesconto">Aplicar Desconto</button>
                                                         </div>
                                                     </div>
-                                                    <h4 class="">Total a prazo: <b>R$
-                                                            {{ number_format($valorTotal, 2, ',', '.') }}</b></h4>
 
-                                                    <h4 class="text-danger mt-10">Total à vista: <b>R$
-                                                            @if ($valorTotalComDesconto == 0.0)
-                                                                {{ number_format($valorTotal, 2, ',', '.') }}
-                                                            @else
-                                                                {{ number_format($valorTotalComDesconto, 2, ',', '.') }}
-                                                            @endif
-                                                        </b>
-                                                    </h4>
-
-
-
+                                                    <div class="semDesconto">
+                                                        <h4 class="">Total a prazo: <b>R$
+                                                        {{ number_format($valorTotal, 2, ',', '.') }}</b></h4>
+                                                        <h5>Sem desconto</h5>
+                                                        <h6 class="text-dark mt-10">Prazo para pagamento: 30 dias</h6>
+                                                    </div>     
+                                                    <div class="comDesconto" style="display: none;">
+                                                        <h5 class="">Valor Total: <b>R$
+                                                        {{ number_format($valorTotal, 2, ',', '.') }}</b></h5>
+                                                        <h4 class="">Total À Vista: <b>R$
+                                                        {{ number_format($valorTotalComDesconto, 2, ',', '.') }}</b></h4>
+                                                        <h6 class="text-dark mt-10">Prazo para pagamento: À vista</h6>
+                                                    </div>       
                                                 </div>
                                             </div>
                                             <div class="row mt-30">
@@ -253,7 +250,7 @@
                                 <div class="col-lg-6">
                                     <label class="form-label">Nome</label>
                                     <input type="text" wire:model="nomeCliente" class="form-control"
-                                        placeholder="Nome do Cliente" maxlength="18">
+                                        placeholder="Nome do Cliente">
                                 </div>
                                 <div class="col-lg-5">
                                     <label class="form-label">Documento</label>
@@ -386,8 +383,6 @@
                                                 {{ $this->cliente->cidade }}/{{ $this->cliente->uf }}</h5>
                                             <h5>Bairro: {{ $this->cliente->bairro }}</h5>
                                             <h5>CEP:{{ $this->cliente->cep }}</h5>
-                                            <h5>Vendedor:
-                                            </h5>
                                         </div>
                                     </div>
                                     <div class="table-responsive mb-20" style="max-height: 400px; padding: 10px 30px">
@@ -423,6 +418,7 @@
                                                 @endif
                                             </tbody>
                                         </table>
+                                        <p><strong>Produtos Selecionados:</strong> {{ count($produtosSelecionados) }} produto(s)</p>
                                     </div>
                                     <div class="row justify-content-between">
                                         <div class="col-lg-6 col-sm-12 col-md-6 d-flex flex-column">
@@ -462,19 +458,23 @@
                                         </div>
                                         <div class="col-lg-6 col-sm-12 col-md-6">
                                             <div class="d-flex flex-column align-items-end my-10">
-                                                <h4 class="">Total à prazo: <b>R$
-                                                        {{ number_format($valorTotal, 2, ',', '.') }}</b></h4>
-
-                                                <h4 class="text-danger mt-10">Total à vista: <b>R$
-                                                        @if ($valorTotalComDesconto == 0.0)
-                                                            {{ number_format($valorTotal, 2, ',', '.') }}
-                                                        @else
-                                                            {{ number_format($valorTotalComDesconto, 2, ',', '.') }}
-                                                        @endif
-                                                    </b>
-                                                </h4>
-                                                <h7>Desconto de
-                                                    {{ number_format($this->descontoAplicado, 2, ',', '.') }}%</h7>
+                                            @if ($valorTotalComDesconto > 0)
+                                                <div class="d-flex flex-column align-items-end my-10">
+                                                    <h5 class="">Valor Total: <b>R$
+                                                    {{ number_format($valorTotal, 2, ',', '.') }}</b></h5>
+                                                    <h4 class="text-danger mt-10">Total à vista: <b> {{ number_format($valorTotalComDesconto, 2, ',', '.') }}</b>
+                                                    </h4>
+                                                    <span>{{ number_format($this->descontoAplicado, 2, ',', '.') }}% de
+                                                        desconto</span>
+                                                    <h6 class="text-dark mt-10">Prazo para pagamento: À vista</h6>        
+                                                </div>
+                                            @else
+                                                <div class="d-flex flex-column align-items-end my-10">
+                                                    <h4>Total à prazo: R${{ number_format($valorTotal, 2, ',', '.') }}</h4>
+                                                    <span>Sem desconto</span>
+                                                    <h6 class="text-dark mt-10">Prazo para pagamento: 30 dias</h6>        
+                                                </div>
+                                            @endif     
                                             </div>
                                         </div>
                                     </div>
@@ -525,5 +525,14 @@
                 this.disabled = true; // Opcional: desativa o botão após o clique
             });
         });
+    });
+</script>
+<script>
+    document.getElementById('aplicaDesconto').addEventListener('click', function() {
+        // Esconde a div com a classe 'semDesconto'
+        document.querySelector('.semDesconto').style.display = 'none';
+
+        // Exibe a div com a classe 'comDesconto'
+        document.querySelector('.comDesconto').style.display = 'block';
     });
 </script>

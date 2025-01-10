@@ -198,14 +198,24 @@
 
                             <!-- Total e Desconto -->
                             <div class="d-flex flex-column align-items-end my-10">
-                                <h5>Total à prazo: R$ {{ number_format($pedidoSelecionado->valor, 2, ',', '.') }}</h5>
-                                <h4 class="text-danger mt-10">Total à vista: <b>R$
-                                        {{ number_format($pedidoSelecionado->valor * (1 - $pedidoSelecionado->desconto / 100), 2, ',', '.') }}</b>
-                                </h4>
-                                <span>{{ number_format($pedidoSelecionado->desconto, 2, ',', '.') }}% de
-                                    desconto</span>
+                                 @if ($pedidoSelecionado->desconto > 0)
+                                    <div class="d-flex flex-column align-items-end my-10">
+                                        <h5 class="">Valor Total: <b>R$
+                                        {{ number_format($pedidoSelecionado->valor, 2, ',', '.') }}</b></h5>
+                                        <h4 class="text-danger mt-10">Total à vista: <b>{{ number_format($pedidoSelecionado->valor * (1 - $pedidoSelecionado->desconto / 100), 2, ',', '.') }}</b>
+                                        </h4>
+                                        <span>{{ number_format($pedidoSelecionado->desconto, 2, ',', '.') }}% de
+                                            desconto</span>
+                                        <h6 class="text-dark mt-10">Prazo para pagamento: À vista</h6>        
+                                    </div>
+                                @else
+                                    <div class="d-flex flex-column align-items-end my-10">
+                                        <h4>Total à prazo: R${{ number_format($pedidoSelecionado->valor, 2, ',', '.') }}</h4>
+                                        <span>Sem desconto</span>
+                                        <h6 class="text-dark mt-10">Prazo para pagamento: 30 dias</h6>        
+                                    </div>
+                                @endif    
                             </div>
-
                         </div>
                     </div>
                 </div>

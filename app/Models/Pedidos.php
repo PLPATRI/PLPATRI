@@ -25,6 +25,7 @@ class Pedidos extends Model
         'financeiro',
         'status',
         'confirmacao',
+        'numero_produtos',
     ];
 
     public function cliente()

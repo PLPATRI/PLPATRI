@@ -8,41 +8,61 @@ use Illuminate\Http\Request;
 use App\Models\Produtos;
 use Illuminate\Support\Facades\Session;
 use App\Models\Configuracoes;
+use Illuminate\Support\Facades\DB;
+
 
 class Estoque extends Controller
 {
     public function index(Request $request)
-    {
-        // Captura dos filtros
-        $modelo = $request->input('modelo');
-        $fornecedor = $request->input('fornecedor');
-        
-        $produtos = Produtos::join('fornecedores', 'fornecedores.id', '=', 'produtos.fornecedor_id')
-            ->select('produtos.*', 'fornecedores.razao_social AS fornecedor');
+{
+    // Captura dos filtros
+    $modelo = $request->input('modelo');
+    $fornecedor = $request->input('fornecedor');
+    
+    $produtos = Produtos::join('fornecedores', 'fornecedores.id', '=', 'produtos.fornecedor_id')
+        ->leftJoin('movimentacoes', 'movimentacoes.referencia', '=', 'produtos.referencia')
+        ->select(
+            'produtos.*',
+            'fornecedores.razao_social AS fornecedor',
+            DB::raw('SUM(movimentacoes.compra) as total_compras'),
+            DB::raw('SUM(movimentacoes.baixa) as total_baixas')
+        )
+        ->groupBy(
+            'produtos.id',
+            'produtos.referencia',
+            'produtos.modelo',
+            'produtos.fornecedor_id',
+            'produtos.estoque_seguranca',
+            'produtos.preco_unitario',
+            'fornecedores.razao_social'
+        );
 
-        if ($modelo) {
-            $produtos->where('produtos.modelo', 'like', '%' . $modelo . '%');
-        }
-
-        if ($fornecedor) {
-            $produtos->where('fornecedores.id', $fornecedor);
-        }
-
-        // Paginação
-        $numeroPaginate = Configuracoes::first();
-        $paginas = $numeroPaginate ? $numeroPaginate->numero_itens_tabelas : 10;
-
-        $paginate = $produtos->paginate($paginas);
-
-        // Dados para a view
-        return view("estoque/estoque", [
-            'data' => [
-                'produtos' => $paginate->items(),
-                'paginate' => $paginate,
-                'fornecedores' => Fornecedores::all()
-            ]
-        ]);
+    $produtos->orderBy('produtos.referencia', 'asc');    
+    
+    if ($modelo) {
+        $produtos->where('produtos.modelo', 'like', '%' . $modelo . '%');
     }
+
+    if ($fornecedor) {
+        $produtos->where('fornecedores.id', $fornecedor);
+    }
+
+    // Paginação
+    $numeroPaginate = Configuracoes::first();
+    $paginas = $numeroPaginate ? $numeroPaginate->numero_itens_tabelas : 10;
+
+    $paginate = $produtos->paginate($paginas);
+
+    // Dados para a view
+    return view("estoque/estoque", [
+        'data' => [
+            'produtos' => $paginate->items(),
+            'paginate' => $paginate,
+            'fornecedores' => Fornecedores::all()
+        ]
+    ]);
+}
+
 
 
     public function editarProduto(Request $request, string $id)

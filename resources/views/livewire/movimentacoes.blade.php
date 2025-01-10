@@ -60,6 +60,7 @@
                                 <th>Modelo</th>
                                 <th>Compra</th>
                                 <th>Baixa</th>
+                                <th>Tipo</th>
                                 <th>Estoque</th>
                                 <th>Dt. Reposição</th>
                                 <th>Dt. Baixa</th>
@@ -90,9 +91,17 @@
                                     <td>{{ $produto['modelo'] }}</td>
                                     <td><b>{{ number_format($produto['compra'], 0) }}</b></td>
                                     <td><b>{{ number_format($produto['baixa'], 0) }}</b></td>
+                                    <td>
+                                        @if ($produto->baixa == 0)
+                                            <b style="color:green">Compra</b>
+                                        @endif  
+                                        @if ($produto->compra == 0)   
+                                            <b style="color:red">Venda</b>
+                                        @endif  
+                                    </td>
 
-                                    @if($produto['estoque'] < 0)
-                                        <td style="color:rgb(255, 0, 0);">
+                                    @if($produto['estoque'] <= 0)
+                                        <td style="color:red;">
                                             <i class="fas fa-warning" style="margin-right: 10px;"></i>
                                             <b>{{ number_format($produto['estoque'], 0) }}</b>
                                         </td>
@@ -116,7 +125,7 @@
                                 <th></th>
                                 <th><b>{{ number_format($totalCompra, 0) }}</b></th>
                                 <th><b>{{ number_format($totalBaixa, 0) }}</b></th>
-                                <th><b>{{ number_format($totalEstoque, 0) }}</b></th>
+                                <th><b>{{ number_format($produto['estoque'], 0) }}</b></th>
                                 <th></th>
                                 <th></th>
                                 <th></th>

@@ -15,6 +15,7 @@ use Livewire\WithPagination;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class NovoPedido extends Component
 {
@@ -80,25 +81,25 @@ class NovoPedido extends Component
         $this->atualizarProdutos();
     }
 
-    public function atualizarProdutos()
+     public function atualizarProdutos()
     {
         $this->configuracoes = Configuracoes::first();
         $this->paginate = $this->configuracoes ? $this->configuracoes->numero_itens_tabelas : 10;
-    
-        $query = Produtos::query();
-    
+
+         $query = Produtos::query();
+
         if ($this->referencia_inicial != '') {
             $query->where('referencia', '>=', $this->referencia_inicial);
         }
-    
+
         if ($this->referencia_final != '') {
             $query->where('referencia', '<=', $this->referencia_final);
         }
-    
+
         if ($this->modelo != '') {
             $query->where('modelo', 'like', '%' . $this->modelo . '%');
         }
-    
+
         if ($this->fornecedor != '') {
             $fornecedores = Fornecedores::where('razao_social', 'like', '%' . $this->fornecedor . '%')->first();
             if ($fornecedores) {
@@ -106,6 +107,8 @@ class NovoPedido extends Component
             }
         }
     
+        $query->orderByRaw('CASE WHEN CAST(referencia AS UNSIGNED) > 0 THEN 0 ELSE 1 END, CAST(referencia AS UNSIGNED), referencia');
+
         // Paginação padrão
         $produtosPaginator = $query->with('fornecedor')->paginate($this->paginate);
     
@@ -121,7 +124,7 @@ class NovoPedido extends Component
         $this->produtos = $produtosPaginator->toArray();
         $this->produtos['visiblePages'] = $visiblePages; // Adiciona as páginas visíveis para o Livewire
     }
-    
+
 
     public function atualizarPagina($pagina)
     {

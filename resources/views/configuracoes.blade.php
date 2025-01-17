@@ -77,7 +77,6 @@
         <!-- /.modal-dialog -->
     </div>
 
-    <!-- /.modal delete -->
     <div class="modal fade delete-modal" tabindex="-1" role="dialog" aria-labelledby="deleteModal" aria-hidden="true"
         style="display: none;">
         <div class="modal-dialog modal-lg">
@@ -113,7 +112,6 @@
         <!-- /.modal-dialog -->
     </div>
 
-    <!-- /.modal select delete -->
     <div class="modal fade select-delete-modal" tabindex="-1" role="dialog" aria-labelledby="selectDeleteModal"
         aria-hidden="true" style="display: none;">
         <div class="modal-dialog modal-lg">
@@ -123,7 +121,7 @@
                     </h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('limpa.tabelas.deletar') }}" method="post">
+                <form action="{{ route('limpa.tabelas.deletar') }}" method="post" id="delete-form">
                     @csrf
                     @method('DELETE')
                     <div class="modal-body">
@@ -143,23 +141,23 @@
                                         <label for="pedidos">Pedidos</label>
                                     </div>
                                     <div class="mx-10">
-                                        <input type="checkbox" name="estoque" onclick="toggleDiv()" id="estoque"
+                                        <input type="checkbox" name="estoque" id="estoque"
                                             class="filled-in">
                                         <label for="estoque">Estoque</label>
                                     </div>
-                                    <div id="toggle-div" style="display: none" class="mx-10">
-                                        <div class="form-group">
-                                            <label class="form-label">Fornecedor</label>
-
-                                            <select name="fornecedor" class="form-control">
-                                                @foreach ($fornecedores as $fornecedor)
-                                                    <option value="{{ $fornecedor->id }}">{{ $fornecedor->razao_social }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
                                 </div>
+                            </div>
+                        </div>
+                        
+                         <!-- Select de Fornecedores (Inicialmente escondido) -->
+                         <div class="row justify-content-center mt-3" id="fornecedores-select" style="display: none;">
+                            <div class="col-6">
+                                <select name="fornecedor" id="fornecedor-select" class="form-control">
+                                    <option value="todos">Todos os Fornecedores</option>
+                                    @foreach($fornecedores as $fornecedor)
+                                    <option value="{{ $fornecedor->id }}">{{ $fornecedor->razao_social }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -167,7 +165,7 @@
                         <button type="button" data-bs-dismiss="modal" aria-label="Close" class="btn btn-danger me-1">
                             <i class="fas fa-close"></i> Não
                         </button>
-                        <button id="open-second-modal" class="btn btn-success">
+                        <button type="submit" id="confirm-delete-button" class="btn btn-success">
                             <i class="fas fa-trash"></i> Sim
                         </button>
                     </div>
@@ -247,7 +245,6 @@
         </div>
         <!-- /.modal-dialog -->
     </div>
-
 
     <!-- /.modal value unic -->
     <div class="modal fade value-product-modal" tabindex="-1" role="dialog" aria-labelledby="valueProductModal"
@@ -420,5 +417,63 @@
             const secondModal = new bootstrap.Modal(document.querySelector('.delete-modal'));
             secondModal.show();
         });
+    </script>
+
+    <script>
+       document.addEventListener('DOMContentLoaded', function () {
+
+const estoqueCheckbox = document.getElementById('estoque');
+const fornecedoresSelectDiv = document.getElementById('fornecedores-select');
+const fornecedorSelect = document.getElementById('fornecedor-select');
+ const form = document.getElementById('delete-form');
+ const confirmDeleteButton = document.getElementById('confirm-delete-button');
+
+
+estoqueCheckbox.addEventListener('change', function () {
+    fornecedoresSelectDiv.style.display = this.checked ? 'flex' : 'none';
+});
+
+
+ confirmDeleteButton.addEventListener('click', function(event) {
+        event.preventDefault(); // Impede o envio padrão do formulário
+         let tabelasSelecionadas = [];
+        
+        if (document.getElementById('clientes').checked) {
+            tabelasSelecionadas.push('Clientes');
+        }
+        if (document.getElementById('vendedores').checked) {
+            tabelasSelecionadas.push('Vendedores');
+        }
+        if (document.getElementById('pedidos').checked) {
+            tabelasSelecionadas.push('Pedidos');
+        }
+        if (document.getElementById('estoque').checked) {
+            tabelasSelecionadas.push('Estoque');
+        }
+        let fornecedorSelecionado = fornecedorSelect.value;
+        
+        if (tabelasSelecionadas.length === 0){
+             alert('Selecione ao menos uma tabela para excluir!');
+             return;
+        }
+        let text = `Tem certeza que deseja excluir todas as informações da(s) tabela(s) `
+        
+         tabelasSelecionadas.forEach((tabela, index)=>{
+            text += tabela;
+            if(index !== tabelasSelecionadas.length - 1){
+                text += ', '
+            }
+        });
+        
+        
+       if(tabelasSelecionadas.includes('Estoque') && fornecedorSelecionado !== 'todos'){
+          text += ' do fornecedor ' + fornecedorSelect.options[fornecedorSelect.selectedIndex].text
+       }
+        text += '?';
+   if(confirm(text)){
+       form.submit();
+   }
+ });
+});
     </script>
 @endsection

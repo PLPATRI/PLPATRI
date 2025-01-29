@@ -66,11 +66,12 @@
                                                 </div>
                                                 <div class="form-group d-flex align-items-center mb-15">
                                                     <label>Fornecedor:</label>
-                                                    <input type="text" wire:model="fornecedor"
-                                                        class="form-control w-75 mx-10" placeholder="Fonecedor">
-                                                    <button class="btn btn-primary-light btn-sm"
-                                                        wire:click="atualizarProdutos"><i
-                                                            class="fas fa-search"></i></button>
+                                                    <select wire:model.live="fornecedorSelecionado" class="form-control w-75 mx-10">
+                                                        <option value="">Selecione um Fornecedor</option>
+                                                            @foreach ($fornecedores as $fornecedor)
+                                                                <option value="{{ $fornecedor->id }}">{{ $fornecedor->razao_social }}</option>
+                                                            @endforeach
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="table-responsive">

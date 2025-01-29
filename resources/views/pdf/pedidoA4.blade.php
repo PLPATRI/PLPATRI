@@ -146,46 +146,56 @@
         </thead>
         <tbody>
             @foreach ($pedidoItems as $item)
-                <tr>
-                    <td>{{ $item['referencia'] }}</td>
-                    <td>{{ $item['modelo'] }}</td>
-                    <td>{{ $item['quantidade'] }}</td>
-                    <td>{{ $item['fornecedor'] }}</td>
-                    <td>{{ number_format($item['valor_unitario'], 4, ',', '.') }}</td>
-                    <td>{{ number_format($item['quantidade'] * $item['valor_unitario'], 2, ',', '.') }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    
-
-    <table style="margin-top: 20px;">
-        <thead>
             <tr>
-                <th style="border: 0px solid #000; padding: 0px 5px">Produtos selecionados:</th>
-                <th style="align: right;border: 0px solid #000; padding: 0px 5px">Valor</th>
+                <td>{{ $item['referencia'] }}</td>
+                <td>{{ $item['modelo'] }}</td>
+                <td>{{ $item['quantidade'] }}</td>
+                <td>{{ $item['fornecedor'] }}</td>
+                <td>{{ number_format($item['valor_unitario'], 4, ',', '.') }}</td>
+                <td>{{ number_format($item['quantidade'] * $item['valor_unitario'], 2, ',', '.') }}</td>
             </tr>
-        </thead>
-        <tbody>
+            @endforeach
             <tr>
-                <td style="border: 0px solid #000; padding: 0px 5px">
+                <th>Produtos selecionados:</th>
+                <th style="border: 0px solid #000;border-bottom: 1px solid;"></th>
+                <th style="border: 0px solid #000;border-bottom: 1px solid;"></th>
+                <th style="border: 0px solid #000;border-bottom: 1px solid;border-right: 1px solid"></th>
+                <th style="border: 0px solid #000;border-bottom: 1px solid">Pagamento</th>
+                <th style="border: 0px solid #000;border-bottom: 1px solid; border-right: 1px solid"></th>
+            </tr>
+            <tr>
+                <td>
                     <p style="margin-top: 10px;"><strong>{{ $pedido['numero_produtos'] }}</strong></p>
                 </td>
-                <td style="align: right;border: 0px solid #000; padding: 0px 5px">
+                <td style="border: 0px solid #000;border-bottom: 1px solid;"></td>
+                <td style="border: 0px solid #000;border-bottom: 1px solid;"></td>
+                <td style="border: 0px solid #000;border-bottom: 1px solid;border-right: 1px solid"></td>
+                <td style="border: 0px solid #000;;border-bottom: 1px solid">
                     @if ($pedido->desconto > 0)
-                        <h4 style="color: red;">À vista:
-                            R${{ number_format($valorComDesconto, 2, ',', '.') }}</h4>
-                        <h5 style="margin:0;">À Prazo: R${{ number_format($pedido['valor'], 2, ',', '.') }}</h5>
-                        <p style="margin:0;">Prazo para pagamento: <strong>À Vista</strong></p>
+                        <h4 style="color: red;">À vista:</h4>
+                        <h5 style="margin:0;">À Prazo:</h5>
                     @else
-                        <h4 style="margin:0;">À Prazo: R${{ number_format($pedido['valor'], 2, ',', '.') }}</h4>
-                        <p style="margin:0;">Prazo para pagamento: <strong>30 Dias</strong></p>
+                        <h4 style="margin:0;">À Prazo:</h4> 
+                    @endif    
+                </td>
+                <td style="border: 0px solid #000;border-bottom: 1px solid;border-right: 1px solid">
+                    @if ($pedido->desconto > 0)
+                        <h4 style="color: red;">
+                            R${{ number_format($valorComDesconto, 2, ',', '.') }}</h4>
+                        <h5 style="margin:0;">R${{ number_format($pedido['valor'], 2, ',', '.') }}</h5>
+                    @else
+                        <h4 style="margin:0;">R${{ number_format($pedido['valor'], 2, ',', '.') }}</h4>
                     @endif
                 </td>
             </tr>
         </tbody>
     </table>
+    @if ($pedido->desconto > 0)
+        <p style="margin:0;color: red; ">Prazo para pagamento: <strong>À Vista</strong></p>
+    @else
+        <p style="margin:0;color: red;">Prazo para pagamento: <strong>30 Dias</strong></p>
+    @endif
+
     @if ($pedido->desconto > 0)
         <p style="margin:0;">Desconto: {{ $pedido['desconto'] }}%</p>
     @endif

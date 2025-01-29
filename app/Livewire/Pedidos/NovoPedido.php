@@ -9,13 +9,10 @@ use App\Models\Pedidos;
 use App\Models\PedidosItems;
 use App\Models\Produtos;
 use App\Models\Configuracoes;
-
 use Livewire\WithPagination;
-
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class NovoPedido extends Component
 {
@@ -47,6 +44,7 @@ class NovoPedido extends Component
     public $modelo = '';
 
     public $fornecedor = '';
+    public $fornecedorSelecionado = '';
 
     public $bloquear_input = [];
 
@@ -63,6 +61,7 @@ class NovoPedido extends Component
 
     public $clientes = [];
     public $modalAberta = true;
+    public $fornecedores;
 
     public function mount()
     {
@@ -74,6 +73,7 @@ class NovoPedido extends Component
             $this->showModalCliente = false;
         }
         $this->atualizarProdutos();
+        $this->fornecedores = Fornecedores::all();
     }
 
     public function updated()
@@ -81,12 +81,12 @@ class NovoPedido extends Component
         $this->atualizarProdutos();
     }
 
-     public function atualizarProdutos()
+    public function atualizarProdutos()
     {
         $this->configuracoes = Configuracoes::first();
         $this->paginate = $this->configuracoes ? $this->configuracoes->numero_itens_tabelas : 10;
 
-         $query = Produtos::query();
+        $query = Produtos::query();
 
         if ($this->referencia_inicial != '') {
             $query->where('referencia', '>=', $this->referencia_inicial);
@@ -100,11 +100,8 @@ class NovoPedido extends Component
             $query->where('modelo', 'like', '%' . $this->modelo . '%');
         }
 
-        if ($this->fornecedor != '') {
-            $fornecedores = Fornecedores::where('razao_social', 'like', '%' . $this->fornecedor . '%')->first();
-            if ($fornecedores) {
-                $query->where('fornecedor_id', $fornecedores->id);
-            }
+         if ($this->fornecedorSelecionado != '') {
+            $query->where('fornecedor_id', $this->fornecedorSelecionado);
         }
     
         $query->orderByRaw('CASE WHEN CAST(referencia AS UNSIGNED) > 0 THEN 0 ELSE 1 END, CAST(referencia AS UNSIGNED), referencia');
@@ -212,6 +209,7 @@ class NovoPedido extends Component
                 $produto['valor_total'] = $this->valorUnitarios[$produto['id']] ?? 0;
                 return $produto;
             }, $this->produtos['data']),
+            'fornecedores' => $this->fornecedores,
         ]);
     }
 
@@ -295,7 +293,7 @@ class NovoPedido extends Component
         $this->showModal = false;
     }
 
-    public function finalizarPedido()
+     public function finalizarPedido()
     {
         if (empty($this->produtosSelecionados)) {
             toastr('Selecione pelo menos um produto.', 'error');
@@ -497,6 +495,4 @@ class NovoPedido extends Component
             toastr('Cliente não encontrado.', 'error');
         }
     }
-
-
 }

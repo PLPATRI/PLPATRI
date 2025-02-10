@@ -34,7 +34,7 @@ Route::middleware(['auth.admin'])->group(function () {
     Route::get('/porcentagem', [Porcentagem::class, 'index'])->name('porcentagem.get');
     Route::get('/configuracoes', [Configuracoes::class, 'index'])->name('configuracoes.get');
     Route::put('/alterar-vendedor', [Configuracoes::class, 'alterarVendedor'])->name('vendedores.put');
-
+Route::get('/etiquetas', [Etiquetas::class, 'index'])->name('etiquetas.get');
     //DELETE
     Route::delete('/deletar-cliente/{id}', [Cliente::class, 'delete'])->name('clientes.deletar.post');
     Route::delete('/deletar-produto/{id}', [Estoque::class, 'deletarProduto'])->name('produto.deletar');

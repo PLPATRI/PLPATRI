@@ -178,7 +178,7 @@
                                                     <div class="form-group">
                                                         <label>Desconto (%)</label>
                                                         <div class="col-md-12 d-flex">
-                                                            <input type="number" wire:model="desconto"
+                                                            <input type="number" id="desconto" wire:model="desconto"
                                                                 class="form-control" placeholder="%"
                                                                 style="width: 85px;">
 
@@ -188,13 +188,13 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="semDesconto">
+                                                    <div id="semDesconto">
                                                         <h4 class="">Total a prazo: <b>R$
                                                         {{ number_format($valorTotal, 2, ',', '.') }}</b></h4>
                                                         <h5>Sem desconto</h5>
                                                         <h6 class="text-dark mt-10">Prazo para pagamento: 30 dias</h6>
                                                     </div>     
-                                                    <div class="comDesconto" style="display: none;">
+                                                    <div id="comDesconto" style="display: none;">
                                                         <h5 class="">Valor Total: <b>R$
                                                         {{ number_format($valorTotal, 2, ',', '.') }}</b></h5>
                                                         <h4 class="">Total À Vista: <b>R$
@@ -529,11 +529,17 @@
     });
 </script>
 <script>
-    document.getElementById('aplicaDesconto').addEventListener('click', function() {
-        // Esconde a div com a classe 'semDesconto'
-        document.querySelector('.semDesconto').style.display = 'none';
+    document.getElementById("desconto").addEventListener("input", function () {
+        const desconto = parseFloat(this.value) || 0;
+        const comDesconto = document.getElementById("comDesconto");
+        const semDesconto = document.getElementById("semDesconto");
 
-        // Exibe a div com a classe 'comDesconto'
-        document.querySelector('.comDesconto').style.display = 'block';
+        if (desconto > 0) {
+            comDesconto.style.display = "block";
+            semDesconto.style.display = "none";
+        } else {
+            comDesconto.style.display = "none";
+            semDesconto.style.display = "block";
+        }
     });
 </script>

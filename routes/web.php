@@ -16,6 +16,7 @@ use App\Http\Controllers\{
     Estoque\Estoque,
     Movimentacoes,
     Porcentagem,
+    RelatorioController
 };
 
 use App\Http\Controllers\Cadastro\{
@@ -68,6 +69,7 @@ Route::post('/cadastrar-produtos', [Produto::class, 'post'])->name('produtos.cad
 Route::delete('/deletar-cliente/{id}', [Cliente::class, 'delete'])->name('clientes.deletar.post');
 Route::delete('/deletar-produto/{id}', [Estoque::class, 'deletarProduto'])->name('produto.deletar');
 
+
 Route::middleware(['auth.vendedor'])->group(function () {
     Route::get('/dashboard-vendedor', [DashboardVendedor::class, 'index'])->name('dashboard.vendedor.get');
     Route::delete('/logout', [LoginAdmin::class, 'logout'])->name('logout');
@@ -89,3 +91,5 @@ Route::get('/produtos/paginados', [Pedidos::class, 'getProdutosPaginados'])->nam
 Route::get('/filtrar-produtos', [Produto::class, 'filtrarProdutos']);
 
 Route::post('/gera-pdf-pedido', [Etiquetas::class, 'geraPdfPedido'])->name('pdf.pedido.post');
+
+Route::get('/relatorio', [RelatorioController::class, 'index'])->name('relatorio.get');

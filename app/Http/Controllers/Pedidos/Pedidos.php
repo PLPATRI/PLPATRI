@@ -149,9 +149,9 @@ class Pedidos extends Controller
     }
     public function salvarObservacao($pedidoId)
     {
-        dd('Método chamado');  // Isso vai verificar se o método é executado
 
-        $pedido = ModelsPedidos::find($pedidoId);
+
+        $pedido = PedidoModal::find($pedidoId);
 
         if (isset($this->observacao[$pedidoId]) && !empty($this->observacao[$pedidoId])) {
             $pedido->observacoes = $this->observacao[$pedidoId];
@@ -163,4 +163,58 @@ class Pedidos extends Controller
 
         $this->pedidoSelecionado = $pedido;
     }
+
+    public function salvarDesconto($pedidoId)
+    {
+        $pedido = Pedidos::find($pedidoId);
+
+        if (!$pedido || !is_numeric($this->desconto)) {
+            session()->flash('error', 'Erro ao aplicar desconto.');
+            return;
+        }
+
+        $pedido->descontos = floatval($this->desconto);
+        $pedido->valor = $pedido->valor_original - $pedido->descontos;
+        $pedido->save();
+
+        session()->flash('success', 'Desconto aplicado com sucesso.');
+        
+        return redirect()->route('editar.pedido.get', $pedidoId);
+    }
+
+    public function atualizarQuantidade(Request $request, $itemId)
+    {
+        try {
+            $quantidade = $request->quantidade;
+            $item = PedidosItems::find($itemId);
+            
+            if (!$item || !is_numeric($quantidade) || $quantidade < 1) {
+                toastr()->error('Quantidade inválida');
+                return redirect()->back();
+            }
+
+            // Store old value for difference calculation
+            $valorAnterior = $item->valor_total;
+            
+            // Update item quantity and total value
+            $item->quantidade = $quantidade;
+            $item->valor_total = $item->valor_unitario * $quantidade;
+            $item->save();
+
+            // Update order total value
+            $pedido = $item->pedido;
+            $pedido->valor_total = PedidosItems::where('pedido_id', $pedido->id)->sum('valor_total');
+            $pedido->valor_original = $pedido->valor_total;
+            $pedido->save();
+
+            toastr()->success('Quantidade e valores atualizados com sucesso');
+            return redirect()->route('editar.pedido.get', $pedido->id);
+            
+        } catch (\Exception $e) {
+            \Log::error('Erro ao atualizar quantidade: ' . $e->getMessage());
+            toastr()->error('Erro ao atualizar quantidade');
+            return redirect()->back();
+        }
+    }
+    
 }

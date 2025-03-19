@@ -456,9 +456,20 @@
                                                     </button>
                                                 </div>
                                             </div>
+                                            <div class="form-group">
+                                                <label for="desconto">Desconto (%):</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="desconto"
+                                                    wire:model.live="desconto" min="0" max="100">
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-primary" type="button" wire:click="aplicaDesconto">Aplicar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="col-lg-6 col-sm-12 col-md-6">
                                             <div class="d-flex flex-column align-items-end my-10">
+                                                
                                             @if ($valorTotalComDesconto > 0)
                                                 <div class="d-flex flex-column align-items-end my-10">
                                                     <h5 class="">Valor Total: <b>R$

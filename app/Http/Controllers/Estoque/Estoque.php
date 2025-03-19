@@ -14,54 +14,61 @@ use Illuminate\Support\Facades\DB;
 class Estoque extends Controller
 {
     public function index(Request $request)
-{
-    // Captura dos filtros
-    $modelo = $request->input('modelo');
-    $fornecedor = $request->input('fornecedor');
+    {
+        // Captura dos filtros
+        $modelo = $request->input('modelo');
+        $fornecedor = $request->input('fornecedor');
+        
+        $produtos = Produtos::join('fornecedores', 'fornecedores.id', '=', 'produtos.fornecedor_id')
+            ->leftJoin('movimentacoes', 'movimentacoes.referencia', '=', 'produtos.referencia')
+            ->select(
+                'produtos.*',
+                'fornecedores.razao_social AS fornecedor',
+                DB::raw('SUM(movimentacoes.compra) as total_compras'),
+                DB::raw('SUM(movimentacoes.baixa) as total_baixas')
+            )
+            ->groupBy(
+                'produtos.id',
+                'produtos.referencia',
+                'produtos.modelo',
+                'produtos.fornecedor_id',
+                'produtos.estoque_seguranca',
+                'produtos.preco_unitario',
+                'fornecedores.razao_social'
+            );
     
-    $produtos = Produtos::join('fornecedores', 'fornecedores.id', '=', 'produtos.fornecedor_id')
-        ->leftJoin('movimentacoes', 'movimentacoes.referencia', '=', 'produtos.referencia')
-        ->select(
-            'produtos.*',
-            'fornecedores.razao_social AS fornecedor',
-            DB::raw('SUM(movimentacoes.compra) as total_compras'),
-            DB::raw('SUM(movimentacoes.baixa) as total_baixas')
-        )
-        ->groupBy(
-            'produtos.id',
-            'produtos.referencia',
-            'produtos.modelo',
-            'produtos.fornecedor_id',
-            'produtos.estoque_seguranca',
-            'produtos.preco_unitario',
-            'fornecedores.razao_social'
-        );
-
-    $produtos->orderBy('produtos.referencia', 'asc');    
+        // Nova ordenação customizada para referência
+        $produtos->orderByRaw('
+            CAST(REGEXP_REPLACE(produtos.referencia, "[^0-9]", "") AS UNSIGNED),
+            CASE 
+                WHEN produtos.referencia REGEXP "[A-Z]" 
+                THEN SUBSTRING(produtos.referencia, REGEXP_INSTR(produtos.referencia, "[A-Z]"))
+                ELSE ""
+            END ASC
+        ');
+        
+        if ($modelo) {
+            $produtos->where('produtos.modelo', 'like', '%' . $modelo . '%');
+        }
     
-    if ($modelo) {
-        $produtos->where('produtos.modelo', 'like', '%' . $modelo . '%');
+        if ($fornecedor) {
+            $produtos->where('fornecedores.id', $fornecedor);
+        }
+    
+        // Paginação
+        $numeroPaginate = Configuracoes::first();
+        $paginas = $numeroPaginate ? $numeroPaginate->numero_itens_tabelas : 10;
+    
+        $paginate = $produtos->paginate($paginas);
+    
+        return view("estoque/estoque", [
+            'data' => [
+                'produtos' => $paginate->items(),
+                'paginate' => $paginate,
+                'fornecedores' => Fornecedores::all()
+            ]
+        ]);
     }
-
-    if ($fornecedor) {
-        $produtos->where('fornecedores.id', $fornecedor);
-    }
-
-    // Paginação
-    $numeroPaginate = Configuracoes::first();
-    $paginas = $numeroPaginate ? $numeroPaginate->numero_itens_tabelas : 10;
-
-    $paginate = $produtos->paginate($paginas);
-
-    // Dados para a view
-    return view("estoque/estoque", [
-        'data' => [
-            'produtos' => $paginate->items(),
-            'paginate' => $paginate,
-            'fornecedores' => Fornecedores::all()
-        ]
-    ]);
-}
 
 
 

@@ -13,41 +13,49 @@ class Movimentacoes extends Controller
     public function index(Request $request)
     {
         $fornecedores = Fornecedores::all();
-
+    
         $config = Configuracoes::first();
         $paginate = $config ? $config->numero_itens_tabelas : 10;
-
+    
         $fornecedor_id = $request->input('fornecedor_id', '');
         $referenciaDe = $request->input('referencia_de');
         $referenciaAte = $request->input('referencia_ate');
         $modelo = $request->input('modelo');
-
+    
         $query = MovimentacoesModel::query();
-
+    
         if ($fornecedor_id != 'todos' && $fornecedor_id != '') {
             $query->where('fornecedor', $fornecedor_id);
         } else {
             $query->where('fornecedor', '!=', null);
         }
-
+    
         // Aplicar filtros
         if ($referenciaDe) {
             $query->where('referencia', '>=', $referenciaDe);
         }
-
+    
         if ($referenciaAte) {
             $query->where('referencia', '<=', $referenciaAte);
         }
- 
+    
         if ($modelo) {
             $query->where('modelo', 'like', '%' . $modelo . '%');
         }
-
-        $query->orderBy('id', 'desc');
-
+    
+        // Nova ordenação customizada para referência
+        $query->orderByRaw('
+            CAST(REGEXP_REPLACE(referencia, "[^0-9]", "") AS UNSIGNED),
+            CASE 
+                WHEN referencia REGEXP "[A-Z]" 
+                THEN SUBSTRING(referencia, REGEXP_INSTR(referencia, "[A-Z]"))
+                ELSE ""
+            END ASC
+        ');
+    
         // Paginação com os filtros anexados
         $produtos = $query->paginate($paginate)->appends($request->all());
-
+    
         // Retornar os dados para a view
         return view('movimentacoes', compact(
             'fornecedores',

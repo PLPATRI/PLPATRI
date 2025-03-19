@@ -11,6 +11,7 @@ use App\Models\{
 };
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class Configuracoes extends Controller
 {
@@ -55,24 +56,28 @@ class Configuracoes extends Controller
             }
         }
 
-          if ($request->clientes == 'on') {
-             Clientes::query()->delete();
+        if ($request->clientes == 'on') {
+            Clientes::query()->delete();
+            DB::statement('ALTER TABLE clientes AUTO_INCREMENT = 1');
         }
-
+        
         if ($request->vendedores == 'on') {
-              Vendedores::query()->delete();
+            Vendedores::query()->delete();
+            DB::statement('ALTER TABLE vendedores AUTO_INCREMENT = 1');
         }
-
-         if ($request->pedidos == 'on') {
-             \App\Models\Pedidos::query()->delete();
+        
+        if ($request->pedidos == 'on') {
+            \App\Models\Pedidos::query()->delete();
+            DB::statement('ALTER TABLE pedidos AUTO_INCREMENT = 1');
         }
-
-         if ($request->estoque == 'on') {
-             if($request->fornecedor === 'todos'){
+        
+        if ($request->estoque == 'on') {
+            if($request->fornecedor === 'todos'){
                 Produtos::query()->delete();
-             }else{
+                DB::statement('ALTER TABLE produtos AUTO_INCREMENT = 1');
+            }else{
                 Produtos::where('fornecedor_id', $request->fornecedor)->delete();
-             }
+            }
         }
 
         toastr('Todos os dados das tabelas selecionadas foram removidos', 'success');

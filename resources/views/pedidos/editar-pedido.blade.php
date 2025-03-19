@@ -151,7 +151,6 @@
                                                 <table id="example1" class="table table-bordered table-striped">
                                                     <thead>
                                                         <tr>
-                                                            <th></th>
                                                             <th>Referência</th>
                                                             <th>Quantidade</th>
                                                             <th>Modelo</th>
@@ -168,11 +167,6 @@
                                                         @foreach ($pedido->items as $item)
                                                             <tr>
                                                                 <td>
-                                                                    <input type="checkbox" id="basic_checkbox_1"
-                                                                        class="filled-in">
-                                                                    <label for="basic_checkbox_1"></label>
-                                                                    </input>
-                                                                <td>
                                                                     {{ $item->produto->referencia }}
                                                                 </td>
                                                                 <td class="w-50">
@@ -180,6 +174,7 @@
                                                                         <input type="text"
                                                                             name="quantidade[{{ $item->id }}]"
                                                                             value="{{ $item->quantidade }}"
+                                                                            data-item-id="{{ $item->id }}"
                                                                             class="form-control" placeholder="">
                                                                     </div>
                                                                 </td>
@@ -273,7 +268,41 @@
                                                             </a>
                                                         </div>
                                                     </div>
-                                                </div>                                                                    
+                                                </div>  
+                                                <!--<div class="col-5">
+                                                    <div class="form-group mt-10">
+                                                        <label>Desconto (R$)</label>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="input-group">
+                                                                <input 
+                                                                    type="number" 
+                                                                    class="form-control" 
+                                                                    id="desconto"
+                                                                    wire:model.defer="desconto" 
+                                                                    min="0" 
+                                                                    step="0.01"
+                                                                    placeholder="0.00">
+                                                                <div class="input-group-append ms-10">
+                                                                    <button 
+                                                                        class="btn btn-primary" 
+                                                                        type="button" 
+                                                                        wire:click="salvarDesconto({{ $pedido->id }})"
+                                                                        wire:loading.attr="disabled">
+                                                                        <span wire:loading wire:target="salvarDesconto">
+                                                                            <i class="fas fa-spinner fa-spin"></i>
+                                                                        </span>
+                                                                        <span wire:loading.remove wire:target="salvarDesconto">
+                                                                            Aplicar
+                                                                        </span>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        @error('desconto') 
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                </div>                                                                           -->
                                                 <!-- Total e Desconto -->
                                                 <div class="col-3">
                                                     @if ($pedido->desconto > 0)
@@ -340,7 +369,30 @@
 
     <!-- /.modal produtos -->
     @livewire('pedidos.modal-editar-pedido', ['pedido' => $pedido])
-
+    <script>
+        $(document).ready(function() {
+            $('.atualizar-quantidade').click(function() {
+                const itemId = $(this).data('item-id');
+                const quantidade = $(this).closest('tr').find('.quantidade-input').val();
+                
+                $.ajax({
+                    url: `/pedidos/item/${itemId}/quantidade`,
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        quantidade: quantidade
+                    },
+                    success: function(response) {
+                        toastr.success('Quantidade atualizada com sucesso');
+                        location.reload();
+                    },
+                    error: function() {
+                        toastr.error('Erro ao atualizar quantidade');
+                    }
+                });
+            });
+        });
+    </script>
     <script>
         const resumoPedidoDiv = document.querySelector('.resumo-pedido');
         const editarPedidoDiv = document.querySelector('.editar-pedido');

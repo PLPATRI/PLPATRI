@@ -16,6 +16,9 @@
                         - Vendedor
                     </h4>
                 @endif
+                    <h4 class="logo-lg mb-0 text-dark">
+                        - v.1
+                    </h4>
 
             </a>
         </div>
@@ -57,6 +60,10 @@
             <li>
                 <a class="{{ Request::is('clientes') ? 'active_navbar ' : '' }}"
                     href="{{ route('clientes.get') }}">Clientes</a>
+            </li>
+            <li>
+                <a class="{{ Request::is('relatorio') ? 'active_navbar ' : '' }}"
+                    href="{{ route('relatorio.get') }}">Relatório</a>
             </li>
             <li>
                 <a href="#"

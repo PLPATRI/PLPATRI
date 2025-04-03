@@ -95,14 +95,14 @@ class Estoque extends Controller
             'data' => $request->data,
             'quantidade' => str_replace(['.', ','], ['', '.'], $request->quantidade),
             'preco_unitario' => (float)$precoUnitario,
-            'estoque_seguranca' => $produto->estoque_seguranca
+            'estoque_seguranca' => $request->estoque_seguranca
         ];
 
         $alterarProduto = Produtos::where('id', $id)->update($alterar);
 
         if (!$alterarProduto) {
             toastr('Não foi possível salvar o produto', 'error');
-            return redirect()->back();
+            return redirect()->back(); 
         }
 
         toastr('Produto atualizado com sucesso', 'success');

@@ -352,7 +352,7 @@
                                                                                     </div>
 
                                                                                     <div class="row">
-                                                                                        <div class="col-md-4">
+                                                                                        <div class="col-md-3">
                                                                                             <div class="form-group">
                                                                                                 <label
                                                                                                     for="example-date-input"
@@ -364,7 +364,7 @@
                                                                                                     id="example-date-input">
                                                                                             </div>
                                                                                         </div>
-                                                                                        <div class="col-md-4">
+                                                                                        <div class="col-md-3">
                                                                                             <div class="form-group">
                                                                                                 <label
                                                                                                     for="example-date-input"
@@ -377,7 +377,7 @@
                                                                                                     id="example-date-input">
                                                                                             </div>
                                                                                         </div>
-                                                                                        <div class="col-md-4">
+                                                                                        <div class="col-md-3">
                                                                                             <div class="form-group">
                                                                                                 <label class="form-label"
                                                                                                     for="quantidade">Quantidade</label>
@@ -385,29 +385,19 @@
                                                                                                     id="quantidade_{{ $produto['id'] }}"
                                                                                                     name="quantidade"
                                                                                                     type="text"
-                                                                                                    value="{{ number_format($produto['quantidade'], 2, ',', '.') }}" />
+                                                                                                    value="{{ $produto['quantidade'] }}" />
                                                                                             </div>
-
-                                                                                            <script>
-                                                                                                function formatarValor(valor) {
-                                                                                                    valor = valor.replace(/\D/g, '');
-                                                                                                    valor = (parseInt(valor, 10) / 100).toFixed(2);
-                                                                                                    const partes = valor.split('.');
-                                                                                                    partes[0] = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                                                                                                    return partes.join(',');
-                                                                                                }
-
-
-                                                                                                document.getElementById("quantidade_{{ $produto['id'] }}").addEventListener('input', function() {
-                                                                                                    const valorFormatado = formatarValor(this.value);
-
-                                                                                                    if (valorFormatado == "NaN") {
-                                                                                                        this.value = 0.00
-                                                                                                    } else {
-                                                                                                        this.value = valorFormatado;
-                                                                                                    }
-                                                                                                });
-                                                                                            </script>
+                                                                                        </div>
+                                                                                        <div class="col-md-3">
+                                                                                            <div class="form-group">
+                                                                                                <label class="form-label"
+                                                                                                    for="estoque_seguranca">Qtd. Segurança</label>
+                                                                                                <input class="form-control"
+                                                                                                    id="estoque_seguranca_{{ $produto['id'] }}"
+                                                                                                    name="estoque_seguranca"
+                                                                                                    type="text"
+                                                                                                    value="{{ $produto['estoque_seguranca'] }}" />
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>

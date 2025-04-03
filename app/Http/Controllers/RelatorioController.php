@@ -4,94 +4,95 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB; // Importe a classe DB
+use Carbon\Carbon;
 
 class RelatorioController extends Controller
 {
-    public function index()
+     /**
+     * Exibe o relatório de vendas mensais com filtro de ano.
+     *
+     * @param Request $request  <---- ADICIONE OU VERIFIQUE ISTO
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function funil(Request $request)
     {
-        // Inicializar variáveis com valores padrão
-        $mes_01_25 = $mes_02_25 = $mes_03_25 = $mes_04_25 = $mes_05_25 = $mes_06_25 = 0;
-        $mes_07_25 = $mes_08_25 = $mes_09_25 = $mes_10_25 = $mes_11_25 = $mes_12_25 = 0;
+         // 1. Determinar o ano a ser exibido
+        // Pegue o ano do request, se não houver, use o ano atual
+        $anoSelecionado = $request->input('ano', date('Y'));
 
-        // Consultas SQL usando Query Builder do Laravel
-        $mes_01_25 = DB::table('pedidos')
-            ->whereBetween('data', ['2025-01-01', '2025-01-31'])
-            ->sum('valor');
+        // 2. Buscar dados de vendas mensais para o ano selecionado em UMA ÚNICA CONSULTA
+        $vendasPorMesQuery = DB::table('pedidos')
+            ->select(
+                DB::raw('MONTH(data) as mes'), // Extrai o número do mês
+                DB::raw('SUM(valor) as total_vendas') // Soma os valores
+            )
+            ->whereYear('data', $anoSelecionado) // Filtra pelo ano selecionado
+            ->groupBy('mes') // Agrupa pelo mês
+            ->orderBy('mes', 'asc') // Ordena pelo mês
+            ->pluck('total_vendas', 'mes'); // Retorna um array associativo [mes => total_vendas]
 
-        $mes_02_25 = DB::table('pedidos')
-            ->whereBetween('data', ['2025-02-01', '2025-02-28'])
-            ->sum('valor');
+        // 3. Preparar os dados para o gráfico (garantindo todos os 12 meses)
+        $labelsMeses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        $dadosVendas = [];
 
-        $mes_03_25 = DB::table('pedidos')
-            ->whereBetween('data', ['2025-03-01', '2025-03-31'])
-            ->sum('valor');
+        for ($mes = 1; $mes <= 12; $mes++) {
+            // Verifica se existe valor para o mês na consulta, senão usa 0
+            $dadosVendas[] = $vendasPorMesQuery->get($mes, 0);
+        }
 
-        $mes_04_25 = DB::table('pedidos')
-            ->whereBetween('data', ['2025-04-01', '2025-04-30'])
-            ->sum('valor');
+        // 4. (Opcional) Buscar anos disponíveis para o filtro (melhora a UX)
+        $anosDisponiveis = DB::table('pedidos')
+                           ->select(DB::raw('DISTINCT YEAR(data) as ano'))
+                           ->orderBy('ano', 'desc')
+                           ->pluck('ano');
+        
+        // Se não houver pedidos, adicione o ano atual como opção
+        if ($anosDisponiveis->isEmpty()) {
+            $anosDisponiveis = collect([date('Y')]);
+        }
 
-        $mes_05_25 = DB::table('pedidos')
-            ->whereBetween('data', ['2025-05-01', '2025-05-31'])
-            ->sum('valor');
 
-        $mes_06_25 = DB::table('pedidos')
-            ->whereBetween('data', ['2025-06-01', '2025-06-30'])
-            ->sum('valor');
-
-        $mes_07_25 = DB::table('pedidos')
-            ->whereBetween('data', ['2025-07-01', '2025-07-31'])
-            ->sum('valor');
-
-        $mes_08_25 = DB::table('pedidos')
-            ->whereBetween('data', ['2025-08-01', '2025-08-31'])
-            ->sum('valor');
-
-        $mes_09_25 = DB::table('pedidos')
-            ->whereBetween('data', ['2025-09-01', '2025-09-30'])
-            ->sum('valor');
-
-        $mes_10_25 = DB::table('pedidos')
-            ->whereBetween('data', ['2025-10-01', '2025-10-31'])
-            ->sum('valor');
-
-        $mes_11_25 = DB::table('pedidos')
-            ->whereBetween('data', ['2025-11-01', '2025-11-30'])
-            ->sum('valor');
-
-        $mes_12_25 = DB::table('pedidos')
-            ->whereBetween('data', ['2025-12-01', '2025-12-31'])
-            ->sum('valor');
-
-        // Dados para o gráfico de vendas mensais
-        $data = [
-            ['Mês', 'Vendas'],
-            ['Jan', 'R$'.' '.(int)$mes_01_25],
-            ['Fev', 'R$'.' '.(int)$mes_02_25],
-            ['Mar', 'R$'.' '.(int)$mes_03_25],
-            ['Abr', 'R$'.' '.(int)$mes_04_25],
-            ['Mai', 'R$'.' '.(int)$mes_05_25],
-            ['Jun', 'R$'.' '.(int)$mes_06_25],
-            ['Jul', 'R$'.' '.(int)$mes_07_25],
-            ['Ago', 'R$'.' '.(int)$mes_08_25],
-            ['Set', 'R$'.' '.(int)$mes_09_25],
-            ['Out', 'R$'.' '.(int)$mes_10_25],
-            ['Nov', 'R$'.' '.(int)$mes_11_25],
-            ['Dez', 'R$'.' '.(int)$mes_12_25],
-        ];
-        $jsonData = json_encode($data);
-
-        // Consultar vendas por região
+        // 5. (Opcional - Mantido da sua lógica original, ajuste se necessário)
+        // Consultar vendas por região (se ainda for necessário nesta view)
+        // Note que isso NÃO está filtrado por ano na sua lógica original.
+        // Se precisar filtrar por ano, adicione ->whereYear('data', $anoSelecionado)
         $vendasPorRegiao = DB::table('pedidos')
             ->select(DB::raw("SUBSTRING_INDEX(endereco, ' - ', -1) AS regiao"), DB::raw("SUM(valor) AS total_vendas"))
+            // ->whereYear('data', $anoSelecionado) // Adicione se quiser filtrar por ano
             ->groupBy('regiao')
-            ->get()
-            ->pluck('total_vendas', 'regiao') // Cria um array associativo regiao => total_vendas
+            ->pluck('total_vendas', 'regiao')
             ->toArray();
 
         $totalVendasBrasil = array_sum($vendasPorRegiao);
 
 
+        
+
+
+        // 6. Retornar a View com os dados
+        return view('relatorios/funil', compact(
+            'labelsMeses',      // Nomes dos meses para o gráfico
+            'dadosVendas',      // Valores de vendas para o gráfico
+            'anoSelecionado',   // Ano que está sendo exibido
+            'anosDisponiveis',  // Anos para popular o dropdown de filtro
+            'vendasPorRegiao',  // Dados de vendas por região (opcional)
+            'totalVendasBrasil' // Total de vendas Brasil (opcional)
+        ));
+    }
+    
+    public function vendedores()
+    {
+    
+
+
         // Retornar a View com os dados
-        return view('relatorios', compact('jsonData', 'vendasPorRegiao', 'totalVendasBrasil'));
+        return view('relatorios/vendedores');
+    }
+
+    public function curva()
+    {
+    
+        // Retornar a View com os dados
+        return view('relatorios/curva');
     }
 }

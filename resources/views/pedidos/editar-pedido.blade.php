@@ -3,7 +3,7 @@
 @extends('components.main')
 @section('content')
     <div class="content-wrapper">
-        <div class="container-full">
+        <div class="container-full"> 
             <!-- Main content -->
             <section class="content">
                 <div class="row">
@@ -255,20 +255,24 @@
                                             <p><strong>Produtos Selecionados:</strong> {{ $pedido->numero_produtos }} produto(s)</p>
                                             <div class="row justify-content-between align-items-center">
                                                 <div class="col-6">
-                                                    <div class="form-group mt-10">
-                                                        <label>Observações</label>
-                                                        <div class="d-flex align-items-center">
-                                                            <textarea class="form-control" 
-                                                                    wire:model="observacao.{{ $pedido->id }}" 
-                                                                    placeholder="Digite suas observações aqui...">
-                                                            </textarea>
-                                                            <a class="btn btn-sm btn-success mx-10" 
-                                                                wire:click="salvarObservacao({{ $pedido->id }})">
-                                                                <i class="fas fa-check"></i> Confirmar
-                                                            </a>
+                                                    <form action="{{ route('pedido.salvar.observacao', ['pedidoId' => $pedido->id]) }}" method="POST"> {{-- Rota Exemplo --}}
+                                                        @csrf
+                                                        <div class="form-group mt-10">
+                                                            <label>Observações</label>
+                                                            <div class="d-flex align-items-center">
+                                                                <textarea class="form-control"
+                                                                        name="observacao"  {{-- Nome do campo --}}
+                                                                        placeholder="Digite suas observações aqui...">{{ old('observacao', $pedido->observacoes) }}</textarea> {{-- Exibe valor atual --}}
+                                                                <button type="submit" class="btn btn-sm btn-success mx-10">
+                                                                    <i class="fas fa-check"></i> Confirmar
+                                                                </button>
+                                                            </div>
+                                                            @error('observacao') {{-- Exibe erro de validação --}}
+                                                                <span class="text-danger">{{ $message }}</span>
+                                                            @enderror
                                                         </div>
-                                                    </div>
-                                                </div>  
+                                                    </form>
+                                                </div>
                                                 <!--<div class="col-5">
                                                     <div class="form-group mt-10">
                                                         <label>Desconto (R$)</label>
@@ -305,24 +309,48 @@
                                                 </div>                                                                           -->
                                                 <!-- Total e Desconto -->
                                                 <div class="col-3">
-                                                    @if ($pedido->desconto > 0)
                                                     <div class="d-flex flex-column align-items-end my-10">
-                                                        <h5 class="">Valor Total: <b>R$
-                                                        {{ number_format($pedido->valor, 2, ',', '.') }}</b></h5>
-                                                        <h4 class="text-danger mt-10">Total à vista: <b>R$
-                                                                {{ number_format($pedido->valor * (1 - $pedido->desconto / 100), 2, ',', '.') }}</b>
-                                                        </h4>
-                                                        <span>{{ number_format($pedido->desconto, 2, ',', '.') }}% de
-                                                            desconto</span>
-                                                        <h6 class="text-dark mt-10">Prazo para pagamento: À vista</h6>        
+                                                        @php
+                                                            $valorBruto = $pedido->valor_bruto ?? ($pedido->desconto > 0 ? $pedido->valor / (1 - $pedido->desconto / 100) : $pedido->valor);
+                                                            $valorBruto = $valorBruto ?? 0; // Garante que não é null
+                                                        @endphp
+                                                        <h5 id="valor-bruto-display"> {{-- ID para fácil acesso --}}
+                                                            Valor Bruto:
+                                                            
+                                                            <b data-valor-bruto="{{ $valorBruto }}">
+                                                                R$ {{ number_format($valorBruto, 2, ',', '.') }}
+                                                            </b>
+                                                        </h5>
+
+                                                        @if ($pedido->desconto > 0)
+                                                            <h5 class="text-danger">
+                                                                Desconto:
+                                                                {{-- Guarda o percentual numérico em um data attribute --}}
+                                                                <b data-desconto="{{ $pedido->desconto }}">
+                                                                    {{ $pedido->desconto }}%
+                                                                </b>
+                                                            </h5>
+                                                            <h4 class="mt-10">
+                                                                Valor Final:
+                                                                {{-- ID para colocar o valor calculado pelo JS --}}
+                                                                <b id="valor-final-calculado">
+                                                                    {{-- Pode deixar o valor inicial do servidor ou deixar vazio --}}
+                                                                    R$ {{ number_format($pedido->valor, 2, ',', '.') }}
+                                                                </b>
+                                                            </h4>
+                                                            {{-- <h6 class="text-dark mt-10">Prazo para pagamento: À vista</h6> --}}
+                                                        @else
+                                                            <h4 class="mt-10">
+                                                                Valor Final:
+                                                                {{-- ID aqui também para consistência, embora não haja cálculo --}}
+                                                                <b id="valor-final-calculado">
+                                                                    R$ {{ number_format($pedido->valor, 2, ',', '.') }}
+                                                                </b>
+                                                            </h4>
+                                                            <span>Sem desconto aplicado</span>
+                                                            {{-- <h6 class="text-dark mt-10">Prazo para pagamento: 30 dias</h6> --}}
+                                                        @endif
                                                     </div>
-                                                    @else
-                                                    <div class="d-flex flex-column align-items-end my-10">
-                                                        <h4>Total à prazo: R$ {{ number_format($pedido->valor, 2, ',', '.') }}</h4>
-                                                        <span>Sem desconto</span>
-                                                        <h6 class="text-dark mt-10">Prazo para pagamento: 30 dias</h6>        
-                                                    </div>
-                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
@@ -454,4 +482,65 @@
     <script src="{{ asset('js/template.js') }}"></script>
     <script src="{{ asset('js/pages/dashboard2.js') }}"></script>
     <script src="{{ asset('js/pages/calendar.js') }}"></script>
+
+    <script>
+    // Espera o DOM (a página HTML) carregar completamente
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // Função para calcular e atualizar o valor final
+        function calcularValorFinalComDesconto() {
+            // Pega os elementos pelos seus atributos/IDs
+            const valorBrutoElement = document.querySelector('[data-valor-bruto]');
+            const descontoElement = document.querySelector('[data-desconto]');
+            const valorFinalElement = document.getElementById('valor-final-calculado');
+
+            // Verifica se os elementos essenciais existem
+            if (!valorBrutoElement || !valorFinalElement) {
+                console.error("Elementos necessários para cálculo não encontrados (valor bruto ou valor final).");
+                return; // Sai da função se não encontrar
+            }
+
+            // Pega os valores numéricos dos atributos 'data-*'
+            // parseFloat converte a string do atributo em número decimal
+            const valorBruto = parseFloat(valorBrutoElement.getAttribute('data-valor-bruto'));
+            let descontoPercentual = 0; // Assume 0 se não houver desconto
+
+            // Só pega o desconto se o elemento existir (caso de $pedido->desconto ser 0)
+            if (descontoElement) {
+                descontoPercentual = parseFloat(descontoElement.getAttribute('data-desconto'));
+            }
+
+            // Valida se os valores são números válidos
+            if (isNaN(valorBruto) || isNaN(descontoPercentual)) {
+                console.error("Valor bruto ou desconto inválido.");
+                valorFinalElement.textContent = 'Erro'; // Informa um erro na tela
+                return;
+            }
+
+            let valorFinalCalculado;
+
+            // Calcula o valor final APENAS se houver desconto
+            if (descontoPercentual > 0) {
+                const valorDoDesconto = valorBruto * (descontoPercentual / 100);
+                valorFinalCalculado = valorBruto - valorDoDesconto;
+            } else {
+                // Se não há desconto, o valor final é igual ao bruto
+                valorFinalCalculado = valorBruto;
+            }
+
+            // Formata o valor final como moeda brasileira (R$ 1.234,56)
+            const valorFormatado = valorFinalCalculado.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            });
+
+            // Atualiza o texto do elemento <b> do Valor Final
+            valorFinalElement.textContent = valorFormatado;
+        }
+
+        // Chama a função para fazer o cálculo assim que a página carregar
+        calcularValorFinalComDesconto();
+
+    }); // Fim do addEventListener('DOMContentLoaded')
+</script>
 @endsection

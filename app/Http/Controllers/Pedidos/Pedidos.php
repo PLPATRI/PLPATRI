@@ -99,21 +99,6 @@ class Pedidos extends Controller
         return redirect()->route("editar.pedido.get", $pedido)->with("success", "Item excluído com sucesso");
     }
 
-    public function validarPedido(Request $request)
-    {
-        $pedido = PedidoModal::find($request->id_pedido);
-
-        foreach ($request->input('quantidade') as $itemId => $novaQuantidade) {
-            $item = $pedido->items->find($itemId);
-            if ($item) {
-                $item->quantidade = $novaQuantidade;
-                $item->save();
-            }
-        }
-
-        return redirect()->back()->with('success', 'Pedido validado e quantidades atualizadas com sucesso.');
-    }
-
     public function atualizarStatus(Request $request)
     {
         $status = $request->status;
@@ -147,23 +132,6 @@ class Pedidos extends Controller
 
         return redirect()->route("editar.pedido.get", $pedido->id)->with("success", "Status do pedido atualizado com sucesso");
     }
-    public function salvarObservacao($pedidoId)
-    {
-
-
-        $pedido = PedidoModal::find($pedidoId);
-
-        if (isset($this->observacao[$pedidoId]) && !empty($this->observacao[$pedidoId])) {
-            $pedido->observacoes = $this->observacao[$pedidoId];
-            $pedido->save();
-            session()->flash('success', 'Observação salva com sucesso.');
-        } else {
-            session()->flash('error', 'Confirme sua anotação.');
-        }
-
-        $this->pedidoSelecionado = $pedido;
-    }
-
     public function salvarDesconto($pedidoId)
     {
         $pedido = Pedidos::find($pedidoId);
@@ -182,39 +150,113 @@ class Pedidos extends Controller
         return redirect()->route('editar.pedido.get', $pedidoId);
     }
 
+    public function validarPedido(Request $request)
+    {
+        $pedido = PedidoModal::find($request->id_pedido);
+
+        if (!$pedido) {
+             toastr()->error("Pedido não encontrado ao validar.");
+             return redirect()->route("pedidos");
+        }
+
+        $houveAlteracao = false;
+
+        foreach ($request->input('quantidade') as $itemId => $novaQuantidade) {
+            $item = $pedido->items()->find($itemId);
+
+            if ($item && is_numeric($novaQuantidade) && $novaQuantidade >= 0) {
+                if ($item->quantidade != $novaQuantidade) {
+                    $item->quantidade = $novaQuantidade;
+                    $item->valor_total = $item->valor_unitario * $novaQuantidade;
+                    $item->save();
+                    $houveAlteracao = true;
+                }
+            } else {
+                 Log::warning("Item ID {$itemId} não encontrado ou quantidade inválida ({$novaQuantidade}) para Pedido ID {$pedido->id} durante validação.");
+            }
+        }
+
+        if ($houveAlteracao) {
+            // Calcula o valor bruto SOMENTE para usar no cálculo do valor final
+            $valorBrutoCalculado = PedidosItems::where('pedido_id', $pedido->id)->sum('valor_total');
+
+            // Atualiza APENAS o valor final (assumindo que 'valor' é o campo final)
+            // Verifica se a coluna de desconto é 'descontos' ou 'desconto'
+            $descontoAplicar = $pedido->desconto ?? 0; // Ou $pedido->desconto ?? 0
+
+            // ATENÇÃO: Verifique se 'descontos' guarda VALOR ou PERCENTUAL
+            // Se for percentual, o cálculo é diferente!
+            // Ex: $pedido->valor = $valorBrutoCalculado * (1 - ($pedido->desconto / 100));
+            $pedido->valor = $valorBrutoCalculado - $descontoAplicar;
+
+            // REMOVIDO: $pedido->valor_original = $valorBrutoCalculado;
+
+            $pedido->save();
+        }
+
+        return redirect()->back()->with('success', 'Pedido validado e quantidades/valores atualizados com sucesso.');
+    }
+
     public function atualizarQuantidade(Request $request, $itemId)
     {
         try {
             $quantidade = $request->quantidade;
+            if (!is_numeric($quantidade) || $quantidade < 0) {
+                 toastr()->error('Quantidade inválida.');
+                 return redirect()->back();
+            }
+
             $item = PedidosItems::find($itemId);
-            
-            if (!$item || !is_numeric($quantidade) || $quantidade < 1) {
-                toastr()->error('Quantidade inválida');
+
+            if (!$item) {
+                toastr()->error('Item não encontrado.');
                 return redirect()->back();
             }
 
-            // Store old value for difference calculation
-            $valorAnterior = $item->valor_total;
-            
-            // Update item quantity and total value
             $item->quantidade = $quantidade;
             $item->valor_total = $item->valor_unitario * $quantidade;
             $item->save();
 
-            // Update order total value
             $pedido = $item->pedido;
-            $pedido->valor_total = PedidosItems::where('pedido_id', $pedido->id)->sum('valor_total');
-            $pedido->valor_original = $pedido->valor_total;
+            $valorBrutoCalculado = PedidosItems::where('pedido_id', $pedido->id)->sum('valor_total');
+
+            // Atualiza APENAS o valor final
+            $descontoAplicar = $pedido->desconto ?? 0;// Ou $pedido->desconto ?? 0
+            // Verifique se é VALOR ou PERCENTUAL
+            $pedido->valor = $valorBrutoCalculado - $descontoAplicar;
+
+            // REMOVIDO: $pedido->valor_original = $valorBrutoCalculado;
+
             $pedido->save();
 
-            toastr()->success('Quantidade e valores atualizados com sucesso');
-            return redirect()->route('editar.pedido.get', $pedido->id);
-            
+            toastr()->success('Quantidade e valores atualizados com sucesso.');
+            return redirect()->route('editar.pedido.get', ['id' => $pedido->id]);
+
         } catch (\Exception $e) {
-            \Log::error('Erro ao atualizar quantidade: ' . $e->getMessage());
-            toastr()->error('Erro ao atualizar quantidade');
+            Log::error('Erro ao atualizar quantidade: ' . $e->getMessage());
+            toastr()->error('Erro ao atualizar quantidade.');
             return redirect()->back();
         }
+    }
+
+    public function salvarObservacao(Request $request, $pedidoId)
+    {
+        $request->validate([
+            'observacao' => 'nullable|string',
+        ]);
+
+        $pedido = PedidoModal::find($pedidoId);
+
+        if (!$pedido) {
+             toastr()->error("Pedido não encontrado ao salvar observação.");
+             return redirect()->back();
+        }
+
+        $pedido->observacoes = $request->input('observacao');
+        $pedido->save();
+
+        return redirect()->route('editar.pedido.get', $pedidoId)
+                         ->with('success', 'Observação salva com sucesso.');
     }
     
 }

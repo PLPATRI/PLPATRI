@@ -92,4 +92,11 @@ Route::get('/filtrar-produtos', [Produto::class, 'filtrarProdutos']);
 
 Route::post('/gera-pdf-pedido', [Etiquetas::class, 'geraPdfPedido'])->name('pdf.pedido.post');
 
-Route::get('/relatorio', [RelatorioController::class, 'index'])->name('relatorio.get');
+Route::get('/relatorio-vendedores', [RelatorioController::class, 'vendedores'])->name('relatorio.vendedores.get');
+Route::get('/relatorio-curva', [RelatorioController::class, 'curva'])->name('relatorio.curva.get');
+Route::get('/relatorio-funil', [RelatorioController::class, 'funil'])->name('relatorio.funil.get');
+
+Route::post('/pedidos/{pedidoId}/salvar-observacao', [Pedidos::class, 'salvarObservacao'])->name('pedido.salvar.observacao');
+Route::post('/pedidos/{pedidoId}/salvar-desconto', [Pedidos::class, 'salvarDesconto'])->name('pedido.salvar.desconto');
+Route::post('/pedidos/validar', [Pedidos::class, 'validarPedido'])->name('pedido.validar');
+Route::post('/pedidos/item/{itemId}/quantidade', [Pedidos::class, 'atualizarQuantidade'])->name('pedido.item.quantidade.update');

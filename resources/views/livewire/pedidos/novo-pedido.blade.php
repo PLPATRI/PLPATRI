@@ -140,7 +140,7 @@
                                                                         {{ number_format($item['preco_unitario'], 4, ',', '.') }}</b>
                                                                 </td>
                                                                 <td><b>R$
-                                                                        {{ isset($valorUnitarios[$item['id']]) ? number_format($valorUnitarios[$item['id']], 4, ',', '.') : '0,00' }}</b>
+                                                                        {{ isset($valorUnitarios[$item['id']]) ? number_format($valorUnitarios[$item['id']], 2, ',', '.') : '0,00' }}</b>
                                                                 </td>
                                                             </tr>
                                                         @endforeach
@@ -177,30 +177,38 @@
                                                 <div class="col-lg-3">
                                                     <div class="form-group">
                                                         <label>Desconto (%)</label>
-                                                        <div class="col-md-12 d-flex">
-                                                            <input type="number" id="desconto" wire:model="desconto"
-                                                                class="form-control" placeholder="%"
-                                                                style="width: 85px;">
-
-                                                            <button class="btn btn-primary-light btn-sm"
-                                                                style="margin-left: 10px;width: 240px;" id="aplicaDesconto"
-                                                                wire:click="aplicaDesconto">Aplicar Desconto</button>
+                                                        <div class="input-group">
+                                                            <input type="number" step="0.01" min="0" id="desconto"
+                                                                wire:model.lazy="desconto"  {{-- Use .lazy para atualizar só ao sair do campo --}}
+                                                                wire:change="aplicaDesconto" {{-- Recalcula ao mudar o valor --}}
+                                                                class="form-control @error('desconto') is-invalid @enderror" placeholder="%" style="width: 85px;">
+                                                            {{-- O botão de aplicar pode ser removido ou mantido para feedback visual --}}
+                                                            {{-- Se mantido, ele apenas chama a função que já recalcula --}}
+                                                            <button class="btn btn-primary-light btn-sm" style="margin-left: 10px;"
+                                                                    wire:click="recalcularComDescontoClick" {{-- Chama o método de recalcular --}}
+                                                                    title="Recalcular com o desconto informado">
+                                                                Aplicar/Recalcular
+                                                            </button>
+                                                            @error('desconto') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                                         </div>
                                                     </div>
 
-                                                    <div id="semDesconto">
-                                                        <h4 class="">Total a prazo: <b>R$
-                                                        {{ number_format($valorTotal, 2, ',', '.') }}</b></h4>
-                                                        <h5>Sem desconto</h5>
-                                                        <h6 class="text-dark mt-10">Prazo para pagamento: 30 dias</h6>
-                                                    </div>     
-                                                    <div id="comDesconto" style="display: none;">
-                                                        <h5 class="">Valor Total: <b>R$
-                                                        {{ number_format($valorTotal, 2, ',', '.') }}</b></h5>
-                                                        <h4 class="">Total À Vista: <b>R$
-                                                        {{ number_format($valorTotalComDesconto, 2, ',', '.') }}</b></h4>
-                                                        <h6 class="text-dark mt-10">Prazo para pagamento: À vista</h6>
-                                                    </div>       
+                                                    <div class="mt-3"> {{-- Agrupador para os totais --}}
+                                                        {{-- Sempre mostra o valor original --}}
+                                                        <h5>Valor Original: <b>R$ {{ number_format($valorTotal, 2, ',', '.') }}</b></h5>
+
+                                                        {{-- Mostra detalhes do desconto e valor final APENAS se houver desconto > 0 --}}
+                                                        @if ($desconto > 0)
+                                                            <h6 class="text-info">Desconto Aplicado: {{ number_format($desconto, 2, ',', '.') }}%</h6>
+                                                            <h4 class="text-danger">Total Final (à vista): <b>R$ {{ number_format($valorTotalComDesconto, 2, ',', '.') }}</b></h4>
+                                                            <h6 class="text-dark mt-1">Prazo para pagamento: À vista</h6>
+                                                        @else
+                                                            {{-- Se não houver desconto, mostra o valor final (que é igual ao original) --}}
+                                                            <h4 class="">Total Final (a prazo): <b>R$ {{ number_format($valorTotalComDesconto, 2, ',', '.') }}</b></h4>
+                                                            {{-- <h5 class="text-muted">Sem desconto</h5> --}} {{-- Comentado pois fica implícito --}}
+                                                            <h6 class="text-dark mt-1">Prazo para pagamento: 30 dias (padrão)</h6>
+                                                        @endif
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mt-30">
@@ -459,11 +467,17 @@
                                             <div class="form-group">
                                                 <label for="desconto">Desconto (%):</label>
                                                 <div class="input-group">
-                                                    <input type="number" class="form-control" id="desconto"
-                                                    wire:model.live="desconto" min="0" max="100">
-                                                    <div class="input-group-append">
-                                                        <button class="btn btn-primary" type="button" wire:click="aplicaDesconto">Aplicar</button>
-                                                    </div>
+                                                    <input type="number" step="0.01" min="0" id="desconto"
+                                                        wire:model.lazy="desconto"  {{-- Use .lazy para atualizar só ao sair do campo --}}
+                                                        wire:change="aplicaDesconto" {{-- Recalcula ao mudar o valor --}}
+                                                        class="form-control @error('desconto') is-invalid @enderror" placeholder="%" style="width: 85px;">
+                                                    {{-- O botão de aplicar pode ser removido ou mantido para feedback visual --}}
+                                                    {{-- Se mantido, ele apenas chama a função que já recalcula --}}
+                                                    <button class="btn btn-primary-light btn-sm" style="margin-left: 10px;"
+                                                            wire:click="recalcularComDescontoClick" {{-- Chama o método de recalcular --}}
+                                                            title="Recalcular com o desconto informado">
+                                                        Aplicar/Recalcular
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -476,7 +490,7 @@
                                                     {{ number_format($valorTotal, 2, ',', '.') }}</b></h5>
                                                     <h4 class="text-danger mt-10">Total à vista: <b> {{ number_format($valorTotalComDesconto, 2, ',', '.') }}</b>
                                                     </h4>
-                                                    <span>{{ number_format($this->descontoAplicado, 2, ',', '.') }}% de
+                                                    <span>{{ number_format($desconto, 2, ',', '.') }}% de
                                                         desconto</span>
                                                     <h6 class="text-dark mt-10">Prazo para pagamento: À vista</h6>        
                                                 </div>

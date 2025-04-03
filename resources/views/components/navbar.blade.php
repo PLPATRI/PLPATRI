@@ -17,7 +17,7 @@
                     </h4>
                 @endif
                     <h4 class="logo-lg mb-0 text-dark">
-                        - v.1
+                        - v.2
                     </h4>
 
             </a>
@@ -62,8 +62,28 @@
                     href="{{ route('clientes.get') }}">Clientes</a>
             </li>
             <li>
-                <a class="{{ Request::is('relatorio') ? 'active_navbar ' : '' }}"
-                    href="{{ route('relatorio.get') }}">Relatório</a>
+                <a href="#"
+                    class="has-submenu {{ Request::is('cadastro-clientes') || Request::is('cadastro-fornecedores') || Request::is('cadastro-produtos') || Request::is('cadastro-vendedores') ? 'active_navbar' : '' }}"
+                    id="sm-17273103402347947-1" aria-haspopup="true" aria-controls="sm-17273103402347947-2"
+                    aria-expanded="false">
+                    Relatórios
+                    <i class="sub-arrow fa fa-angle-right"></i>
+                </a>
+                <ul id="sm-17273103402347947-2" role="group" aria-hidden="true"
+                    aria-labelledby="sm-17273103402347947-1" aria-expanded="false">
+                    <li>
+                        <a class="{{ Request::is('/relatorio-vendedores') ? 'active_navbar' : '' }}"
+                            href="{{ route('relatorio.vendedores.get') }}">Vendedores</a>
+                    </li>
+                    <li>
+                        <a class="{{ Request::is('/relatorio-funil') ? 'active_navbar' : '' }}"
+                            href="{{ route('relatorio.funil.get') }}">Funil de Vendas</a>
+                    </li>
+                    <li>
+                        <a class="{{ Request::is('/relatorio-curva') ? 'active_navbar' : '' }}"
+                            href="{{ route('relatorio.curva.get') }}">Curva ABC</a>
+                    </li>
+                </ul>
             </li>
             <li>
                 <a href="#"

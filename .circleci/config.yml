@@ -1,0 +1,69 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: cimg/php:8.1-node
+    steps:
+      - checkout
+      
+      # Instalar dependências do Composer
+      - restore_cache:
+          keys:
+            - composer-v1-{{ checksum "composer.lock" }}
+            - composer-v1-
+      - run:
+          name: Install Composer Dependencies
+          command: composer install --no-interaction --prefer-dist
+      - save_cache:
+          key: composer-v1-{{ checksum "composer.lock" }}
+          paths:
+            - vendor
+      
+      # Configurar Laravel
+      - run:
+          name: Setup Laravel
+          command: |
+            cp .env.example .env || echo "APP_KEY=" > .env
+            php artisan key:generate
+      
+      # Instalar dependências do Cypress
+      - restore_cache:
+          keys:
+            - v1-deps-{{ checksum "package-lock.json" }}
+            - v1-deps-
+      - run:
+          name: Install Node Dependencies
+          command: npm ci
+      - save_cache:
+          key: v1-deps-{{ checksum "package-lock.json" }}
+          paths:
+            - ~/.npm
+            - ~/.cache
+      
+      # Iniciar servidor Laravel
+      - run:
+          name: Start Laravel Server
+          command: php artisan serve
+          background: true
+      
+      # Esperar servidor ficar pronto
+      - run:
+          name: Wait for server
+          command: npx wait-on http://127.0.0.1:8000
+      
+      # Rodar testes Cypress
+      - run:
+          name: Run Cypress Tests
+          command: npx cypress run
+      
+      # Salvar artefatos
+      - store_artifacts:
+          path: cypress/videos
+      - store_artifacts:
+          path: cypress/screenshots
+
+workflows:
+  build:
+    jobs:
+      - test

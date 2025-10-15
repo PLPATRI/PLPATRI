@@ -1,12 +1,26 @@
 {
-    "private": true,
-    "scripts": {
-        "dev": "vite",
-        "build": "vite build"
-    },
-    "devDependencies": {
-        "axios": "^1.1.2",
-        "laravel-vite-plugin": "^0.7.2",
-        "vite": "^4.0.0"
-    }
+  "name": "cypress",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cypress.config.js",
+  "scripts": {
+  "test": "cypress run",
+  "start": "php artisan serve"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PLPATRI/PLPATRI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/PLPATRI/PLPATRI/issues"
+  },
+  "homepage": "https://github.com/PLPATRI/PLPATRI#readme",
+  "devDependencies": {
+    "cypress": "^15.4.0",
+    "wait-on": "^9.0.1"
+  }
 }

@@ -71,18 +71,31 @@
                 </a>
                 <ul id="sm-17273103402347947-2" role="group" aria-hidden="true"
                     aria-labelledby="sm-17273103402347947-1" aria-expanded="false">
+					 <li>
+                        <a class="{{ Request::is('/relatorio-vendedores') ? 'active_navbar' : '' }}"
+                            href="{{ route('relatorio.funil.get') }}">Relatório Mensal</a>
+                    </li>
                     <li>
                         <a class="{{ Request::is('/relatorio-vendedores') ? 'active_navbar' : '' }}"
                             href="{{ route('relatorio.vendedores.get') }}">Vendedores</a>
-                    </li>
-                    <li>
-                        <a class="{{ Request::is('/relatorio-funil') ? 'active_navbar' : '' }}"
-                            href="{{ route('relatorio.funil.get') }}">Funil de Vendas</a>
-                    </li>
+                    </li>                  
                     <li>
                         <a class="{{ Request::is('/relatorio-curva') ? 'active_navbar' : '' }}"
                             href="{{ route('relatorio.curva.get') }}">Curva ABC</a>
                     </li>
+					  <li>
+                        <a class="{{ Request::is('/relatorio-clientes') ? 'active_navbar' : '' }}"
+                            href="{{ route('relatorio.clientes.get') }}">Clientes que mais Compraram</a>
+                    </li>
+					
+					
+					<li>
+                        <a class="{{ Request::is('/relatorio-anual') ? 'active_navbar' : '' }}"
+                            href="{{ route('relatorio.anual.get') }}">Anual</a>
+                    </li>
+					  <li>	
+				
+					
                 </ul>
             </li>
             <li>
@@ -111,7 +124,10 @@
                         <a class="{{ Request::is('cadastro-vendedores') ? 'active_navbar' : '' }}"
                             href="{{ route('vendedores.cadastrar.get') }}">Vendedores</a>
                     </li>
+					
+
                 </ul>
+				
 
             </li>
             <li>
@@ -164,6 +180,7 @@
                         <a class="{{ Request::is('cadastro-vendedores') ? 'active_navbar' : '' }}"
                             href="{{ route('vendedores.cadastrar.get') }}">Vendedores</a>
                     </li>
+					
                 </ul>
 
             </li>

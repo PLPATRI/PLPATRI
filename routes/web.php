@@ -96,6 +96,11 @@ Route::get('/relatorio-vendedores', [RelatorioController::class, 'vendedores'])-
 Route::get('/relatorio-curva', [RelatorioController::class, 'curva'])->name('relatorio.curva.get');
 Route::get('/relatorio-funil', [RelatorioController::class, 'funil'])->name('relatorio.funil.get');
 
+Route::get('/relatorio-clientes', [RelatorioController::class, 'clientes'])->name('relatorio.clientes.get');
+
+Route::get('/relatorio-anual', [RelatorioController::class, 'anual'])->name('relatorio.anual.get');
+
+
 Route::post('/pedidos/{pedidoId}/salvar-observacao', [Pedidos::class, 'salvarObservacao'])->name('pedido.salvar.observacao');
 Route::post('/pedidos/{pedidoId}/salvar-desconto', [Pedidos::class, 'salvarDesconto'])->name('pedido.salvar.desconto');
 Route::post('/pedidos/validar', [Pedidos::class, 'validarPedido'])->name('pedido.validar');

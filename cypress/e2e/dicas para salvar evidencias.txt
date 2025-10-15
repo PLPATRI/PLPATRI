@@ -1,0 +1,79 @@
+Por padrão, o Cypress só gera screenshots automaticamente se o teste falhar, e precisa estar configurado corretamente no cypress.config.js.
+
+
+
+
+Para abrir o cypress e rodar o teste   PS C:\dev\cypress\cypress\e2e>      npx cypress open 
+
+
+
+
+
+
+🔹 Como salvar prints manualmente
+
+Você pode adicionar cy.screenshot() a qualquer momento:
+
+cy.get('[name="email"]').type('plpatri@gmail.com');
+cy.screenshot('preenche-email'); // salva screenshot com nome 'preenche-email.png'
+
+
+Pode fazer isso em qualquer passo:
+
+cy.get('.btn').click();
+cy.screenshot('depois-login');
+
+🔹 Como salvar prints automaticamente ao falhar
+
+No cypress.config.js:
+
+const { defineConfig } = require('cypress');
+
+module.exports = defineConfig({
+  e2e: {
+    setupNodeEvents(on, config) {
+      // screenshots automáticos ao falhar
+      on('after:screenshot', (details) => {
+        console.log('Screenshot tirada:', details.path)
+      });
+    },
+    screenshotOnRunFailure: true, // habilita automaticamente
+    defaultCommandTimeout: 10000
+  }
+});
+
+
+screenshotOnRunFailure: true → tira screenshot se qualquer comando falhar.
+
+As imagens são salvas em cypress/screenshots/<nome-do-teste>/.
+
+🔹 Dicas
+
+Se quiser screenshot de todo o teste, adicione ao final do it:
+
+cy.screenshot('final-teste');
+
+
+Se quiser screenshot apenas de um elemento específico:
+
+cy.get('.box-header > .btn').screenshot('botao-box-header');
+
+
+Para depurar, você pode usar { capture: 'runner' } ou { capture: 'viewport' }:
+
+cy.screenshot('exemplo', { capture: 'viewport' }); // só o que está visível na tela
+
+
+
+ypress grava vídeo apenas quando você roda via cypress run, não via cypress open
+
+cypress open abre o Test Runner interativo.
+
+Vídeos não são gravados nesse modo.
+
+Para gerar vídeos, use no terminal:
+
+npx cypress run
+
+
+Isso executa todos os testes no modo headless e grava o vídeo automaticamente.

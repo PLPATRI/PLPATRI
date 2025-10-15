@@ -55,7 +55,10 @@ jobs:
       # Rodar testes Cypress
       - run:
           name: Run Cypress Tests
-          command: npx cypress run
+          command: |
+            export DISPLAY=:99
+            Xvfb :99 -screen 0 1920x1080x24 &
+            npx cypress run
       
       # Salvar artefatos
       - store_artifacts:

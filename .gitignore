@@ -16,3 +16,5 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+echo "cypress/videos" >> .gitignore
+echo "cypress/screenshots" >> .gitignore

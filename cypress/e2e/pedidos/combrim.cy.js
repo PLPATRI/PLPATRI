@@ -21,10 +21,14 @@ describe('Realizar teste de login e pedidos', () => {
 
     // 4️⃣ Clica no botão de login
     cy.get('.btn').should('be.visible').click();
+    
+    // Aguarda o redirecionamento e carregamento da dashboard
+    cy.url().should('not.include', '/login');
+    cy.wait(2000);
     cy.screenshot('04-depois-login');
 
-    // 5️⃣ Navega para página de pedidos
-    cy.get(':nth-child(6) > a').should('be.visible').click();
+    // 5️⃣ Navega para página de pedidos (com timeout aumentado)
+    cy.get(':nth-child(6) > a', { timeout: 10000 }).should('be.visible').click();
     cy.wait(2000);
     cy.screenshot('05-pagina-pedidos');
 

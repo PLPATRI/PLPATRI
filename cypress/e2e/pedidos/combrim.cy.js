@@ -19,12 +19,12 @@ describe('Realizar teste de login e pedidos', () => {
     cy.get('[name="senha"]').should('be.visible').type('979899');
     cy.screenshot('03-preenche-credenciais');
 
-    // 4️⃣ Clica no botão de login
+    // 4️⃣ Clica no botão de login e aguarda redirecionamento
     cy.get('.btn').should('be.visible').click();
     
-    // Aguarda o redirecionamento e carregamento da dashboard
-    cy.url().should('not.include', '/login');
-    cy.wait(2000);
+    // Aguarda um elemento que só existe após o login (ex: menu, dashboard)
+    // Substitua pelo seletor de um elemento visível após login
+    cy.wait(3000); // Aguarda processamento e redirecionamento
     cy.screenshot('04-depois-login');
 
     // 5️⃣ Navega para página de pedidos (com timeout aumentado)

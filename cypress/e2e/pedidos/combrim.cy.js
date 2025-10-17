@@ -22,13 +22,24 @@ describe('Realizar teste de login e pedidos', () => {
     // 4️⃣ Clica no botão de login e aguarda redirecionamento
     cy.get('.btn').should('be.visible').click();
     
-    // Aguarda um elemento que só existe após o login (ex: menu, dashboard)
-    // Substitua pelo seletor de um elemento visível após login
-    cy.wait(3000); // Aguarda processamento e redirecionamento
+    // Aguarda o carregamento completo da dashboard
+    cy.wait(5000); // Aumentado para garantir carregamento
     cy.screenshot('04-depois-login');
 
-    // 5️⃣ Navega para página de pedidos (com timeout aumentado)
-    cy.get(':nth-child(6) > a', { timeout: 10000 }).should('be.visible').click();
+    // 5️⃣ Navega para página de pedidos
+    // Tenta múltiplas estratégias para encontrar o link de pedidos
+    cy.get('body').then(($body) => {
+      // Estratégia 1: Tentar por texto
+      if ($body.find('a:contains("Pedido")').length > 0) {
+        cy.contains('a', 'Pedido').first().click();
+      } 
+      // Estratégia 2: Tentar pelo nth-child com timeout maior
+      else {
+        cy.get(':nth-child(6) > a', { timeout: 20000 })
+          .should('be.visible')
+          .click();
+      }
+    });
     cy.wait(2000);
     cy.screenshot('05-pagina-pedidos');
 

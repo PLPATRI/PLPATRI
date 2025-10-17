@@ -30,6 +30,13 @@ jobs:
             php artisan config:clear
       
       # Instalar dependências do Cypress
+      - run:
+          name: Install Cypress System Dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+      
+      # Instalar dependências do Cypress
       - restore_cache:
           keys:
             - v1-deps-{{ checksum "package-lock.json" }}

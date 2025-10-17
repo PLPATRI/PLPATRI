@@ -1,50 +1,78 @@
 version: 2.1
-
 jobs:
   test:
     docker:
-      - image: cypress/base:20.9.0
+      - image: cimg/php:8.1-node
     steps:
       - checkout
       
+      # Instalar dependências do Composer
       - restore_cache:
           keys:
             - composer-v1-{{ checksum "composer.lock" }}
-      # Etapa de Composer removida
+            - composer-v1-
+      - run:
+          name: Install Composer Dependencies
+          command: composer install --no-interaction --prefer-dist
       - save_cache:
           key: composer-v1-{{ checksum "composer.lock" }}
           paths:
             - vendor
       
-      # Laravel setup (mantido, mas depende do PHP já estar disponível)
-      - run: |
-          cp .env.example .env || echo "APP_KEY=" > .env
-          php artisan key:generate || echo "Laravel setup pulado (sem PHP)"
+      # Configurar Laravel
+      - run:
+          name: Setup Laravel
+          command: |
+            cp .env.example .env || echo "APP_KEY=" > .env
+            echo "DB_CONNECTION=sqlite" >> .env
+            echo "DB_DATABASE=:memory:" >> .env
+            php artisan key:generate
+            php artisan config:clear
       
+      # Instalar dependências do Cypress
       - restore_cache:
           keys:
             - v1-deps-{{ checksum "package-lock.json" }}
-      - run: npm ci
+            - v1-deps-
+      - run:
+          name: Install Node Dependencies
+          command: npm ci
       - save_cache:
           key: v1-deps-{{ checksum "package-lock.json" }}
           paths:
             - ~/.npm
             - ~/.cache
       
-      # Servidor Laravel (pulável se PHP não estiver disponível)
+      # Iniciar servidor Laravel
       - run:
           name: Start Laravel Server
-          command: php artisan serve || echo "Servidor Laravel não iniciado"
+          command: php artisan serve --host=127.0.0.1 --port=8000
           background: true
       
+      # Esperar servidor ficar pronto
       - run:
           name: Wait for server
-          command: npx wait-on http://127.0.0.1:8000 || echo "Servidor não disponível"
+          command: |
+            echo "Aguardando servidor Laravel iniciar..."
+            for i in {1..30}; do
+              if curl -s http://127.0.0.1:8000 > /dev/null 2>&1; then
+                echo "✓ Servidor está respondendo!"
+                exit 0
+              fi
+              echo "Tentativa $i/30 - Aguardando..."
+              sleep 2
+            done
+            echo "✗ Erro: Servidor não respondeu após 60 segundos"
+            echo "Verificando processos PHP:"
+            ps aux | grep php
+            exit 1
       
+      # Rodar testes Cypress
       - run:
           name: Run Cypress Tests
           command: npx cypress run
       
+      # Salvar artefatos
       - store_artifacts:
           path: cypress/videos
       - store_artifacts:

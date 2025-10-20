@@ -28,6 +28,13 @@ jobs:
             echo "DB_DATABASE=:memory:" >> .env
             php artisan key:generate
             php artisan config:clear
+            
+      # Criar banco de dados e rodar migrations
+      - run:
+          name: Setup Database
+          command: |
+            touch database/database.sqlite
+            php artisan migrate:fresh --seed --force
       
       # Instalar dependências do Cypress
       - run:

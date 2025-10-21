@@ -29,14 +29,20 @@ describe('Realizar teste de login e pedidos', () => {
     // 5️⃣ Navega para página de pedidos
     // Estratégia robusta: tenta clicar no link, se falhar usa cy.visit
     cy.get('body').then(($body) => {
-      const pedidosLink = $body.find('a').filter(function() {
-        return $(this).text().trim().toLowerCase().includes('pedido');
-      });
+      // Procura por qualquer link que contenha "pedido" no texto (case insensitive)
+      const pedidosLink = $body[0].querySelectorAll('a');
+      let found = false;
       
-      if (pedidosLink.length > 0) {
-        cy.log('✓ Encontrou link "Pedidos" - clicando');
-        cy.wrap(pedidosLink.first()).click();
-      } else {
+      for (let link of pedidosLink) {
+        if (link.textContent.trim().toLowerCase().includes('pedido')) {
+          cy.log('✓ Encontrou link "Pedidos" - clicando');
+          cy.wrap(link).click();
+          found = true;
+          break;
+        }
+      }
+      
+      if (!found) {
         cy.log('⚠ Link não encontrado - navegando direto via URL');
         cy.visit('http://127.0.0.1:8000/pedidos');
       }

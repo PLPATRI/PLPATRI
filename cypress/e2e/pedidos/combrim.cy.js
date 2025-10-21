@@ -21,93 +21,108 @@ describe('Realizar teste de login e pedidos', () => {
 
     // 4️⃣ Clica no botão de login e aguarda redirecionamento
     cy.get('.btn').should('be.visible').click();
-    
-    // Aguarda o carregamento completo da dashboard
-    cy.wait(5000);
+    cy.wait(5000); // Aguarda carregamento completo da dashboard
     cy.screenshot('04-depois-login');
 
     // 5️⃣ Navega para página de pedidos
-    // Estratégia robusta: tenta clicar no link, se falhar usa cy.visit
     cy.get('body').then(($body) => {
-      // Procura por qualquer link que contenha "pedido" no texto (case insensitive)
       const pedidosLink = $body[0].querySelectorAll('a');
       let found = false;
       
       for (let link of pedidosLink) {
         if (link.textContent.trim().toLowerCase().includes('pedido')) {
-          cy.log('✓ Encontrou link "Pedidos" - clicando');
+          cy.log('✓ Encontrou link "Pedidos" no menu');
           cy.wrap(link).click();
           found = true;
           break;
         }
       }
       
+      // Se não encontrar, deixa o teste falhar (não usa cy.visit como fallback)
       if (!found) {
-        cy.log('⚠ Link não encontrado - navegando direto via URL');
-        cy.visit('http://127.0.0.1:8000/pedidos');
+        throw new Error('Link "Pedidos" não foi encontrado no menu após login');
       }
     });
     cy.wait(2000);
     cy.screenshot('05-pagina-pedidos');
 
-    // 6️⃣ Clica no botão dentro do box-header
-    cy.get('.box-header > .btn', { timeout: 10000 }).should('be.visible').click();
-    cy.screenshot('06-box-header');
+    // 6️⃣ Clica no botão "Novo Pedido" dentro do box-header
+    cy.get('.box-header > .btn', { timeout: 10000 })
+      .should('be.visible')
+      .click();
+    cy.screenshot('06-botao-novo-pedido');
 
-    // 7️⃣ Seleciona um cliente para pesquisa
-    cy.get('.col-lg-6 > .form-control').should('be.visible').type('bb');
-    cy.screenshot('07-preenche-campo');
+    // 7️⃣ Busca cliente por nome
+    cy.get('.col-lg-6 > .form-control')
+      .should('be.visible')
+      .type('bb');
+    cy.screenshot('07-busca-cliente');
 
-    // 8️⃣ Busca um cliente
+    // 8️⃣ Clica no botão de pesquisa
     cy.get('.btn > :nth-child(1) > .fas').click({ force: true });
     cy.wait(1000);
     cy.screenshot('08-resultado-busca');
 
-    // 9️⃣ Seleciona o cliente
-    cy.get('tr > :nth-child(3) > .btn').should('be.visible').click();
+    // 9️⃣ Seleciona o cliente encontrado
+    cy.get('tr > :nth-child(3) > .btn')
+      .should('be.visible')
+      .click();
     cy.screenshot('09-cliente-selecionado');
 
-    // 🔟 Clica em Próximo
-    cy.get('.d-flex > .btn-success').should('be.visible').click();
-    cy.screenshot('10-proximo');
+    // 🔟 Avança para próxima etapa
+    cy.get('.d-flex > .btn-success')
+      .should('be.visible')
+      .click();
+    cy.screenshot('10-proximo-passo');
 
-    // 1️⃣1️⃣ Botão Novo Pedido
-    cy.get('#new-pedido-customer').should('be.visible').click();
+    // 1️⃣1️⃣ Adiciona novo produto ao pedido
+    cy.get('#new-pedido-customer')
+      .should('be.visible')
+      .click();
     cy.wait(1000);
-    cy.screenshot('11-novo-pedido');
+    cy.screenshot('11-adicionar-produto');
 
-    // 1️⃣2️⃣ Seleciona o checkbox
-    cy.get('tbody > :nth-child(1) > :nth-child(1) > label').should('be.visible').click();
-    cy.screenshot('12-checkbox-selecionado');
+    // 1️⃣2️⃣ Seleciona o primeiro produto
+    cy.get('tbody > :nth-child(1) > :nth-child(1) > label')
+      .should('be.visible')
+      .click();
+    cy.screenshot('12-produto-selecionado');
 
-    // 1️⃣3️⃣ Seleciona campo quantidade e insere valor
+    // 1️⃣3️⃣ Define quantidade do produto
     cy.get(':nth-child(1) > .w-50 > .form-group > .form-control')
       .should('be.visible')
       .clear()
       .type('100')
       .blur();
     cy.wait(500);
-    cy.screenshot('13-quantidade-inserida');
+    cy.screenshot('13-quantidade-definida');
 
-    // 1️⃣4️⃣ Seleciona balcão
-    cy.get('#pedido-modal > span:first-child').parent().should('be.visible').click();
-    cy.screenshot('14-modal-aberto');
+    // 1️⃣4️⃣ Abre modal de finalização
+    cy.get('#pedido-modal > span:first-child')
+      .parent()
+      .should('be.visible')
+      .click();
+    cy.screenshot('14-modal-finalizacao');
 
-    // Scroll até o elemento e força o clique se necessário
+    // 1️⃣5️⃣ Seleciona forma de retirada (Balcão)
     cy.get('.col-lg-6.d-flex > :nth-child(1) > :nth-child(1) > label')
       .scrollIntoView()
       .wait(500)
       .click({ force: true });
-    cy.screenshot('15-balcao-selecionado');
+    cy.screenshot('15-forma-retirada-selecionada');
 
-    // 1️⃣5️⃣ Finaliza o pedido
+    // 1️⃣6️⃣ Finaliza o pedido
     cy.get('.modal-footer > .btn-success > :nth-child(1)')
       .should('be.visible')
       .click();
     cy.wait(2000);
     cy.screenshot('16-pedido-finalizado');
 
-    // Validação final
+    // 1️⃣7️⃣ Tela final - Confirmação
     cy.screenshot('17-tela-final');
+    
+    // ✅ Validação opcional: verifica mensagem de sucesso
+    cy.contains('Pedido Gerado com sucesso', { timeout: 5000 })
+      .should('be.visible');
   });
 });

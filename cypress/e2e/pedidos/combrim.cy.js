@@ -21,12 +21,26 @@ describe('Realizar teste de login e pedidos', () => {
 
     // 4️⃣ Clica no botão de login e aguarda redirecionamento
     cy.get('.btn').should('be.visible').click();
-    cy.wait(5000); // Aguarda carregamento completo da dashboard
+    
+    // Aguarda o carregamento completo da dashboard
+    cy.wait(5000);
     cy.screenshot('04-depois-login');
 
     // 5️⃣ Navega para página de pedidos
-    // Usa cy.visit direto para a rota de pedidos
-    cy.visit('http://127.0.0.1:8000/pedidos');
+    // Estratégia robusta: tenta clicar no link, se falhar usa cy.visit
+    cy.get('body').then(($body) => {
+      const pedidosLink = $body.find('a').filter(function() {
+        return $(this).text().trim().toLowerCase().includes('pedido');
+      });
+      
+      if (pedidosLink.length > 0) {
+        cy.log('✓ Encontrou link "Pedidos" - clicando');
+        cy.wrap(pedidosLink.first()).click();
+      } else {
+        cy.log('⚠ Link não encontrado - navegando direto via URL');
+        cy.visit('http://127.0.0.1:8000/pedidos');
+      }
+    });
     cy.wait(2000);
     cy.screenshot('05-pagina-pedidos');
 
@@ -38,7 +52,7 @@ describe('Realizar teste de login e pedidos', () => {
     cy.get('.col-lg-6 > .form-control').should('be.visible').type('bb');
     cy.screenshot('07-preenche-campo');
 
-    // 8️⃣ Busca um cliente (ajustado para forçar clique no ícone invisível)
+    // 8️⃣ Busca um cliente
     cy.get('.btn > :nth-child(1) > .fas').click({ force: true });
     cy.wait(1000);
     cy.screenshot('08-resultado-busca');
@@ -69,7 +83,7 @@ describe('Realizar teste de login e pedidos', () => {
     cy.wait(500);
     cy.screenshot('13-quantidade-inserida');
 
-    // 1️⃣4️⃣ Seleciona balcão - CORRIGIDO
+    // 1️⃣4️⃣ Seleciona balcão
     cy.get('#pedido-modal > span:first-child').parent().should('be.visible').click();
     cy.screenshot('14-modal-aberto');
 
@@ -87,7 +101,7 @@ describe('Realizar teste de login e pedidos', () => {
     cy.wait(2000);
     cy.screenshot('16-pedido-finalizado');
 
-    // Validação final (opcional)
+    // Validação final
     cy.screenshot('17-tela-final');
   });
 });

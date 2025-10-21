@@ -21,28 +21,21 @@ describe('Realizar teste de login e pedidos', () => {
 
     // 4️⃣ Clica no botão de login e aguarda redirecionamento
     cy.get('.btn').should('be.visible').click();
-    cy.wait(5000); // Aguarda carregamento completo da dashboard
+    
+    // Aguarda o carregamento completo da dashboard
+    cy.wait(5000);
+    
+    // Aguarda o menu estar completamente carregado
+    cy.get('a').should('have.length.greaterThan', 5); // Espera pelo menos 5 links no menu
+    
     cy.screenshot('04-depois-login');
 
     // 5️⃣ Navega para página de pedidos
-    cy.get('body').then(($body) => {
-      const pedidosLink = $body[0].querySelectorAll('a');
-      let found = false;
-      
-      for (let link of pedidosLink) {
-        if (link.textContent.trim().toLowerCase().includes('pedido')) {
-          cy.log('✓ Encontrou link "Pedidos" no menu');
-          cy.wrap(link).click();
-          found = true;
-          break;
-        }
-      }
-      
-      // Se não encontrar, deixa o teste falhar (não usa cy.visit como fallback)
-      if (!found) {
-        throw new Error('Link "Pedidos" não foi encontrado no menu após login');
-      }
-    });
+    // Procura o link "Pedidos" com retry automático do Cypress
+    cy.contains('a', 'Pedidos', { timeout: 10000, matchCase: false })
+      .should('be.visible')
+      .click();
+    
     cy.wait(2000);
     cy.screenshot('05-pagina-pedidos');
 

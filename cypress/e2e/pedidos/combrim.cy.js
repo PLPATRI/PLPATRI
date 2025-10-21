@@ -23,16 +23,29 @@ describe('Realizar teste de login e pedidos', () => {
     cy.get('.btn').should('be.visible').click();
     
     // Aguarda o carregamento completo da dashboard
-    cy.wait(5000);
+    cy.wait(7000); // Aumentado para 7 segundos
     
-    // Aguarda o menu estar completamente carregado
-    cy.get('a').should('have.length.greaterThan', 5); // Espera pelo menos 5 links no menu
+    cy.screenshot('04-depois-login-DEBUG');
     
-    cy.screenshot('04-depois-login');
+    // 🔍 DEBUG: Lista TODOS os links encontrados
+    cy.get('a').then(($links) => {
+      cy.log(`===== TOTAL DE LINKS ENCONTRADOS: ${$links.length} =====`);
+      $links.each((index, link) => {
+        const text = link.textContent.trim();
+        const href = link.getAttribute('href');
+        cy.log(`[${index}] Texto: "${text}" | href: "${href}"`);
+      });
+    });
+    
+    // 🔍 DEBUG: Captura o HTML completo da página
+    cy.document().then((doc) => {
+      cy.log('===== INÍCIO DO HTML =====');
+      cy.log(doc.body.innerHTML.substring(0, 2000)); // Primeiros 2000 caracteres
+      cy.log('===== FIM DO HTML =====');
+    });
 
-    // 5️⃣ Navega para página de pedidos
-    // Procura o link "Pedidos" com retry automático do Cypress
-    cy.contains('a', 'Pedidos', { timeout: 10000, matchCase: false })
+    // 5️⃣ Tenta encontrar o link "Pedidos" (vai falhar mas teremos os logs)
+    cy.contains('a', 'Pedidos', { timeout: 5000, matchCase: false })
       .should('be.visible')
       .click();
     

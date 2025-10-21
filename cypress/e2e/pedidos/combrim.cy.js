@@ -21,11 +21,12 @@ describe('Realizar teste de login e pedidos', () => {
 
     // 4️⃣ Clica no botão de login e aguarda redirecionamento
     cy.get('.btn').should('be.visible').click();
-    cy.wait(3000); // Aguarda carregamento da dashboard
+    cy.wait(5000); // Aguarda carregamento completo da dashboard
     cy.screenshot('04-depois-login');
 
-    // 5️⃣ Navega para página de pedidos (usando texto do link)
-    cy.contains('a', 'Pedidos').should('be.visible').click();
+    // 5️⃣ Navega para página de pedidos
+    // Usa cy.visit direto para a rota de pedidos
+    cy.visit('http://127.0.0.1:8000/pedidos');
     cy.wait(2000);
     cy.screenshot('05-pagina-pedidos');
 

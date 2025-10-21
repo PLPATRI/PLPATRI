@@ -1,0 +1,644 @@
+DEU CERTO EXCUAÇÃO
+
+npx cypress run --record --parallel --ci-build-id regressions-2023-10-13 --key 79f4440a-85a5-4a9a-8736-0c2de9d158a3
+
+npx cypress run --record --parallel --ci-build-id regressao-2025-10-13 --key 79f4440a-85a5-4a9a-8736-0c2de9d158a3
+
+
+
+npx cypress run --record --parallel --ci-build-id regressao-2025-10-13 --key 79f4440a-85a5-4a9a-8736-0c2de9d158a3
+
+
+deucerto
+npx cypress run --browser chrome --headless
+gravou tudo neste
+C:\dev\cypress\cypress\videos\cypress\e2e
+
+
+
+evidencias
+C:\dev\cypress\cypress\screenshots\cypress\e2e\combrim.cy.js\17-tela-final.png
+
+
+16/10/2025
+local aonde possui as evidencias  
+C:\laragon\www\sys_erp\cypress\screenshots\cypress\e2e\combrim.cy.js
+
+
+
+C:\dev\cypress\cypress\videos\cypress\e2e\2-advanced-examples\window.cy.js.mp4
+
+
+agora executar com estes abaixo
+PS C:\laragon\www\sys_erp> npx cypress open
+PS C:\laragon\www\sys_erp> npx cypress run --record --key 79f4440a-85a5-4a9a-8736-0c2de9d158a3
+
+
+Aperte q para sair do diff e depois:
+
+powershell 
+git add -A
+git commit -m "Corrigir testes"
+git push
+
+Isso vai:
+
+✅ Adicionar o config correto na raiz
+✅ Aplicar as correções no teste
+✅ Limpar screenshots antigos
+✅ Disparar uma nova pipeline no CircleCI
+
+
+PS C:\dev\cypress> git add -A
+warning: in the working copy of 'cypress.config.js', LF will be replaced by CRLF the next time Git touches it
+PS C:\dev\cypress> git commit -m "Adicionar cypress.config.js na raiz e corrigir teste"
+[main 0e6755f] Adicionar cypress.config.js na raiz e corrigir teste
+ 22 files changed, 57 insertions(+), 66 deletions(-)
+ delete mode 100644 cypress/e2e/cypress.config.js
+ delete mode 100644 cypress/screenshots/cypress/e2e/2-advanced-examples/misc.cy.js/my-image.png
+ delete mode 100644 cypress/screenshots/cypress/e2e/combrim.cy.js/01-homepage.png
+ delete mode 100644 cypress/screenshots/cypress/e2e/combrim.cy.js/02-seleciona-tipo-login.png
+ delete mode 100644 cypress/screenshots/cypress/e2e/combrim.cy.js/03-preenche-credenciais.png
+ delete mode 100644 cypress/screenshots/cypress/e2e/combrim.cy.js/04-depois-login.png
+ delete mode 100644 cypress/screenshots/cypress/e2e/combrim.cy.js/05-pagina-pedidos.png
+ delete mode 100644 cypress/screenshots/cypress/e2e/combrim.cy.js/06-box-header.png
+ delete mode 100644 cypress/screenshots/cypress/e2e/combrim.cy.js/07-preenche-campo.png
+ delete mode 100644 cypress/screenshots/cypress/e2e/combrim.cy.js/08-resultado-busca.png
+ delete mode 100644 cypress/screenshots/cypress/e2e/combrim.cy.js/09-cliente-selecionado.png
+ delete mode 100644 cypress/screenshots/cypress/e2e/combrim.cy.js/10-proximo.png
+ delete mode 100644 cypress/screenshots/cypress/e2e/combrim.cy.js/11-novo-pedido.png
+ delete mode 100644 cypress/screenshots/cypress/e2e/combrim.cy.js/12-checkbox-selecionado.png
+ delete mode 100644 cypress/screenshots/cypress/e2e/combrim.cy.js/13-quantidade-inserida.png
+ delete mode 100644 cypress/screenshots/cypress/e2e/combrim.cy.js/14-modal-aberto.png
+ delete mode 100644 cypress/screenshots/cypress/e2e/combrim.cy.js/15-balcao-selecionado.png
+ delete mode 100644 cypress/screenshots/cypress/e2e/combrim.cy.js/16-pedido-finalizado.png
+ delete mode 100644 cypress/screenshots/cypress/e2e/combrim.cy.js/17-tela-final.png
+PS C:\dev\cypress> git push
+Enumerating objects: 19, done.
+Counting objects: 100% (19/19), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (9/9), done.
+Writing objects: 100% (10/10), 1.52 KiB | 777.00 KiB/s, done.
+Total 10 (delta 5), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (5/5), completed with 5 local objects.
+To https://github.com/PLPATRI/PLPATRI.git
+   5eb6b73..0e6755f  main -> main
+PS C:\dev\cypress> 
+
+
+Perfeito! 🎉 O push foi realizado com sucesso!
+Commit 0e6755f enviado:
+
+✅ 22 arquivos alterados
+✅ cypress.config.js adicionado na raiz com projectId
+✅ Teste corrigido com scrollIntoView e force: true
+✅ Screenshots antigos limpos
+✅ Config duplicado removido
+
+Agora:
+Vá para o CircleCI e acompanhe a nova pipeline:
+https://app.circleci.com/pipelines/github/PLPATRI/PLPATRI
+Você deve ver uma nova pipeline disparada pelo commit "Adicionar cypress.config.js na raiz e corrigir teste".
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Processo ProcessoProcesso ProcessoProcesso ProcessoProcesso ProcessoProcesso ProcessoProcesso ProcessoProcesso ProcessoProcesso ProcessoProcesso ProcessoProcesso ProcessoProcesso Processo
+
+Sobre o Processo (respondendo sua pergunta):
+NÃO precisa testar no VS Code antes de commitar para o CircleCI. O processo pode ser:
+Opção 1 - Desenvolvimento Local (Recomendado):
+
+✅ Faz mudanças no código
+✅ Testa localmente no VS Code com npx cypress open ou npx cypress run
+✅ Se passar, faz commit e push
+✅ CircleCI roda automaticamente
+✅ Vê resultado no CircleCI (não precisa do Cypress Cloud se não usar --record)
+
+Opção 2 - Direto no CI:
+
+✅ Faz mudanças no código
+✅ Faz commit e push direto
+✅ CircleCI roda e testa
+✅ Se falhar, ajusta e repete
+
+Sobre o Cypress Cloud:
+
+Cypress Cloud (https://cloud.cypress.io) só é usado quando você roda com --record
+CircleCI roda os testes automaticamente a cada push
+São duas coisas separadas
+
+
+
+
+ Padrão das Empresas de Tecnologia
+✅ O que é considerado OBRIGATÓRIO:
+
+Manter APENAS testes relevantes do projeto
+
+❌ Deletar todos os testes de exemplo do Cypress
+✅ Manter apenas testes reais da aplicação
+Motivo: Testes de exemplo poluem os relatórios, aumentam tempo de execução e confundem a equipe
+
+Organização por funcionalidade/módulo
+
+   cypress/e2e/
+   ├── auth/
+   │   ├── login.cy.js
+   │   └── logout.cy.js
+   ├── pedidos/
+   │   ├── criar-pedido.cy.js
+   │   └── listar-pedidos.cy.js
+   └── clientes/
+       └── buscar-cliente.cy.js
+	   
+	   Usar specPattern genérico para pegar tudo:
+
+javascript   specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}"
+```
+   Isso permite adicionar novos testes em qualquer pasta automaticamente.
+
+4. **Separar por tipo de teste** (se o projeto crescer):
+```
+   cypress/
+   ├── e2e/           # Testes end-to-end
+   ├── integration/   # Testes de integração
+   └── component/     # Testes de componente
+   
+   Boas Práticas de QA
+✅ FAÇA:
+
+✅ Delete os testes de exemplo (cypress/e2e/cypress/)
+✅ Organize testes por módulo/funcionalidade
+✅ Use nomes descritivos (criar-pedido-balcao.cy.js)
+✅ Mantenha um arquivo README.md explicando como rodar os testes
+✅ Use .gitignore para não commitar vídeos/screenshots
+
+❌ NÃO FAÇA:
+
+❌ Manter testes de exemplo em produção
+❌ Commitar pasta node_modules
+❌ Commitar vídeos/screenshots (só os artefatos do CI)
+❌ Usar specPattern específico que limite futuros testes
+
+
+
+
+
+Faça commit dessa configuração
+Observe os logs do step "Wait for server"
+Se ainda falhar, você verá exatamente quais processos estão rodando
+Se ainda houver problemas, os logs vão mostrar se o PHP está rodando ou não
+
+git add .circleci/config.yml
+git commit -m "fix: corrigir timeout ao aguardar servidor Laravel"
+git push
+
+caso não mude no pipeline
+Vamos verificar se o commit foi feito corretamente:
+
+bash# Verifique se as mudanças foram commitadas
+git status
+
+# Verifique o último commit
+git log --oneline -1
+
+# Verifique se foi feito push
+git log origin/main..HEAD
+
+
+
+Solução: Atualizar a versão do PHPconfig.ymlCódigo ∙ Versão 2   test:
+    docker:
+      - image: cimg/php:8.2-nodeAgora faça o commit:
+bas
+git add .circleci/config.yml
+git commit -m "fix: atualizar imagem PHP para 8.2"
+git push
+
+
+
+
+
+ fluxo completo: 🎓
+Por que precisa fazer commit?
+1️⃣ O arquivo está só na sua máquina local
+Quando você copiou o arquivo combrim.cy.js, ele foi criado apenas no seu computador:
+C:\laragon\www\sys_erp\cypress\e2e\pedidos\combrim.cy.js
+```
+
+### 2️⃣ **O CircleCI roda no servidor deles, não no seu PC**
+O CircleCI **não tem acesso** aos arquivos da sua máquina. Ele precisa buscar os arquivos do **GitHub**.
+
+### 3️⃣ **O fluxo completo é:**
+```
+Seu PC (local)  →  GitHub (remoto)  →  CircleCI (servidor)
+Passo a passo:
+
+git add → Prepara o arquivo para commit
+git commit → Salva as mudanças localmente no Git
+git push → Envia as mudanças para o GitHub
+CircleCI detecta o push → Baixa o código do GitHub → Roda os testes
+
+4️⃣ Sem o push, o CircleCI não vê o arquivo novo
+O CircleCI só enxerga o que está no GitHub, não o que está no seu computador.
+Resumindo:
+
+✅ Com commit + push: CircleCI vê e executa o teste
+❌ Sem commit + push: CircleCI continua executando a versão antiga (só o teste básico)
+
+
+
+
+
+como funcionam nas empresas hoje, teria algum exemplo como funcionam neste caso?
+
+Ótima pergunta! Vou te mostrar como funciona na prática nas empresas modernas: 🏢
+
+Fluxo Real de Desenvolvimento em Empresas
+📋 Cenário típico:
+Desenvolvedor → Branch → Pull Request → Code Review → CI/CD → Deploy
+```
+
+---
+
+## 🎯 **Exemplo do dia a dia:**
+
+### **Segunda-feira, 9h - Nova tarefa**
+
+**João (desenvolvedor)** recebe no Jira/Trello:
+```
+TASK-123: Adicionar teste E2E de criação de pedido
+1️⃣ Cria uma branch (nunca trabalha direto na main)
+bash
+git checkout -b feature/TASK-123-teste-criar-pedido
+2️⃣ Desenvolve e testa localmente
+bash
+# Cria o teste
+code cypress/e2e/pedidos/combrim.cy.js
+
+# Testa localmente
+npx cypress run
+
+# Vê que funcionou ✅
+3️⃣ Commit com mensagem padronizada
+bash
+git add cypress/e2e/pedidos/combrim.cy.js
+git commit -m "feat(tests): adicionar teste E2E completo de pedido
+
+- Implementa fluxo: login → buscar cliente → criar pedido
+- Adiciona 17 screenshots para documentação
+- Refs: TASK-123"
+
+git push origin feature/TASK-123-teste-criar-pedido
+```
+
+### **4️⃣ Abre Pull Request (PR) no GitHub**
+```
+Title: [TASK-123] Adicionar teste E2E de criação de pedido
+
+Description:
+## O que foi feito
+- ✅ Teste completo de criação de pedido
+- ✅ 17 screenshots documentando cada passo
+- ✅ Tratamento de exceções não tratadas
+
+## Como testar
+1. Rodar localmente: `npx cypress run`
+2. Ver vídeo em: cypress/videos/
+
+## Screenshots
+[anexa prints do teste rodando]
+```
+
+### **5️⃣ CI/CD roda automaticamente**
+```
+CircleCI detecta o PR → Roda todos os testes → Publica resultado
+```
+
+GitHub mostra:
+```
+✅ All checks passed
+   ✅ CircleCI: test (1m 35s)
+   ✅ Code quality: A
+   ✅ Coverage: 85%
+```
+
+### **6️⃣ Code Review**
+**Maria (tech lead)** revisa:
+```
+💬 "Ótimo trabalho! Só alguns ajustes:"
+   - Usar data-testid ao invés de classes CSS
+   - Reduzir os waits fixos
+   - Adicionar validação final
+
+👍 Approved after changes
+7️⃣ João corrige e atualiza
+bash
+# Faz os ajustes
+git add .
+git commit -m "refactor: aplicar sugestões do code review"
+git push
+
+# CI roda novamente ✅
+```
+
+### **8️⃣ Merge para main**
+```
+Maria clica em "Merge Pull Request"
+→ CircleCI roda novamente na main
+→ Se passar, faz deploy automático
+```
+
+---
+
+## 🏗️ **Estrutura Real de uma Empresa**
+
+### **Times separados:**
+```
+┌─────────────────────────────────────────┐
+│         EQUIPE DE DESENVOLVIMENTO        │
+├─────────────────────────────────────────┤
+│ • Frontend (3 devs)                     │
+│ • Backend (4 devs)                      │
+│ • QA/Testes (2 devs) ← Você aqui!      │
+│ • DevOps (1 dev)                        │
+└─────────────────────────────────────────┘
+           ↓
+┌─────────────────────────────────────────┐
+│              CI/CD PIPELINE              │
+├─────────────────────────────────────────┤
+│ 1. Build                                │
+│ 2. Unit Tests                           │
+│ 3. Integration Tests                    │
+│ 4. E2E Tests (Cypress) ← Seu teste!    │
+│ 5. Security Scan                        │
+│ 6. Code Quality                         │
+└─────────────────────────────────────────┘
+           ↓
+┌─────────────────────────────────────────┐
+│            AMBIENTES                     │
+├─────────────────────────────────────────┤
+│ • DEV (toda vez que merge na develop)   │
+│ • QA/Staging (toda vez que merge main)  │
+│ • PROD (manual, após aprovação)         │
+└─────────────────────────────────────────┘
+📊 Ferramentas usadas juntas:
+Stack típica 2025:
+javascript
+// Controle de versão
+Git + GitHub/GitLab/Bitbucket
+
+// CI/CD
+CircleCI / GitHub Actions / Jenkins / GitLab CI
+
+// Testes
+Cypress (E2E) + Jest (Unit) + Playwright (E2E alternativo)
+
+// Qualidade de código
+SonarQube / ESLint / Prettier
+
+// Gestão
+Jira / Linear / Trello
+
+// Comunicação
+Slack / Teams / Discord
+
+// Monitoramento
+Sentry / Datadog / New Relic
+```
+
+---
+
+## 🚀 **Exemplo de empresa real (Netflix, Uber, etc):**
+
+### **Deploy 50x por dia:**
+```
+09:00 → Dev A: Push feature X → CI passa → Deploy DEV
+09:30 → Dev B: Push bugfix Y → CI passa → Deploy DEV
+10:00 → Dev C: Push teste Z → CI passa → Deploy DEV
+...
+17:00 → 50+ deploys aconteceram hoje!
+```
+
+### **Como é possível?**
+
+1. **Testes automatizados** (como o que você criou!)
+2. **CI/CD roda em < 2 minutos**
+3. **Deploy automático** se passar
+4. **Rollback automático** se falhar
+5. **Feature flags** para ativar/desativar
+
+---
+
+## 💡 **Seu teste no Combrim em uma empresa:**
+```
+Você (QA Engineer):
+├─ Cria teste E2E no Cypress
+├─ Abre PR
+├─ CI roda automaticamente
+├─ Tech Lead aprova
+├─ Merge na main
+└─ Deploy automático ✅
+
+Benefícios:
+✅ Ninguém quebra o login/pedidos sem perceber
+✅ Documentação visual (screenshots)
+✅ Regressão automática
+✅ Confiança para fazer mudanças
+🎓 Resumo:
+Antes (antigamente):
+
+Testar manualmente tudo antes de cada deploy
+1 deploy por semana
+Medo de quebrar coisas
+Agora (empresas modernas):
+
+Testes automatizados (como o seu!)
+50+ deploys por dia
+Confiança e velocidade
+Seu teste do Combrim é exatamente o que empresas fazem! 🎯
+
+Alguma dúvida sobre como funciona? 😊
+
+
+
+
+SIM JA ABRI E APLIQUEI , E AGORA
+
+Perfeito! Agora vamos fazer o commit e push! 🚀
+
+bash
+git add cypress/e2e/pedidos/combrim.cy.js
+git commit -m "fix: aumentar timeout e adicionar wait após login"
+git push
+Depois execute esses 3 comandos, um de cada vez.
+
+O que vai acontecer:
+✅ git add - Prepara o arquivo modificado
+✅ git commit - Salva as mudanças localmente
+✅ git push - Envia para o GitHub
+🤖 CircleCI detecta - Pipeline #30 inicia automaticamente
+🎬 Testes rodam - Agora com o timeout corrigido
+Depois do push:
+Volte para a página do CircleCI
+Atualize (F5)
+Aguarde o pipeline #30 aparecer
+Acompanhe o step "Run Cypress Tests"
+Agora deve passar! 💪
+
+Execute os comandos e me avise o resultado! 🎯
+
+
+O TESTE VAI RODAR SOZINHO, SEM SER PELO vscode?
+
+SIM! Exatamente! 🎯
+
+Como funciona:
+1️⃣ Você faz push para o GitHub:
+bash
+git push
+```
+
+### 2️⃣ **GitHub avisa o CircleCI:**
+```
+GitHub: "Ei CircleCI, tem código novo aqui!"
+3️⃣ CircleCI automaticamente:
+🤖 Detecta o push
+📥 Baixa o código do GitHub
+🏗️ Cria um servidor virtual (Ubuntu)
+⚙️ Instala PHP, Node, Composer, Cypress
+🚀 Inicia o servidor Laravel
+🧪 Roda os testes do Cypress automaticamente
+📹 Grava vídeos e screenshots
+✅ Mostra resultado (passou/falhou)
+4️⃣ Você só acompanha:
+Abre o CircleCI no navegador
+Assiste os testes rodando
+Vê os resultados
+Você NÃO precisa:
+❌ Abrir o VS Code
+❌ Rodar npx cypress run
+❌ Deixar seu PC ligado
+❌ Fazer nada manualmente
+
+Comparação:
+Local (no seu PC):
+bash
+npx cypress run  ← Você executa manualmente
+CI/CD (CircleCI):
+bash
+git push  ← CircleCI executa automaticamente!
+É tipo Netflix:
+📺 Local: Você assiste no seu computador
+☁️ CircleCI: Roda na nuvem, automático, 24/7
+Execute os comandos de commit agora e veja a mágica acontecer! ✨
+
+
+Cria um servidor virtual (Ubuntu) ,cria aonde no github, não na minha maquina local, isso?
+
+EXATO! 🎯 Você entendeu perfeitamente!
+
+Onde o servidor é criado:
+❌ NÃO é criado:
+❌ No seu PC (C:\laragon\www\sys_erp)
+❌ No GitHub (GitHub só guarda o código)
+✅ É criado:
+✅ Nos servidores do CircleCI (na nuvem deles - AWS)
+Visualizando o fluxo completo:
+┌─────────────────────────────────────────────────────────┐
+│          SEU COMPUTADOR (Local)                         │
+│  C:\laragon\www\sys_erp                                 │
+│                                                          │
+│  1. Você edita: combrim.cy.js                           │
+│  2. Você faz: git push                                  │
+└────────────────────┬────────────────────────────────────┘
+                     │
+                     │ git push (envia código)
+                     ↓
+┌─────────────────────────────────────────────────────────┐
+│          GITHUB.COM (Repositório)                       │
+│  github.com/PLPATRI/PLPATRI                             │
+│                                                          │
+│  • Guarda todo o código                                 │
+│  • Histórico de commits                                 │
+│  • NÃO executa nada!                                    │
+└────────────────────┬────────────────────────────────────┘
+                     │
+                     │ webhook (avisa que tem código novo)
+                     ↓
+┌─────────────────────────────────────────────────────────┐
+│       CIRCLECI (Servidores na AWS - Nuvem)              │
+│  app.circleci.com                                       │
+│                                                          │
+│  🤖 AUTOMÁTICO - CircleCI FAZ TUDO:                     │
+│                                                          │
+│  1. 🏗️  Cria máquina virtual Ubuntu (efêmera)           │
+│      • CPU: 2 cores                                     │
+│      • RAM: 4GB                                         │
+│      • Disco: 10GB                                      │
+│      • Vida: ~10 minutos                                │
+│                                                          │
+│  2. 📥 Baixa seu código do GitHub                       │
+│      git clone github.com/PLPATRI/PLPATRI               │
+│                                                          │
+│  3. ⚙️  Instala tudo:                                    │
+│      • PHP 8.2                                          │
+│      • Composer                                         │
+│      • Node.js                                          │
+│      • Cypress                                          │
+│      • Xvfb (para rodar browser)                        │
+│                                                          │
+│  4. 🚀 Inicia Laravel:                                   │
+│      php artisan serve                                  │
+│                                                          │
+│  5. 🧪 Roda testes Cypress:                              │
+│      npx cypress run                                    │
+│      • Abre browser (headless)                          │
+│      • Executa combrim.cy.js                            │
+│      • Grava vídeo                                      │
+│      • Tira screenshots                                 │
+│                                                          │
+│  6. 📊 Mostra resultados                                 │
+│      ✅ Passou ou ❌ Falhou                              │
+│                                                          │
+│  7. 💾 Salva artifacts (vídeos/screenshots)             │
+│                                                          │
+│  8. 🗑️  Deleta a máquina virtual                        │
+│      (economiza recursos)                               │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Analogia:
+
+### 🏠 **Seu PC (Local):**
+Sua casa - você trabalha aqui
+
+### 📦 **GitHub:**
+Correios - guarda suas "cartas" (código)
+
+### 🏭 **CircleCI:**
+Fábrica automatizada - pega o código do GitHub, cria uma mini-fábrica temporária, testa tudo, te avisa se funcionou, e depois se destrói
+
+---
+
+## Por que na nuvem (CircleCI)?
+
+### ✅ **Vantagens:**
+- Seu PC não precisa ficar ligado
+- Sempre tem o mesmo ambiente (Ubuntu)
+- Roda em paralelo (vários testes ao mesmo tempo)
+- Não consome recursos do seu PC
+- Disponível 24/7
+
+### 🏢 **Na prática:**
+```
+Você: Sexta 18h, faz push e desliga o PC
+CircleCI: Continua rodando testes a noite toda
+Segunda 9h: Você abre e vê todos os resultados prontos ✅
+Entendeu agora? É como contratar um robô na nuvem para fazer os testes pra você! 🤖☁️
+
+
+

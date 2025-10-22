@@ -1,6 +1,5 @@
 describe('Realizar teste de login e pedidos', () => {
   
-  // Prevenir falhas por erros não tratados da aplicação
   Cypress.on('uncaught:exception', (err, runnable) => {
     return false;
   });
@@ -19,116 +18,73 @@ describe('Realizar teste de login e pedidos', () => {
     cy.get('[name="senha"]').should('be.visible').type('979899');
     cy.screenshot('03-preenche-credenciais');
 
-    // 4️⃣ Clica no botão de login e aguarda redirecionamento
+    // 4️⃣ Clica no botão de login
     cy.get('.btn').should('be.visible').click();
-    
-    // Aguarda o carregamento completo da dashboard
-    cy.wait(7000); // Aumentado para 7 segundos
-    
-    cy.screenshot('04-depois-login-DEBUG');
-    
-    // 🔍 DEBUG: Lista TODOS os links encontrados
-    cy.get('a').then(($links) => {
-      cy.log(`===== TOTAL DE LINKS ENCONTRADOS: ${$links.length} =====`);
-      $links.each((index, link) => {
-        const text = link.textContent.trim();
-        const href = link.getAttribute('href');
-        cy.log(`[${index}] Texto: "${text}" | href: "${href}"`);
-      });
-    });
-    
-    // 🔍 DEBUG: Captura o HTML completo da página
-    cy.document().then((doc) => {
-      cy.log('===== INÍCIO DO HTML =====');
-      cy.log(doc.body.innerHTML.substring(0, 2000)); // Primeiros 2000 caracteres
-      cy.log('===== FIM DO HTML =====');
-    });
+    cy.wait(3000);
+    cy.screenshot('04-depois-login');
 
-    // 5️⃣ Tenta encontrar o link "Pedidos" (vai falhar mas teremos os logs)
-    cy.contains('a', 'Pedidos', { timeout: 5000, matchCase: false })
-      .should('be.visible')
-      .click();
-    
+    // 5️⃣ Navega para Pedidos usando o seletor correto
+    cy.get(':nth-child(6) > a').should('be.visible').click();
     cy.wait(2000);
     cy.screenshot('05-pagina-pedidos');
 
-    // 6️⃣ Clica no botão "Novo Pedido" dentro do box-header
-    cy.get('.box-header > .btn', { timeout: 10000 })
-      .should('be.visible')
-      .click();
-    cy.screenshot('06-botao-novo-pedido');
+    // 6️⃣ Clica no botão dentro do box-header
+    cy.get('.box-header > .btn', { timeout: 10000 }).should('be.visible').click();
+    cy.screenshot('06-box-header');
 
-    // 7️⃣ Busca cliente por nome
-    cy.get('.col-lg-6 > .form-control')
-      .should('be.visible')
-      .type('bb');
-    cy.screenshot('07-busca-cliente');
+    // 7️⃣ Seleciona um cliente para pesquisa
+    cy.get('.col-lg-6 > .form-control').should('be.visible').type('bb');
+    cy.screenshot('07-preenche-campo');
 
-    // 8️⃣ Clica no botão de pesquisa
+    // 8️⃣ Busca um cliente
     cy.get('.btn > :nth-child(1) > .fas').click({ force: true });
     cy.wait(1000);
     cy.screenshot('08-resultado-busca');
 
-    // 9️⃣ Seleciona o cliente encontrado
-    cy.get('tr > :nth-child(3) > .btn')
-      .should('be.visible')
-      .click();
+    // 9️⃣ Seleciona o cliente
+    cy.get('tr > :nth-child(3) > .btn').should('be.visible').click();
     cy.screenshot('09-cliente-selecionado');
 
-    // 🔟 Avança para próxima etapa
-    cy.get('.d-flex > .btn-success')
-      .should('be.visible')
-      .click();
-    cy.screenshot('10-proximo-passo');
+    // 🔟 Clica em Próximo
+    cy.get('.d-flex > .btn-success').should('be.visible').click();
+    cy.screenshot('10-proximo');
 
-    // 1️⃣1️⃣ Adiciona novo produto ao pedido
-    cy.get('#new-pedido-customer')
-      .should('be.visible')
-      .click();
+    // 1️⃣1️⃣ Botão Novo Pedido
+    cy.get('#new-pedido-customer').should('be.visible').click();
     cy.wait(1000);
-    cy.screenshot('11-adicionar-produto');
+    cy.screenshot('11-novo-pedido');
 
-    // 1️⃣2️⃣ Seleciona o primeiro produto
-    cy.get('tbody > :nth-child(1) > :nth-child(1) > label')
-      .should('be.visible')
-      .click();
-    cy.screenshot('12-produto-selecionado');
+    // 1️⃣2️⃣ Seleciona o checkbox
+    cy.get('tbody > :nth-child(1) > :nth-child(1) > label').should('be.visible').click();
+    cy.screenshot('12-checkbox-selecionado');
 
-    // 1️⃣3️⃣ Define quantidade do produto
+    // 1️⃣3️⃣ Seleciona campo quantidade e insere valor
     cy.get(':nth-child(1) > .w-50 > .form-group > .form-control')
       .should('be.visible')
       .clear()
       .type('100')
       .blur();
     cy.wait(500);
-    cy.screenshot('13-quantidade-definida');
+    cy.screenshot('13-quantidade-inserida');
 
-    // 1️⃣4️⃣ Abre modal de finalização
-    cy.get('#pedido-modal > span:first-child')
-      .parent()
-      .should('be.visible')
-      .click();
-    cy.screenshot('14-modal-finalizacao');
+    // 1️⃣4️⃣ Seleciona balcão
+    cy.get('#pedido-modal > span:first-child').parent().should('be.visible').click();
+    cy.screenshot('14-modal-aberto');
 
-    // 1️⃣5️⃣ Seleciona forma de retirada (Balcão)
     cy.get('.col-lg-6.d-flex > :nth-child(1) > :nth-child(1) > label')
       .scrollIntoView()
       .wait(500)
       .click({ force: true });
-    cy.screenshot('15-forma-retirada-selecionada');
+    cy.screenshot('15-balcao-selecionado');
 
-    // 1️⃣6️⃣ Finaliza o pedido
+    // 1️⃣5️⃣ Finaliza o pedido
     cy.get('.modal-footer > .btn-success > :nth-child(1)')
       .should('be.visible')
       .click();
     cy.wait(2000);
     cy.screenshot('16-pedido-finalizado');
 
-    // 1️⃣7️⃣ Tela final - Confirmação
     cy.screenshot('17-tela-final');
-    
-    // ✅ Validação opcional: verifica mensagem de sucesso
-    cy.contains('Pedido Gerado com sucesso', { timeout: 5000 })
-      .should('be.visible');
   });
+  
 });

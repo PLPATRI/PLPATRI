@@ -1,10 +1,12 @@
 describe('Realizar teste de login e pedidos', () => {
   
+  // Ignora erros não tratados da aplicação
   Cypress.on('uncaught:exception', (err, runnable) => {
     return false;
   });
 
-  it('executa fluxo completo com screenshots', () => {
+  it('executa fluxo completo com screenshots e validações', () => {
+
     // 1️⃣ Acessa a página inicial
     cy.visit('http://127.0.0.1:8000/');
     cy.screenshot('01-homepage');
@@ -23,42 +25,58 @@ describe('Realizar teste de login e pedidos', () => {
     cy.wait(3000);
     cy.screenshot('04-depois-login');
 
-    // 5️⃣ Navega para Pedidos usando o seletor correto
-    cy.get(':nth-child(6) > a').should('be.visible').click();
+    // 5️⃣ Navega para Pedidos
+    cy.get(':nth-child(6) > a', { timeout: 10000 })
+      .should('be.visible')
+      .click();
     cy.wait(2000);
     cy.screenshot('05-pagina-pedidos');
 
     // 6️⃣ Clica no botão dentro do box-header
-    cy.get('.box-header > .btn', { timeout: 10000 }).should('be.visible').click();
+    cy.get('.box-header > .btn', { timeout: 10000 })
+      .should('be.visible')
+      .click();
     cy.screenshot('06-box-header');
 
     // 7️⃣ Seleciona um cliente para pesquisa
-    cy.get('.col-lg-6 > .form-control').should('be.visible').type('bb');
+    cy.get('.col-lg-6 > .form-control')
+      .should('be.visible')
+      .type('bb');
     cy.screenshot('07-preenche-campo');
 
-    // 8️⃣ Busca um cliente
-    cy.get('.btn > :nth-child(1) > .fas').click({ force: true });
+    // 8️⃣ Busca o cliente
+    cy.get('.btn > :nth-child(1) > .fas')
+      .should('be.visible')
+      .click({ force: true });
     cy.wait(1000);
     cy.screenshot('08-resultado-busca');
 
     // 9️⃣ Seleciona o cliente
-    cy.get('tr > :nth-child(3) > .btn').should('be.visible').click();
+    cy.get('tr > :nth-child(3) > .btn', { timeout: 10000 })
+      .should('be.visible')
+      .click();
     cy.screenshot('09-cliente-selecionado');
 
     // 🔟 Clica em Próximo
-    cy.get('.d-flex > .btn-success').should('be.visible').click();
+    cy.get('.d-flex > .btn-success', { timeout: 10000 })
+      .should('be.visible')
+      .click();
     cy.screenshot('10-proximo');
 
     // 1️⃣1️⃣ Botão Novo Pedido
-    cy.get('#new-pedido-customer').should('be.visible').click();
+    cy.get('#new-pedido-customer', { timeout: 10000 })
+      .should('be.visible')
+      .click();
     cy.wait(1000);
     cy.screenshot('11-novo-pedido');
 
-    // 1️⃣2️⃣ Seleciona o checkbox
-    cy.get('tbody > :nth-child(1) > :nth-child(1) > label').should('be.visible').click();
+    // 1️⃣2️⃣ Seleciona o checkbox do primeiro produto
+    cy.get('tbody > :nth-child(1) > :nth-child(1) > label')
+      .should('be.visible')
+      .click();
     cy.screenshot('12-checkbox-selecionado');
 
-    // 1️⃣3️⃣ Seleciona campo quantidade e insere valor
+    // 1️⃣3️⃣ Define a quantidade
     cy.get(':nth-child(1) > .w-50 > .form-group > .form-control')
       .should('be.visible')
       .clear()
@@ -67,24 +85,42 @@ describe('Realizar teste de login e pedidos', () => {
     cy.wait(500);
     cy.screenshot('13-quantidade-inserida');
 
-    // 1️⃣4️⃣ Seleciona balcão
-    cy.get('#pedido-modal > span:first-child').parent().should('be.visible').click();
+    // 1️⃣4️⃣ Abre o modal de balcão
+    cy.get('#pedido-modal > span:first-child')
+      .parent()
+      .should('be.visible')
+      .click();
     cy.screenshot('14-modal-aberto');
 
-    cy.get('.col-lg-6.d-flex > :nth-child(1) > :nth-child(1) > label')
+    // 1️⃣5️⃣ Seleciona o balcão
+    cy.get('.col-lg-6.d-flex > :nth-child(1) > :nth-child(1) > label', { timeout: 10000 })
       .scrollIntoView()
       .wait(500)
       .click({ force: true });
     cy.screenshot('15-balcao-selecionado');
 
-    // 1️⃣5️⃣ Finaliza o pedido
-    cy.get('.modal-footer > .btn-success > :nth-child(1)')
-      .should('be.visible')
-      .click();
+    // 1️⃣6️⃣ Finaliza o pedido com interceptação da requisição
+    cy.intercept('POST', '**/pedido/**').as('novoPedido');
+
+    cy.get('.modal-footer > .btn-success', { timeout: 10000 })
+      .should('be.enabled')
+      .click({ force: true });
+
+    // Aguarda a resposta da API do pedido
+    cy.wait('@novoPedido').then((intercept) => {
+      cy.log('Status da resposta:', intercept.response.statusCode);
+      expect(intercept.response.statusCode).to.eq(200);
+    });
+
     cy.wait(2000);
     cy.screenshot('16-pedido-finalizado');
 
-    cy.screenshot('17-tela-final');
+    // 1️⃣7️⃣ Verifica se há mensagem de sucesso ou alerta
+    cy.get('.alert-success, .toast-success', { timeout: 5000 })
+      .should('be.visible')
+      .screenshot('17-tela-final');
+
+    // Log final
+    cy.log('✅ Fluxo completo executado com sucesso e pedido gerado.');
   });
-  
 });

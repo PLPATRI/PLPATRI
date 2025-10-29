@@ -1,18 +1,21 @@
 name: Cypress E2E Tests
 
+# 🔁 Quando o workflow será executado
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [ main, master, develop ]  # Executa ao fazer push nessas branches
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master ]           # Executa em PRs para main ou master
   schedule:
-    - cron: '0 2 * * *'
-  workflow_dispatch:
+    - cron: '0 2 * * *'                  # Executa diariamente às 2h da manhã
+  workflow_dispatch:                     # Permite execução manual via botão no GitHub
 
+# 🌐 Variáveis de ambiente globais
 env:
-  CYPRESS_baseUrl: http://127.0.0.1:8000
+  CYPRESS_baseUrl: http://127.0.0.1:8000  # URL onde o Laravel estará rodando
 
 jobs:
+  # 🧪 Job principal: testes Cypress em múltiplos navegadores
   cypress-tests:
     name: Cypress E2E Tests
     runs-on: ubuntu-latest
@@ -20,8 +23,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [chrome, firefox, edge]
+        browser: [chrome, firefox, edge]  # Testa em três navegadores
 
+    # 🛢️ Serviço de banco de dados MySQL (opcional)
     services:
       mysql:
         image: mysql:8
@@ -37,9 +41,11 @@ jobs:
           --health-retries=3
 
     steps:
+      # 📥 Baixa o código do repositório
       - name: Checkout do código
         uses: actions/checkout@v4
 
+      # 🧰 Instala PHP e extensões necessárias para Laravel
       - name: Instalar PHP e extensões
         uses: shivammathur/setup-php@v2
         with:
@@ -47,43 +53,54 @@ jobs:
           extensions: mbstring, bcmath, pdo_mysql
           coverage: none
 
+      # 📦 Instala dependências do Laravel via Composer
       - name: Instalar dependências Laravel
         run: composer install --prefer-dist --no-progress --no-suggest
 
+      # ⚙️ Copia o .env de exemplo
       - name: Copiar .env
         run: cp .env.example .env
 
+      # 🛠️ Configura credenciais do banco no .env
       - name: Configurar banco de dados
         run: |
-          sed -i 's/DB_HOST=127.0.0.1/DB_HOST=127.0.0.1/' .env
+          sed -i 's/DB_HOST=.*/DB_HOST=127.0.0.1/' .env
           sed -i 's/DB_DATABASE=.*/DB_DATABASE=test_db/' .env
           sed -i 's/DB_USERNAME=.*/DB_USERNAME=root/' .env
           sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=root/' .env
 
+      # 🔐 Gera chave da aplicação Laravel
       - name: Gerar chave da aplicação
         run: php artisan key:generate
 
-      - name: Rodar migrations
-        run: php artisan migrate --force
+      # ❌ Etapa de migrations removida (não será executada)
+      # - name: Rodar migrations
+      #   run: php artisan migrate --force
 
+      # ▶️ Inicia o servidor Laravel em segundo plano
       - name: Iniciar servidor Laravel
         run: php artisan serve &
 
+      # ⏳ Aguarda o servidor subir antes de rodar os testes
       - name: Aguardar servidor subir
         run: sleep 10
 
+      # 🧰 Instala Node.js e prepara ambiente para Cypress
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
+      # 📦 Instala dependências do projeto frontend
       - name: Instalar dependências Node
         run: npm ci
 
+      # ✅ Verifica se o Cypress está instalado corretamente
       - name: Verificar Cypress
         run: npx cypress verify
 
+      # 🧪 Executa os testes Cypress nos navegadores definidos
       - name: Executar testes Cypress
         uses: cypress-io/github-action@v6
         with:
@@ -96,6 +113,7 @@ jobs:
         env:
           CYPRESS_baseUrl: ${{ env.CYPRESS_baseUrl }}
 
+      # 📸 Faz upload de screenshots se houver falhas
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
         if: failure()
@@ -104,6 +122,7 @@ jobs:
           path: cypress/screenshots
           retention-days: 7
 
+      # 🎥 Faz upload dos vídeos dos testes
       - name: Upload vídeos
         uses: actions/upload-artifact@v4
         if: always()
@@ -112,6 +131,7 @@ jobs:
           path: cypress/videos
           retention-days: 7
 
+      # 📊 Gera resumo dos testes no painel do GitHub
       - name: Gerar relatório
         if: always()
         run: |
@@ -119,6 +139,7 @@ jobs:
           echo "Browser: **${{ matrix.browser }}**" >> $GITHUB_STEP_SUMMARY
           echo "Status: **${{ job.status }}**" >> $GITHUB_STEP_SUMMARY
 
+  # 🧪 Job separado para rodar testes principais apenas no Chrome
   cypress-main-tests:
     name: Testes Principais (Chrome)
     runs-on: ubuntu-latest
@@ -148,6 +169,7 @@ jobs:
             cypress/screenshots
             cypress/videos
 
+  # 🔍 Job opcional para análise de código (lint)
   code-quality:
     name: Análise de Código
     runs-on: ubuntu-latest
@@ -167,6 +189,7 @@ jobs:
         run: npm run lint || echo "Lint não configurado"
         continue-on-error: true
 
+  # 📣 Job final para notificar resultado geral
   notify:
     name: Notificar Resultado
     runs-on: ubuntu-latest

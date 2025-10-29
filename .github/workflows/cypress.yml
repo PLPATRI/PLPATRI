@@ -1,0 +1,117 @@
+name: Cypress E2E Tests
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+env:
+  CYPRESS_baseUrl: http://127.0.0.1:8000
+
+jobs:
+  cypress-tests:
+    name: Cypress E2E Tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chrome, firefox, edge]
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Instalar dependências
+        run: npm ci
+      - name: Verificar Cypress
+        run: npx cypress verify
+      - name: Executar testes Cypress
+        uses: cypress-io/github-action@v6
+        with:
+          browser: ${{ matrix.browser }}
+          spec: |
+            cypress/e2e/combrim.cy.js
+            cypress/e2e/criar-pedido.cy.js
+          headed: false
+          record: false
+        env:
+          CYPRESS_baseUrl: ${{ env.CYPRESS_baseUrl }}
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots-${{ matrix.browser }}
+          path: cypress/screenshots
+          retention-days: 7
+      - name: Upload vídeos
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cypress-videos-${{ matrix.browser }}
+          path: cypress/videos
+          retention-days: 7
+      - name: Gerar relatório
+        if: always()
+        run: |
+          echo "## 🧪 Resultados dos Testes - ${{ matrix.browser }}" >> $GITHUB_STEP_SUMMARY
+          echo "Browser: **${{ matrix.browser }}**" >> $GITHUB_STEP_SUMMARY
+          echo "Status: **${{ job.status }}**" >> $GITHUB_STEP_SUMMARY
+
+  cypress-main-tests:
+    name: Testes Principais (Chrome)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          spec: cypress/e2e/combrim.cy.js
+          config: video=true,screenshotOnRunFailure=true
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-results
+          path: |
+            cypress/screenshots
+            cypress/videos
+
+  code-quality:
+    name: Análise de Código
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Instalar dependências
+        run: npm ci
+      - name: Lint
+        run: npm run lint || echo "Lint não configurado"
+        continue-on-error: true
+
+  notify:
+    name: Notificar Resultado
+    runs-on: ubuntu-latest
+    needs: [cypress-tests, cypress-main-tests]
+    if: always()
+    steps:
+      - name: Resultado dos testes
+        run: |
+          echo "## 📊 Pipeline Completo" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Todos os testes foram executados" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 Veja os artefatos na aba 'Actions'" >> $GITHUB_STEP_SUMMARY

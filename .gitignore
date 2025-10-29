@@ -17,4 +17,5 @@ yarn-error.log
 /.idea
 /.vscode
 echo "cypress/videos" >> .gitignore
-echo "cypress/screenshots" >> .gitignore
+echo "cypress/screenshots" >> .gitignorecypress/screenshots/
+cypress/videos/

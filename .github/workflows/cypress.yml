@@ -35,8 +35,6 @@ jobs:
       - name: Gerar chave da aplicação
         run: php artisan key:generate
 
-      # ⚠️ MIGRATIONS REMOVIDAS - não são necessárias para testes E2E
-
       - name: Iniciar servidor Laravel
         run: php artisan serve --host=127.0.0.1 --port=8000 &
 
@@ -79,19 +77,27 @@ jobs:
         env:
           CYPRESS_baseUrl: ${{ env.CYPRESS_baseUrl }}
 
-      - name: Upload screenshots
+      - name: Upload screenshots (sucesso)
         uses: actions/upload-artifact@v4
-        if: failure()
+        if: success()
         with:
-          name: cypress-screenshots
+          name: cypress-screenshots-success
           path: cypress/screenshots
           retention-days: 7
 
-      - name: Upload vídeos
+      - name: Upload screenshots (falha)
         uses: actions/upload-artifact@v4
-        if: always()
+        if: failure()
         with:
-          name: cypress-videos
+          name: cypress-screenshots-failure
+          path: cypress/screenshots
+          retention-days: 7
+
+      - name: Upload vídeos (apenas falhas)
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-videos-failure
           path: cypress/videos
           retention-days: 7
 
@@ -101,7 +107,11 @@ jobs:
           echo "## 🧪 Resultados dos Testes Cypress" >> $GITHUB_STEP_SUMMARY
           echo "Browser: **Chrome**" >> $GITHUB_STEP_SUMMARY
           echo "Status: **${{ job.status }}**" >> $GITHUB_STEP_SUMMARY
-          echo "🔗 Veja os artefatos acima para screenshots e vídeos" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" == "failure" ]; then
+            echo "📸 Screenshots e 🎥 vídeos disponíveis nos artefatos" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ Screenshots de sucesso disponíveis nos artefatos" >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Stop servidor
         if: always()

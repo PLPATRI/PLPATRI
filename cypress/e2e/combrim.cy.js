@@ -5,23 +5,23 @@ describe('Realizar teste de login e pedidos', () => {
     return false;
   });
 
-  it('1️⃣ Acessa a página inicial', () => {
-    cy.log('🚀 PASSO 1: Acessando a página inicial');
-    cy.visit('/', { timeout: 30000 }); // Aumentado timeout
-    cy.wait(1000); // Aguarda página carregar
-    cy.screenshot('01-homepage');
-  });
+  it('executa fluxo completo com 17 passos', () => {
 
-  it('2️⃣ Seleciona tipo de login', () => {
+    // 1️⃣ Acessa a página inicial
+    cy.log('🚀 PASSO 1: Acessando a página inicial');
+    cy.visit('/', { timeout: 30000 });
+    cy.wait(1000);
+    cy.screenshot('01-homepage');
+
+    // 2️⃣ Seleciona tipo de login
     cy.log('🚀 PASSO 2: Selecionando tipo de login como Admin');
     cy.get('[name="tipo_login"]', { timeout: 15000 })
       .should('be.visible')
       .select('Admin');
     cy.wait(500);
     cy.screenshot('02-seleciona-tipo-login');
-  });
 
-  it('3️⃣ Preenche email e senha', () => {
+    // 3️⃣ Preenche email e senha
     cy.log('🚀 PASSO 3: Preenchendo credenciais de login');
     cy.get('[name="email"]', { timeout: 15000 })
       .should('be.visible')
@@ -33,42 +33,33 @@ describe('Realizar teste de login e pedidos', () => {
       .type('979899');
     cy.wait(500);
     cy.screenshot('03-preenche-credenciais');
-  });
 
-  it('4️⃣ Clica no botão de login', () => {
+    // 4️⃣ Clica no botão de login
     cy.log('🚀 PASSO 4: Clicando no botão de login');
     cy.get('.btn', { timeout: 15000 })
       .should('be.visible')
       .click();
-    cy.wait(5000); // Aumentado para aguardar login processar
+    cy.wait(5000); // Aguarda login processar
     cy.screenshot('04-depois-login');
-  });
 
-  it('5️⃣ Navega para Pedidos', () => {
+    // 5️⃣ Navega para Pedidos
     cy.log('🚀 PASSO 5: Navegando para a página de Pedidos');
-    // Aguarda a página estar totalmente carregada
-    cy.get('body', { timeout: 15000 }).should('be.visible');
-    
-    // Tenta diferentes seletores caso o primeiro falhe
     cy.get(':nth-child(6) > a', { timeout: 15000 })
       .should('be.visible')
       .should('not.be.disabled')
-      .click({ force: true }); // Force click para garantir
-    
-    cy.wait(3000); // Aguarda página de pedidos carregar
+      .click({ force: true });
+    cy.wait(3000);
     cy.screenshot('05-pagina-pedidos');
-  });
 
-  it('6️⃣ Clica no botão dentro do box-header', () => {
+    // 6️⃣ Clica no botão dentro do box-header
     cy.log('🚀 PASSO 6: Clicando no botão dentro do box-header');
     cy.get('.box-header > .btn', { timeout: 15000 })
       .should('be.visible')
       .click({ force: true });
     cy.wait(2000);
     cy.screenshot('06-box-header');
-  });
 
-  it('7️⃣ Preenche campo de busca de cliente', () => {
+    // 7️⃣ Preenche campo de busca de cliente
     cy.log('🚀 PASSO 7: Preenchendo campo de busca com "bb"');
     cy.get('.col-lg-6 > .form-control', { timeout: 15000 })
       .should('be.visible')
@@ -76,53 +67,47 @@ describe('Realizar teste de login e pedidos', () => {
       .type('bb');
     cy.wait(500);
     cy.screenshot('07-preenche-campo');
-  });
 
-  it('8️⃣ Clica no botão de busca', () => {
+    // 8️⃣ Clica no botão de busca
     cy.log('🚀 PASSO 8: Clicando no botão de busca');
     cy.get('.btn > :nth-child(1) > .fas', { timeout: 15000 })
       .click({ force: true });
-    cy.wait(2000); // Aguarda resultado da busca
+    cy.wait(2000);
     cy.screenshot('08-resultado-busca');
-  });
 
-  it('9️⃣ Seleciona o cliente da lista', () => {
+    // 9️⃣ Seleciona o cliente da lista
     cy.log('🚀 PASSO 9: Selecionando o cliente');
     cy.get('tr > :nth-child(3) > .btn', { timeout: 15000 })
       .should('be.visible')
       .click({ force: true });
     cy.wait(1000);
     cy.screenshot('09-cliente-selecionado');
-  });
 
-  it('🔟 Clica em Próximo', () => {
+    // 🔟 Clica em Próximo
     cy.log('🚀 PASSO 10: Clicando em Próximo');
     cy.get('.d-flex > .btn-success', { timeout: 15000 })
       .should('be.visible')
       .click({ force: true });
     cy.wait(2000);
     cy.screenshot('10-proximo');
-  });
 
-  it('1️⃣1️⃣ Clica no botão Novo Pedido', () => {
+    // 1️⃣1️⃣ Clica no botão Novo Pedido
     cy.log('🚀 PASSO 11: Clicando no botão Novo Pedido');
     cy.get('#new-pedido-customer', { timeout: 15000 })
       .should('be.visible')
       .click({ force: true });
     cy.wait(2000);
     cy.screenshot('11-novo-pedido');
-  });
 
-  it('1️⃣2️⃣ Seleciona checkbox do primeiro produto', () => {
+    // 1️⃣2️⃣ Seleciona checkbox do primeiro produto
     cy.log('🚀 PASSO 12: Selecionando checkbox do produto');
     cy.get('tbody > :nth-child(1) > :nth-child(1) > label', { timeout: 15000 })
       .should('be.visible')
       .click({ force: true });
     cy.wait(500);
     cy.screenshot('12-checkbox-selecionado');
-  });
 
-  it('1️⃣3️⃣ Define quantidade do produto', () => {
+    // 1️⃣3️⃣ Define quantidade do produto
     cy.log('🚀 PASSO 13: Definindo quantidade (100)');
     cy.get(':nth-child(1) > .w-50 > .form-group > .form-control', { timeout: 15000 })
       .should('be.visible')
@@ -131,9 +116,8 @@ describe('Realizar teste de login e pedidos', () => {
       .blur();
     cy.wait(1000);
     cy.screenshot('13-quantidade-inserida');
-  });
 
-  it('1️⃣4️⃣ Abre modal de seleção de balcão', () => {
+    // 1️⃣4️⃣ Abre modal de seleção de balcão
     cy.log('🚀 PASSO 14: Abrindo modal de balcão');
     cy.get('#pedido-modal > span:first-child', { timeout: 15000 })
       .parent()
@@ -141,9 +125,8 @@ describe('Realizar teste de login e pedidos', () => {
       .click({ force: true });
     cy.wait(1500);
     cy.screenshot('14-modal-aberto');
-  });
 
-  it('1️⃣5️⃣ Seleciona o balcão', () => {
+    // 1️⃣5️⃣ Seleciona o balcão
     cy.log('🚀 PASSO 15: Selecionando o balcão');
     cy.get('.col-lg-6.d-flex > :nth-child(1) > :nth-child(1) > label', { timeout: 15000 })
       .scrollIntoView()
@@ -152,19 +135,17 @@ describe('Realizar teste de login e pedidos', () => {
       .click({ force: true });
     cy.wait(500);
     cy.screenshot('15-balcao-selecionado');
-  });
 
-  it('1️⃣6️⃣ Finaliza o pedido', () => {
+    // 1️⃣6️⃣ Finaliza o pedido
     cy.log('🚀 PASSO 16: Finalizando o pedido');
     cy.get('.modal-footer > .btn-success', { timeout: 15000 })
       .should('be.visible')
       .should('be.enabled')
       .click({ force: true });
-    cy.wait(5000); // Aguarda processamento do pedido
+    cy.wait(5000);
     cy.screenshot('16-pedido-finalizado');
-  });
 
-  it('1️⃣7️⃣ Verifica mensagem de confirmação', () => {
+    // 1️⃣7️⃣ Verifica mensagem de confirmação
     cy.log('🚀 PASSO 17: Verificando confirmação');
     cy.wait(1000);
     cy.get('body').then(($body) => {
@@ -176,5 +157,8 @@ describe('Realizar teste de login e pedidos', () => {
         cy.screenshot('17-tela-final');
       }
     });
+
+    // Log final
+    cy.log('✅ FLUXO COMPLETO: 17 PASSOS EXECUTADOS COM SUCESSO');
   });
 });

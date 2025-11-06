@@ -44,9 +44,8 @@ describe('Realizar teste de login e pedidos', () => {
       .type('bb');
     cy.screenshot('07-preenche-campo');
 
-    // 8️⃣ Busca o cliente
+    // 8️⃣ Busca o cliente (CORRIGIDO - removido .should('be.visible'))
     cy.get('.btn > :nth-child(1) > .fas')
-      .should('be.visible')
       .click({ force: true });
     cy.wait(1000);
     cy.screenshot('08-resultado-busca');

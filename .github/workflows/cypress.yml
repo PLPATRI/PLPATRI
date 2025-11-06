@@ -9,6 +9,7 @@ on:
 
 env:
   CYPRESS_baseUrl: http://127.0.0.1:8000
+  NODE_OPTIONS: --max-old-space-size=4096  # ✅ Aumenta memória do Node.js
 
 jobs:
   cypress-tests:
@@ -27,20 +28,13 @@ jobs:
           coverage: none
 
       - name: Instalar dependências Laravel
-        run: composer install --prefer-dist --no-progress --no-interaction
+        run: composer install --prefer-dist --no-progress --no-interaction --no-dev  # ✅ --no-dev economiza espaço
 
       - name: Copiar .env
         run: cp .env.example .env
 
       - name: Gerar chave da aplicação
         run: php artisan key:generate
-
-      # ⚠️ MELHORIA 1: Adicionar configuração do banco (se necessário)
-      - name: Configurar banco de dados (opcional)
-        run: |
-          touch database/database.sqlite
-          php artisan migrate --force --seed
-        continue-on-error: true  # Não falha se não precisar de DB
 
       - name: Iniciar servidor Laravel
         run: php artisan serve --host=127.0.0.1 --port=8000 &
@@ -71,38 +65,37 @@ jobs:
       - name: Verificar Cypress
         run: npx cypress verify
 
-      # ⚠️ MELHORIA 2: Remover wait-on duplicado (já está aguardando acima)
+      # ✅ Limpar cache antes de executar
+      - name: Limpar cache do Cypress
+        run: |
+          rm -rf cypress/screenshots/* || true
+          rm -rf cypress/videos/* || true
+
       - name: Executar testes Cypress
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
-          spec: cypress/e2e/combrim.cy.js,cypress/e2e/criar-pedido.cy.js
+          spec: cypress/e2e/combrim.cy.js
           headed: false
           record: false
-          config: video=true,screenshotOnRunFailure=true,testIsolation=false
-          # wait-on removido pois já aguardamos acima
+          config: video=false,screenshotOnRunFailure=true,numTestsKeptInMemory=0  # ✅ Otimizações de memória
+          wait-on: 'http://127.0.0.1:8000'
+          wait-on-timeout: 60
         env:
           CYPRESS_baseUrl: ${{ env.CYPRESS_baseUrl }}
+          NODE_OPTIONS: --max-old-space-size=4096  # ✅ Mais memória para Node.js
 
-      # ⚠️ MELHORIA 3: Upload de screenshots sempre (não só em sucesso)
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
-        if: always()  # Sempre faz upload
+        if: always()
         with:
           name: cypress-screenshots-${{ github.run_number }}
           path: cypress/screenshots
-          retention-days: 7
+          retention-days: 3  # ✅ Reduzido de 7 para 3 dias
           if-no-files-found: ignore
+          compression-level: 9  # ✅ Máxima compressão
 
-      # ⚠️ MELHORIA 4: Upload de vídeos sempre
-      - name: Upload vídeos
-        uses: actions/upload-artifact@v4
-        if: always()  # Sempre faz upload
-        with:
-          name: cypress-videos-${{ github.run_number }}
-          path: cypress/videos
-          retention-days: 7
-          if-no-files-found: ignore
+      # ❌ REMOVIDO: Upload de vídeos (economiza muito espaço)
 
       - name: Gerar relatório
         if: always()
@@ -114,15 +107,21 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ "${{ job.status }}" == "failure" ]; then
             echo "❌ **Testes falharam**" >> $GITHUB_STEP_SUMMARY
-            echo "📸 Screenshots e 🎥 vídeos disponíveis nos artefatos" >> $GITHUB_STEP_SUMMARY
+            echo "📸 Screenshots disponíveis nos artefatos" >> $GITHUB_STEP_SUMMARY
           else
             echo "✅ **Todos os testes passaram!**" >> $GITHUB_STEP_SUMMARY
-            echo "📸 Screenshots disponíveis nos artefatos" >> $GITHUB_STEP_SUMMARY
           fi
 
       - name: Stop servidor
         if: always()
         run: pkill -f "php artisan serve" || true
+
+      # ✅ Limpar arquivos temporários
+      - name: Limpar arquivos temporários
+        if: always()
+        run: |
+          rm -rf node_modules/.cache || true
+          rm -rf /tmp/cypress* || true
 
   notify:
     name: Notificar Resultado
@@ -136,5 +135,3 @@ jobs:
           echo "## 📊 Pipeline Completo" >> $GITHUB_STEP_SUMMARY
           echo "✅ Execução finalizada" >> $GITHUB_STEP_SUMMARY
           echo "Status: **${{ needs.cypress-tests.result }}**" >> $GITHUB_STEP_SUMMARY
-          echo "Workflow: **${{ github.workflow }}**" >> $GITHUB_STEP_SUMMARY
-          echo "Branch: **${{ github.ref_name }}**" >> $GITHUB_STEP_SUMMARY

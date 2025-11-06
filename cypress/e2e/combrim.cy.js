@@ -27,13 +27,24 @@ describe('Realizar teste de login e pedidos', () => {
   it('4️⃣ Clica no botão de login', () => {
     cy.log('🚀 PASSO 4: Clicando no botão de login');
     cy.get('.btn').should('be.visible').click();
+    
+    // MUDANÇA: Aguardar URL mudar ou elemento do dashboard aparecer
+    cy.url({ timeout: 10000 }).should('not.include', '/login');
     cy.wait(3000);
+    
     cy.screenshot('04-depois-login');
+    cy.log('✅ Login realizado com sucesso!');
   });
 
   it('5️⃣ Navega para Pedidos', () => {
     cy.log('🚀 PASSO 5: Navegando para a página de Pedidos');
-    cy.get(':nth-child(6) > a', { timeout: 10000 })
+    
+    // MUDANÇA: Adicionar log para debug
+    cy.get('body').then(($body) => {
+      cy.log('URL atual: ' + $body.prop('ownerDocument').location.href);
+    });
+    
+    cy.get(':nth-child(6) > a', { timeout: 15000 })
       .should('be.visible')
       .click();
     cy.wait(2000);

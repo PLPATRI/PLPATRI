@@ -9,7 +9,7 @@ on:
 
 env:
   CYPRESS_baseUrl: http://127.0.0.1:8000
-  NODE_OPTIONS: --max-old-space-size=4096  # ✅ Aumenta memória do Node.js
+  NODE_OPTIONS: --max-old-space-size=4096
 
 jobs:
   cypress-tests:
@@ -28,7 +28,7 @@ jobs:
           coverage: none
 
       - name: Instalar dependências Laravel
-        run: composer install --prefer-dist --no-progress --no-interaction --no-dev  # ✅ --no-dev economiza espaço
+        run: composer install --prefer-dist --no-progress --no-interaction
 
       - name: Copiar .env
         run: cp .env.example .env
@@ -65,25 +65,11 @@ jobs:
       - name: Verificar Cypress
         run: npx cypress verify
 
-      # ✅ Limpar cache antes de executar
-      - name: Limpar cache do Cypress
-        run: |
-          rm -rf cypress/screenshots/* || true
-          rm -rf cypress/videos/* || true
-
       - name: Executar testes Cypress
-        uses: cypress-io/github-action@v6
-        with:
-          browser: chrome
-          spec: cypress/e2e/combrim.cy.js
-          headed: false
-          record: false
-          config: video=false,screenshotOnRunFailure=true,numTestsKeptInMemory=0  # ✅ Otimizações de memória
-          wait-on: 'http://127.0.0.1:8000'
-          wait-on-timeout: 60
+        run: npx cypress run --spec "cypress/e2e/combrim.cy.js" --browser chrome
         env:
           CYPRESS_baseUrl: ${{ env.CYPRESS_baseUrl }}
-          NODE_OPTIONS: --max-old-space-size=4096  # ✅ Mais memória para Node.js
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
@@ -91,47 +77,9 @@ jobs:
         with:
           name: cypress-screenshots-${{ github.run_number }}
           path: cypress/screenshots
-          retention-days: 3  # ✅ Reduzido de 7 para 3 dias
+          retention-days: 3
           if-no-files-found: ignore
-          compression-level: 9  # ✅ Máxima compressão
-
-      # ❌ REMOVIDO: Upload de vídeos (economiza muito espaço)
 
       - name: Gerar relatório
         if: always()
-        run: |
-          echo "## 🧪 Resultados dos Testes Cypress" >> $GITHUB_STEP_SUMMARY
-          echo "Browser: **Chrome**" >> $GITHUB_STEP_SUMMARY
-          echo "Status: **${{ job.status }}**" >> $GITHUB_STEP_SUMMARY
-          echo "Run: **#${{ github.run_number }}**" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ job.status }}" == "failure" ]; then
-            echo "❌ **Testes falharam**" >> $GITHUB_STEP_SUMMARY
-            echo "📸 Screenshots disponíveis nos artefatos" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "✅ **Todos os testes passaram!**" >> $GITHUB_STEP_SUMMARY
-          fi
-
-      - name: Stop servidor
-        if: always()
-        run: pkill -f "php artisan serve" || true
-
-      # ✅ Limpar arquivos temporários
-      - name: Limpar arquivos temporários
-        if: always()
-        run: |
-          rm -rf node_modules/.cache || true
-          rm -rf /tmp/cypress* || true
-
-  notify:
-    name: Notificar Resultado
-    runs-on: ubuntu-latest
-    needs: [cypress-tests]
-    if: always()
-    
-    steps:
-      - name: Resultado dos testes
-        run: |
-          echo "## 📊 Pipeline Completo" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Execução finalizada" >> $GITHUB_STEP_SUMMARY
-          echo "Status: **${{ needs.cypress-tests.result }}**" >> $GITHUB_STEP_SUMMARY
+        r
